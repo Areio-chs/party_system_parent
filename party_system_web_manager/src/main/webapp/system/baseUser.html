@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>baseUser管理</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- 上传图片框样式，不使用上传组件可以删除此样式 -->
+    <style>
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+        }
+        .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 150px;
+            height: 70px;
+            line-height: 150px;
+            text-align: center;
+        }
+        .avatar {
+            width: 150px;
+            height: 70px;
+            display: block;
+        }
+
+    </style>
+</head>
+<body class="hold-transition">
+<div id="app">
+
+    <div class="content-header">
+        <h1>管理<small>baseUser管理</small></h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>管理</el-breadcrumb-item>
+            <el-breadcrumb-item>baseUser管理</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+
+    <div class="app-container">
+        <div class="box">
+            <div class="filter-container">
+                <!--查询表单-->
+                <el-form :inline="true" >
+                          <el-form-item label="学号">
+<el-input v-model="searchMap.sid" placeholder="学号" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="姓名">
+<el-input v-model="searchMap.name" placeholder="姓名" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="性别">
+<el-input v-model="searchMap.sex" placeholder="性别" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="生日（年月日）">
+<el-input v-model="searchMap.birth" placeholder="生日（年月日）" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="年级">
+<el-input v-model="searchMap.grade" placeholder="年级" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="班级">
+<el-input v-model="searchMap.classNum" placeholder="班级" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="宿舍号">
+<el-input v-model="searchMap.room" placeholder="宿舍号" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="个人照片">
+<el-input v-model="searchMap.iamge" placeholder="个人照片" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="身份证">
+<el-input v-model="searchMap.idCard" placeholder="身份证" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="电话号码">
+<el-input v-model="searchMap.phone" placeholder="电话号码" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="邮箱">
+<el-input v-model="searchMap.email" placeholder="邮箱" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="家庭住址">
+<el-input v-model="searchMap.address" placeholder="家庭住址" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="个人身份（学生）">
+<el-input v-model="searchMap.identity" placeholder="个人身份（学生）" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="籍贯">
+<el-input v-model="searchMap.nativePlace" placeholder="籍贯" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="户籍所在地">
+<el-input v-model="searchMap.residence" placeholder="户籍所在地" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="民族">
+<el-input v-model="searchMap.nation" placeholder="民族" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="职务（副部长）">
+<el-input v-model="searchMap.duty" placeholder="职务（副部长）" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="职称">
+<el-input v-model="searchMap.title" placeholder="职称" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="学历">
+<el-input v-model="searchMap.aducation" placeholder="学历" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="毕业院校">
+<el-input v-model="searchMap.graInstitution" placeholder="毕业院校" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="参加工作时间">
+<el-input v-model="searchMap.workTime" placeholder="参加工作时间" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="入团时间">
+<el-input v-model="searchMap.joinTime" placeholder="入团时间" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="落款时间">
+<el-input v-model="searchMap.petitionConfirm" placeholder="落款时间" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="首次谈话时间">
+<el-input v-model="searchMap.firstTalkTime" placeholder="首次谈话时间" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="奖惩信息">
+<el-input v-model="searchMap.rewardPunishInfo" placeholder="奖惩信息" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="账户id">
+<el-input v-model="searchMap.accountId" placeholder="账户id" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="0积极分子1发展对象2预备党员">
+<el-input v-model="searchMap.typeId" placeholder="0积极分子1发展对象2预备党员" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="累计积分">
+<el-input v-model="searchMap.integral" placeholder="累计积分" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="QQ">
+<el-input v-model="searchMap.qq" placeholder="QQ" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="微信">
+<el-input v-model="searchMap.wechat" placeholder="微信" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="团支部id">
+<el-input v-model="searchMap.leagueBranchId" placeholder="团支部id" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="党总支id">
+<el-input v-model="searchMap.generalId" placeholder="党总支id" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="党支部id">
+<el-input v-model="searchMap.partyId" placeholder="党支部id" class="filter-item" ></el-input></el-form-item>
+          <el-form-item label="党小组id">
+<el-input v-model="searchMap.groupId" placeholder="党小组id" class="filter-item" ></el-input></el-form-item>
+
+                <el-button class="dalfBut" @click="fetchData()">查询</el-button>
+                <el-button type="primary"  class="butT" @click="formVisible=true;pojo={}">新增</el-button>
+                </el-form>
+            </div>
+
+            <el-table :data="tableData" border style="width: 100%">
+                          <el-table-column prop="id" label="id" width="80"></el-table-column>
+          <el-table-column prop="sid" label="学号" width="80"></el-table-column>
+          <el-table-column prop="name" label="姓名" width="80"></el-table-column>
+          <el-table-column prop="sex" label="性别" width="80"></el-table-column>
+          <el-table-column prop="birth" label="生日（年月日）" width="80"></el-table-column>
+          <el-table-column prop="grade" label="年级" width="80"></el-table-column>
+          <el-table-column prop="classNum" label="班级" width="80"></el-table-column>
+          <el-table-column prop="room" label="宿舍号" width="80"></el-table-column>
+          <el-table-column prop="iamge" label="个人照片" width="80"></el-table-column>
+          <el-table-column prop="idCard" label="身份证" width="80"></el-table-column>
+          <el-table-column prop="phone" label="电话号码" width="80"></el-table-column>
+          <el-table-column prop="email" label="邮箱" width="80"></el-table-column>
+          <el-table-column prop="address" label="家庭住址" width="80"></el-table-column>
+          <el-table-column prop="identity" label="个人身份（学生）" width="80"></el-table-column>
+          <el-table-column prop="nativePlace" label="籍贯" width="80"></el-table-column>
+          <el-table-column prop="residence" label="户籍所在地" width="80"></el-table-column>
+          <el-table-column prop="nation" label="民族" width="80"></el-table-column>
+          <el-table-column prop="duty" label="职务（副部长）" width="80"></el-table-column>
+          <el-table-column prop="title" label="职称" width="80"></el-table-column>
+          <el-table-column prop="aducation" label="学历" width="80"></el-table-column>
+          <el-table-column prop="graInstitution" label="毕业院校" width="80"></el-table-column>
+          <el-table-column prop="workTime" label="参加工作时间" width="80"></el-table-column>
+          <el-table-column prop="joinTime" label="入团时间" width="80"></el-table-column>
+          <el-table-column prop="petitionConfirm" label="落款时间" width="80"></el-table-column>
+          <el-table-column prop="firstTalkTime" label="首次谈话时间" width="80"></el-table-column>
+          <el-table-column prop="rewardPunishInfo" label="奖惩信息" width="80"></el-table-column>
+          <el-table-column prop="accountId" label="账户id" width="80"></el-table-column>
+          <el-table-column prop="typeId" label="0积极分子1发展对象2预备党员" width="80"></el-table-column>
+          <el-table-column prop="integral" label="累计积分" width="80"></el-table-column>
+          <el-table-column prop="qq" label="QQ" width="80"></el-table-column>
+          <el-table-column prop="wechat" label="微信" width="80"></el-table-column>
+          <el-table-column prop="leagueBranchId" label="团支部id" width="80"></el-table-column>
+          <el-table-column prop="generalId" label="党总支id" width="80"></el-table-column>
+          <el-table-column prop="partyId" label="党支部id" width="80"></el-table-column>
+          <el-table-column prop="groupId" label="党小组id" width="80"></el-table-column>
+
+                    <el-table-column
+                            label="操作"  >
+                        <template slot-scope="scope">
+                            <el-button @click="edit(scope.row.id)" size="mini" type="primary" size="small">修改</el-button>
+                            <el-button @click="dele(scope.row.id)" size="mini" type="danger" size="small">删除</el-button>
+                        </template>
+                    </el-table-column>
+            </el-table>
+            <div class="pagination-container">
+                <el-pagination
+                        class="pagiantion"
+                        @size-change="fetchData"
+                        @current-change="fetchData"
+                        :current-page.sync="currentPage"
+                        :page-sizes="[10, 20, 30, 40]"
+                        :page-size="size"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="total">
+                </el-pagination>
+            </div>
+            <div class="add-form">
+                <!--弹出窗口-->
+                <el-dialog  title="编辑" :visible.sync="formVisible" >
+                    <el-form label-width="80px">
+                                <el-form-item label="学号"><el-input v-model="pojo.sid"></el-input></el-form-item>
+        <el-form-item label="姓名"><el-input v-model="pojo.name"></el-input></el-form-item>
+        <el-form-item label="性别"><el-input v-model="pojo.sex"></el-input></el-form-item>
+        <el-form-item label="生日（年月日）"><el-input v-model="pojo.birth"></el-input></el-form-item>
+        <el-form-item label="年级"><el-input v-model="pojo.grade"></el-input></el-form-item>
+        <el-form-item label="班级"><el-input v-model="pojo.classNum"></el-input></el-form-item>
+        <el-form-item label="宿舍号"><el-input v-model="pojo.room"></el-input></el-form-item>
+        <el-form-item label="个人照片"><el-input v-model="pojo.iamge"></el-input></el-form-item>
+        <el-form-item label="身份证"><el-input v-model="pojo.idCard"></el-input></el-form-item>
+        <el-form-item label="电话号码"><el-input v-model="pojo.phone"></el-input></el-form-item>
+        <el-form-item label="邮箱"><el-input v-model="pojo.email"></el-input></el-form-item>
+        <el-form-item label="家庭住址"><el-input v-model="pojo.address"></el-input></el-form-item>
+        <el-form-item label="个人身份（学生）"><el-input v-model="pojo.identity"></el-input></el-form-item>
+        <el-form-item label="籍贯"><el-input v-model="pojo.nativePlace"></el-input></el-form-item>
+        <el-form-item label="户籍所在地"><el-input v-model="pojo.residence"></el-input></el-form-item>
+        <el-form-item label="民族"><el-input v-model="pojo.nation"></el-input></el-form-item>
+        <el-form-item label="职务（副部长）"><el-input v-model="pojo.duty"></el-input></el-form-item>
+        <el-form-item label="职称"><el-input v-model="pojo.title"></el-input></el-form-item>
+        <el-form-item label="学历"><el-input v-model="pojo.aducation"></el-input></el-form-item>
+        <el-form-item label="毕业院校"><el-input v-model="pojo.graInstitution"></el-input></el-form-item>
+        <el-form-item label="参加工作时间"><el-input v-model="pojo.workTime"></el-input></el-form-item>
+        <el-form-item label="入团时间"><el-input v-model="pojo.joinTime"></el-input></el-form-item>
+        <el-form-item label="落款时间"><el-input v-model="pojo.petitionConfirm"></el-input></el-form-item>
+        <el-form-item label="首次谈话时间"><el-input v-model="pojo.firstTalkTime"></el-input></el-form-item>
+        <el-form-item label="奖惩信息"><el-input v-model="pojo.rewardPunishInfo"></el-input></el-form-item>
+        <el-form-item label="账户id"><el-input v-model="pojo.accountId"></el-input></el-form-item>
+        <el-form-item label="0积极分子1发展对象2预备党员"><el-input v-model="pojo.typeId"></el-input></el-form-item>
+        <el-form-item label="累计积分"><el-input v-model="pojo.integral"></el-input></el-form-item>
+        <el-form-item label="QQ"><el-input v-model="pojo.qq"></el-input></el-form-item>
+        <el-form-item label="微信"><el-input v-model="pojo.wechat"></el-input></el-form-item>
+        <el-form-item label="团支部id"><el-input v-model="pojo.leagueBranchId"></el-input></el-form-item>
+        <el-form-item label="党总支id"><el-input v-model="pojo.generalId"></el-input></el-form-item>
+        <el-form-item label="党支部id"><el-input v-model="pojo.partyId"></el-input></el-form-item>
+        <el-form-item label="党小组id"><el-input v-model="pojo.groupId"></el-input></el-form-item>
+
+                            <!-- 图片上传代码 如页面有图片上传功能放开注释 ****
+                            <el-form-item label="图片">
+                                <el-upload
+                                        class="avatar-uploader"
+                                        action="/upload/native.do"
+                                        :show-file-list="false"
+                                        :on-success="handleAvatarSuccess"
+                                        :before-upload="beforeAvatarUpload">
+                                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </el-upload>
+                            </el-form-item>
+                            -->
+
+                            <el-form-item>
+                                <el-button type="primary" @click="save()">保存</el-button>
+                                <el-button @click="formVisible = false" >关闭</el-button>
+                            </el-form-item>
+                    </el-form>
+                </el-dialog>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+</body>
+<script src="/js/vue.js"></script>
+<script src="/js/axios.js"></script>
+<script src="/js/elementui.js"></script>
+<script>
+     new Vue({
+        el: '#app',
+        data(){
+            return {
+                tableData: [],
+                currentPage: 1,
+                total: 10,
+                size: 10,
+                searchMap: {},
+                pojo: {},
+                formVisible: false,
+                imageUrl: ''
+            }
+        },
+        created(){
+            this.fetchData();
+        },
+        methods:{
+            fetchData (){
+                axios.post(`/baseUser/findPage.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
+                    this.tableData = response.data.rows;
+                    this.total = response.data.total;
+                });
+            },
+            save (){
+                // this.pojo.image= this.imageUrl; //如页面有图片上传功能放开注释
+                axios.post(`/baseUser/${this.pojo.id==null?'add':'update'}.do`,this.pojo).then(response => {
+                    this.fetchData (); //刷新列表
+                    this.formVisible = false ;//关闭窗口
+                });
+            },
+            edit (id){
+                this.formVisible = true // 打开窗口
+                // 调用查询
+                axios.get(`/baseUser/findById.do?id=${id}`).then(response => {
+                    this.pojo = response.data;
+                    // this.imageUrl=this.pojo.image //显示图片  如页面有图片上传功能放开注释
+                })
+            },
+            dele (id){
+                this.$confirm('确定要删除此记录吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then( () => {
+                    axios.get(`/baseUser/delete.do?id=${id}`).then(response => {
+                        this.fetchData (); //刷新列表
+                    })
+                })
+            },
+			/* ****图片上传相关代码  如页面有图片上传功能放开注释 **** 
+            handleAvatarSuccess(res, file) {
+                this.imageUrl = file.response;
+            },
+            beforeAvatarUpload(file) {
+                const isJPG = file.type === 'image/jpeg';
+                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                if (!isJPG) {
+                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                }
+                return isJPG && isLt2M;
+            }*/
+        }
+    })
+</script>
+</html>
