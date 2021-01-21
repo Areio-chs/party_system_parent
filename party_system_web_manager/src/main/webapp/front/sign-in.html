@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/sign-in.css">
+
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+</head>
+<body>
+        <div id="app" class="app">
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                我的签到
+            </div>
+            <div class="tip">
+                未签到
+            </div>
+            <div class="wait">
+                <div class="act" v-for="act in list1" :key="act.id" v-if="list1.length != 0">
+                    <div class="actLogo">
+                        <img src="../images/wait.png">
+                    </div>
+                    <div class="actInfo">
+                        <div>{{ act.name }}</div>
+                        <div>{{ act.date }}</div>
+                    </div>
+                    <span @click="signIn(act.id)">点击签到</span>
+                </div>
+                <div class="none" v-if="list1.length == 0">
+                    暂无签到
+                </div>
+            </div>
+            <div class="tip">
+                历史签到
+            </div>
+            <div class="act" v-for="act in list2" :key="act.id">
+                <div class="actLogo">
+                    <img src="../images/done.png">
+                </div>
+                <div class="actInfo">
+                    <div>{{ act.name }}</div>
+                    <div>{{ act.date }}</div>
+                </div>
+                <span>已签到</span>
+            </div>
+        </div>
+
+            <!-- 引入组件库 -->
+            <script src="../assets/js/vue.js"></script><!-- vue -->
+            <script src="../assets/js/elementui.js"></script>
+            <script src="../assets/js/axios.js"></script>
+
+            <script>
+                new Vue({
+                    el: '#app',
+                    // router,
+                    data() {
+                        return {
+                            list1: [],
+                            list2: []
+                        };
+                    },
+                    created() {
+                        this.getList1()
+                        this.getList2()
+                    },
+                    methods: {
+                        getList1() {
+                          //获取要签到的
+                          this.list1 = [{
+                              id: 1,
+                              name: '组织生活会',
+                              date: '2020/20/28'
+                          }]
+                        },
+                        getList2() {
+                            //获取已签到的活动
+                            this.list2 = [{
+                                id: 1,
+                                name: '党日大会',
+                                date: '2020/20/28'
+                            }, {
+                                id: 2,
+                                name: '党小组会',
+                                date: '2020/20/28'
+                            }]
+                        },
+                        signIn(id) {
+                            //根据id签到
+                            this.$message.success('签到成功！')
+                            this.getList1()
+                            this.getList2()
+                        }
+                    }
+                })
+            </script>
+</body>
+</html>

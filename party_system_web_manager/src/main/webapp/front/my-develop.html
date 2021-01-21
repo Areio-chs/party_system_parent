@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/develop.css">
+
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+    <style>
+        .el-dialog__title {
+            font-size: 14px;
+        }
+        .el-dialog__body {
+            padding: 10px 20px;
+        }
+        .el-form-item {
+            margin-bottom: 0;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+        <div id="app" class="app" v-cloak>
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                党员发展
+            </div>
+            <div class="info">
+                <img src="../images/logo.jpg">
+                <div>
+                    <span>{{ user.name }}</span>
+                    <span>{{ user.status }}</span>
+                </div>
+            </div>
+            <h3>党务信息</h3>
+            <ul class="base">
+                <li>
+                    <span>当前身份</span>
+                    <span>{{ user.status }}</span>
+                </li>
+                <li>
+                    <span>当前团支部</span>
+                    <span>{{ user.youthLeagueBranch }}</span>
+                </li>
+                <div v-show="!tuanyuan">
+                    <div v-show="!tuanyuan && !applicant">
+                        <li>
+                            <span>当前党总支</span>
+                            <span>{{ user.general }}</span>
+                        </li>
+                        <li>
+                            <span>当前党支部</span>
+                            <span>{{ user.party }}</span>
+                        </li>
+                        <li>
+                            <span>当前党小组</span>
+                            <span>{{ user.group }}</span>
+                        </li>
+                    </div>
+                    <li>
+                        <span>申请书落款日期</span>
+                        <span>{{ user.applyTime }}</span>
+                    </li>
+                    <li v-show="!tuanyuan && !applicant">
+                        <span>确认积极分子日期</span>
+                        <span>{{ user.activistTime }}</span>
+                    </li>
+                    <li v-show="!tuanyuan && !applicant && !activist">
+                        <span>确认发展对象日期</span>
+                        <span>{{ user.developTime }}</span>
+                    </li>
+                    <li v-show="!tuanyuan && !applicant && !activist && !develop">
+                        <span>确认预备党员日期</span>
+                        <span>{{ user.preMemberTime }}</span>
+                    </li>
+                    <li v-show="member">
+                        <span>确认正式党员日期</span>
+                        <span>{{ user.memberTime }}</span>
+                    </li>
+                    <li v-show="!tuanyuan && !applicant">
+                        <span>培养联系人</span>
+                        <span>{{ user.culturelName }}</span>
+                    </li>
+                </div>
+
+            </ul>
+            <a href="apply-for.html" v-show="tuanyuan"><button class="submit">申请入党</button></a>
+            <a href="acticist-recommend.html" v-show="applicant"><button class="submit">报名积极分子推优</button></a>
+            <a href="devlop-recommend.html" v-show="activist"><button class="submit">申请为发展对象</button></a>
+            <a href="premember-recommend.html" v-show="develop"><button class="submit">申请为预备党员</button></a>
+            <a href="member-recommend.html" v-show="yubei"><button class="submit">申请为正式党员</button></a>
+        </div>
+
+        <!-- 引入组件库 -->
+        <script src="../assets/js/vue.js"></script><!-- vue -->
+        <script src="../assets/js/elementui.js"></script><!-- vue -->
+        <script src="../assets/js/axios.js"></script>
+
+        <script>
+            new Vue({
+                el: '#app',
+                // router,
+                data() {
+                    return {
+                        user: {}
+                    };
+                },
+                created() {
+                    this.getUser()
+                },
+                computed: {
+                    tuanyuan:function () {
+                        return this.user.status == '团员' ? true : false
+                    },
+                    applicant:function () {
+                        return this.user.status == '入党申请人' ? true : false
+                    },
+                    activist:function () {
+                        return this.user.status == '积极分子' ? true : false
+                    },
+                    develop:function () {
+                        return this.user.status == '发展对象' ? true : false
+                    },
+                    yubei:function () {
+                        return this.user.status == '预备党员' ? true : false
+                    },
+                    member:function () {
+                        return this.user.status == '正式党员' ? true : false
+                    }
+                },
+                methods: {
+                    getUser() {
+                        this.user = {
+                            id: '1',
+                            name: '廖盛浪',
+                            status: '入党申请人',
+                            applyTime: '2018/09/20',
+                            activistTime: '2019/09/20',
+                            developTime: '2020/09/20',
+                            preMemberTime: '2020/10/20',
+                            memberTime: '2020/10/20',
+                            general: '信科院第一党总支',
+                            party: '信科院第二党支部',
+                            group: '信科院第二党小组',
+                            youthLeagueBranch: '信科院第二团支部',
+                            culturelName: '陈惠珊、蔡梓哲'
+                        }
+                    }
+                }
+            })
+        </script>
+</body>
+</html>

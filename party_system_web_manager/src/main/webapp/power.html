@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script>
+		<script src="assets/js/axios.js"></script>
+		<style>
+			.el-row{
+				margin-bottom: 20px;
+			}
+			.el-tag {
+				margin: 7px;
+			}
+
+			.bdtop {
+				border-top: 1px solid #eee;
+			}
+
+			.bdbottom {
+				border-bottom: 1px solid #eee;
+			}
+
+			.vcenter {
+				display: flex;
+				align-items: center;
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-cloak>
+
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>权限管理</el-breadcrumb-item>
+						<el-breadcrumb-item>权限列表</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<!-- 卡片视图 -->
+					<el-card>
+						<el-table :data="rightsList" border stripe fit>
+							<el-table-column type="index"></el-table-column>
+							<el-table-column label="权限名称" prop="name"></el-table-column>
+							<el-table-column label="权限类型" prop="type">
+								<template slot-scope="scope">
+									<el-tag size="mini" type="success" v-if="scope.row.type=='menu'">菜单</el-tag>
+									<el-tag size="mini"  type="warning" v-else>按钮</el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column label="权限等级" prop="level">
+								<template slot-scope="scope">
+									<el-tag v-if="scope.row.level == '1'">一级</el-tag>
+									<el-tag type="success" v-else-if="scope.row.level == '2'">二级</el-tag>
+									<el-tag type="warning" v-else>三级</el-tag>
+								</template>
+							</el-table-column>
+						</el-table>
+					</el-card>
+
+				</div>
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						// 权限列表
+						rightsList: []
+					}
+				},
+				created() {
+					// 获取所有的权限
+					this.getRightsList()
+				},
+				methods: {
+					// 获取权限列表
+					getRightsList() {
+						this.rightsList = [
+							{
+								"id": 1,
+								"pid": 0,
+								"name": "用户管理",
+								"url": "user",
+								"type": 'menu',
+								"level": 1,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 5,
+								"pid": 1,
+								"name": "用户列表",
+								"url": "user",
+								"type": 'menu',
+								"level": 2,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 6,
+								"pid": 1,
+								"name": "新增用户",
+								"url": "user/add",
+								"type": 'bottom',
+								"level": 3,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 2,
+								"pid": 0,
+								"name": "权限管理",
+								"url": "menu",
+								"type": 'menu',
+								"level": 1,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 7,
+								"pid": 2,
+								"name": "角色列表",
+								"url": "role",
+								"type": 'menu',
+								"level": 2,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 10,
+								"pid": 2,
+								"name": "权限列表",
+								"url": "menu",
+								"type": 'menu',
+								"level": 2,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 3,
+								"pid": 0,
+								"name": "日志管理",
+								"url": "log",
+								"type": 'menu',
+								"level": 1,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 8,
+								"pid": 3,
+								"name": "系统日志",
+								"url": "log",
+								"type": 'menu',
+								"level": 2,
+								"disabled": false,
+								"icon": null
+							},
+							{
+								"id": 9,
+								"pid": 3,
+								"name": "登录日志",
+								"url": "log/login",
+								"type": 'menu',
+								"level": 2,
+								"disabled": false,
+								"icon": null
+							}
+						]
+					}
+				}
+			})
+		</script>
+
+	</body>
+</html>

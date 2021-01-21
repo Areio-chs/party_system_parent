@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+<!--		<link rel="stylesheet" href="assets/css/e.css">-->
+
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+
+		<script src="assets/js/elementui.js"></script>
+
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+				/*font-size: 14px !important;*/
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.block{
+				text-align: center;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-cloak>
+
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>党员发展</el-breadcrumb-item>
+						<el-breadcrumb-item>确定入党积极分子</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
+							<el-form-item label="姓名">
+								<el-input
+										@keyup.enter.native="searchUser"
+										@clear="searchUser"
+										clearable
+										v-model="queryInfo.name"
+										placeholder="请输入用户名查询"
+								></el-input>
+							</el-form-item>
+
+							<el-form-item>
+								<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
+								<el-button type="primary" icon="el-icon-search">查询</el-button>
+								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
+								<el-button type="warning" icon="el-icon-check">一键审核</el-button>
+							</el-form-item>
+						</el-form>
+
+						<el-table
+								ref="multipleTable"
+								:data="tableList"
+								tooltip-effect="dark"
+								style="width: 100%"
+								size="mini"
+								highlight-current-row
+								@selection-change="handleSelectionChange">
+							<el-table-column
+									type="selection"
+									width="55">
+							</el-table-column>
+							<el-table-column
+									type="index"
+									label="#"
+									width="40">
+							</el-table-column>
+							<el-table-column
+									prop="name"
+									label="姓名"
+									width="80"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="className"
+									label="班级"
+									width="120"
+									:filters="selectClass"
+									:filter-method="filterCell"
+									filter-placement="bottom-end"
+									sortable
+									align="center">
+							</el-table-column>
+							<el-table-column
+									prop="youthLeagueBranch"
+									label="所属团支部"
+									width="120"
+									:filters="selectYouth"
+									:filter-method="filterCell3"
+									filter-placement="bottom-end"
+									sortable
+									align="center">
+							</el-table-column>
+							<el-table-column
+									prop="group"
+									label="所属党小组"
+									width="120"
+									:filters="selectGroup"
+									:filter-method="filterCell2"
+									filter-placement="bottom-end"
+									sortable
+									align="center">
+							</el-table-column>
+							<el-table-column
+									prop="applyTime"
+									label="申请书落款日期"
+									width="150"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="culturel1Name"
+									label="培养联系人1"
+									width="120"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="culturel2Name"
+									label="培养联系人2"
+									width="120"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="activityCount"
+									label="参加活动次数"
+									width="120"
+									sortable>
+								<template slot-scope="scope">
+									<span style="margin-right: 10px">{{ scope.row.activityCount }}</span>
+									<el-tag size="mini" type="danger" style="cursor: pointer" @click="showActivityDialog(scope.row.id)">点击详情</el-tag>
+								</template>
+							</el-table-column>
+							<el-table-column
+									prop="integral"
+									label="学习积分"
+									width="120"
+									sortable>
+							</el-table-column>
+							<el-table-column label="审核情况" width="120">
+								　　<template slot-scope="scope">
+								　　　　<div class="demo-image__preview">
+											<el-image
+													style="width: 50px; height: 50px"
+													:src="scope.row.url"
+													:preview-src-list="scope.row.src">
+											</el-image>
+										</div>
+								　　</template>
+							</el-table-column>
+							<el-table-column label="是否通过">
+								<template slot-scope="scope">
+									<el-switch v-model="scope.row.status" @change="userStateChanged(scope.row)">
+									</el-switch>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作" width="150" fixed="right" align="center">
+								<template slot-scope="scope">
+									<!-- 编辑 -->
+									<el-tooltip effect="dark" content="更多信息" placement="top" :enterable="false">
+										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
+									</el-tooltip>
+									<!-- 查看其相关文档 -->
+									<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
+										<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+						</el-table>
+
+						<!-- 分页区域 -->
+						<el-pagination @size-change="handleSizeChange"
+									   @current-change="handleCurrentChange"
+									   :current-page="queryInfo.pagenum"
+									   :page-sizes="[1, 2, 5, 10]"
+									   :page-size="queryInfo.pagesize"
+									   layout="total, sizes, prev, pager, next, jumper"
+									   :total="total">
+						</el-pagination>
+					</el-card>
+
+					<!-- 查看信息的对话框 -->
+					<el-dialog title="积极分子表" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
+						<table align="center" style="text-align: center" border="2px" cellspacing="0" cellpadding="2">
+							<tr>
+								<td align="center" colspan="7">一、基本信息</td>
+							</tr>
+							<tr>
+								<td>姓名</td>
+								<td width="15%">{{ tableList[0].name }}</td>
+								<td>性别</td>
+								<td width="15%">{{ tableList[0].sex }}</td>
+								<td>民族</td>
+								<td width="15%">{{ tableList[0].nation }}</td>
+								<td  width="18%" rowspan="2" align="center">照片</td>
+							</tr>
+							<tr>
+								<td >籍贯</td>
+								<td >{{ tableList[0].nativePlace }}</td>
+								<td >出生日期</td>
+								<td colspan="3">{{ tableList[0].birth }}</td>
+							</tr>
+							<tr>
+								<td >身份证号码</td>
+								<td colspan="6">{{ tableList[0].idCard }}</td>
+							</tr>
+							<tr>
+								<td>职务/职称</td>
+								<td >{{ tableList[0].duty }}</td>
+								<td colspan="2">申请入党时间</td>
+								<td colspan="3">{{ tableList[0].applyTime }}</td>
+							</tr>
+							<tr>
+								<td>学历</td>
+								<td >{{ tableList[0].education }}</td>
+								<td colspan="2">所属党小组</td>
+								<td colspan="3">{{ tableList[0].group }}</td>
+							</tr>
+							<tr>
+								<td>培养联系人1</td>
+								<td >{{ tableList[0].culturel1Nmae }}</td>
+								<td colspan="2">培养联系人2</td>
+								<td colspan="3">{{ tableList[0].culturel2Nmae }}</td>
+							</tr>
+							<tr>
+								<td>联系电话</td>
+								<td >{{ tableList[0].phoneNum }}</td>
+								<td colspan="2">电子邮箱</td>
+								<td colspan="3">{{ tableList[0].email }}</td>
+							</tr>
+							<tr>
+								<td>家庭地址(详细)</td>
+								<td colspan="6">{{ tableList[0].address }}</td>
+							</tr>
+						</table>
+						<span slot="footer" class="dialog-footer">
+
+        					<el-button @click="showDialogVisible = false">取 消</el-button>
+        					<el-button type="primary">确 定</el-button>
+      					</span>
+					</el-dialog>
+
+					<!-- 查看参加活动情况的对话框 -->
+					<el-dialog title="查看参加活动情况" :visible.sync="activityDialogVisible" width="50%">
+						<el-timeline>
+							<el-timeline-item
+									v-for=" act in activitys"
+									:key=" act.id"
+									:timestamp="act.actTime"
+									placement="top">
+								<el-card>
+									<h4><el-link type="primary" @click="innerDialog(act)">{{ act.name }}</el-link></h4>
+									<p>{{ act.username }} 参加于 {{ act.actTime }}</p>
+								</el-card>
+							</el-timeline-item>
+						</el-timeline>
+						<el-dialog
+								width="30%"
+								:visible.sync="innerVisible"
+								append-to-body>
+							<div class="demo-image">
+								<div class="block">
+									<el-image
+											style="width: 100px; height: 100px"
+											:src="url"
+											:preview-src-list="srcList">
+									</el-image>
+								</div>
+							</div>
+
+						</el-dialog>
+						<!-- 底部区域 -->
+						<span slot="footer" class="dialog-footer">
+								<el-button @click="activityDialogVisible = false">取 消</el-button>
+							</span>
+					</el-dialog>
+
+					<!-- 查看上传文档情况的对话框 -->
+					<el-dialog title="查看上传文档情况" :visible.sync="fileDialogVisible" width="50%">
+						<el-timeline>
+							<el-timeline-item
+									v-for="file in files"
+									:key="file.id"
+									:timestamp="file.uploadTime"
+									placement="top">
+								<el-card>
+									<el-link type="primary" @click="innerDialog2(file)">{{ file.fileName }}</el-link>
+									<p>{{ file.username }} 提交于 {{ file.uploadTime }}</p>
+								</el-card>
+							</el-timeline-item>
+						</el-timeline>
+
+						<el-dialog
+								width="30%"
+								:visible.sync="innerVisible2"
+								append-to-body>
+							<div class="demo-image">
+								<div class="block">
+									<el-image
+											style="width: 100px; height: 100px"
+											:src="url2"
+											:preview-src-list="srcList2">
+									</el-image>
+								</div>
+							</div>
+
+						</el-dialog>
+
+						<!-- 底部区域 -->
+						<span slot="footer" class="dialog-footer">
+												<el-button @click="fileDialogVisible = false">取 消</el-button>
+											</span>
+					</el-dialog>
+				</div>
+
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						// 获取党小组列表的参数对象
+						queryInfo: {
+							// 当前的页数
+							pagenum: 1,
+							// 当前每页显示多少条数据
+							pagesize: 2,
+							//按名字查询
+							name: '',
+							sex: ''
+						},
+						tableList: [],
+						//检索党支部
+						selectClass: [],
+						//检索党小组
+						selectGroup: [],
+						//检索团支部
+						selectYouth: [],
+						//全选
+						multipleSelection: [],
+						//当前页
+						currentPage4: 1,
+						//总数
+						total: 10,
+						// 控制查看信息对话框的显示与隐藏
+						showDialogVisible: false,
+						//控制查看参加活动对话框的显示与隐藏
+						activityDialogVisible: false,
+						//参加的活动
+						activitys: [],
+						// 控制查看活动对话框里面的对话框的显示与隐藏
+						innerVisible: false,
+						url: '',
+						srcList: [],
+						// 控制查看文档对话框的显示与隐藏
+						fileDialogVisible: false,
+						//文件对象
+						files: {
+							id: '',
+							fileName: '',
+							uploadTime: '',
+							filePath: '',
+							username: ''
+						},
+						// 控制查看文档对话框里面的对话框的显示与隐藏
+						innerVisible2: false,
+						url2: '',
+						srcList2: []
+					}
+				},
+				created() {
+					this.getTableList()
+				},
+				methods: {
+					getTableList() {
+						//向后台获取列表
+						this.tableList = [
+								{
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'assets/img/avatar/头像.png',
+							src: ['assets/img/avatar/头像.png'],
+							activityCount: 15,
+									integral: 56,
+									group: '信科院第一党小组',
+									youthLeagueBranch: '信科院第一团支部'
+						}, {
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'assets/img/avatar/头像.png',
+							src: ['assets/img/avatar/头像.png'],
+							activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '信科院第二团支部'
+						}, {
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'assets/img/avatar/头像.png',
+							src: ['assets/img/avatar/头像.png'],
+							activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '信科院第二团支部'
+						}, {
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+							src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+							activityCount: 15,
+								integral: 56,
+								group: '信科院第一党小组',
+								youthLeagueBranch: '信科院第一团支部'
+						}, {
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'assets/img/avatar/头像.png',
+							src: ['assets/img/avatar/头像.png'],
+							activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '信科院第二团支部'
+						}, {
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+							src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+							activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '信科院第一团支部'
+						}, {
+							name: '廖盛浪',
+							sex: '男',
+							nation: '民族',
+							nativePlace: '广东广州',
+							birth: '2020/09/19',
+							idCard: '440983333333333333',
+							phoneNum: '123456789',
+							email: '454305375@qq.com',
+							education: '本科',
+							duty: '班长',
+							address: '仲恺农业工程学院',
+							applyTime: '2019-09-20',
+							culturel1Name: '小龙女',
+							culturel2Name: '杨过',
+							status: false,
+							className: '计算机187',
+							studentNum: '201810254884',
+							url: 'assets/img/avatar/头像.png',
+							src: ['assets/img/avatar/头像.png'],
+							activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '信科院第一团支部'
+						}]
+						this.selectClass = [{
+							text: '计算机187',
+							value: '计算机187'
+						}, {
+							text: '网络181',
+							value: '网络181'
+						}]
+						this.selectGroup = [{
+							text: '信科院第一党小组',
+							value: '信科院第一党小组'
+						}, {
+							text: '信科院第二党小组',
+							value: '信科院第二党小组'
+						}]
+						this.selectYouth = [{
+							text: '信科院第一团支部',
+							value: '信科院第一团支部'
+						}, {
+							text: '信科院第二团支部',
+							value: '信科院第二团支部'
+						}]
+					},
+					filterCell(value, row) {
+						return row.classNum === value;
+					},
+					filterCell2(value, row) {
+						return row.group=== value;
+					},
+					filterCell3(value, row) {
+						return row.youthLeagueBranch === value;
+					},
+					/**
+					 * 重置
+					 */
+					reset(){
+						this.queryInfo= {
+							pagenum: 1,
+							pagesize: 6,
+							name: ""
+						}
+					},
+					/**
+					 * 搜索用户
+					 */
+					searchUser() {
+						this.queryInfo.pageNum = 1;
+						this.getTableList();
+					},
+					toggleSelection(rows) {
+						if (rows) {
+							rows.forEach(row => {
+								this.$refs.multipleTable.toggleRowSelection(row);
+							});
+						} else {
+							this.$refs.multipleTable.clearSelection();
+						}
+					},
+					handleSelectionChange(val) {
+						this.multipleSelection = val;//val是一个数组
+					},
+					handleSizeChange(val) {
+						console.log(`每页 ${val} 条`);
+					},
+					handleCurrentChange(val) {
+						console.log(`当前页: ${val}`);
+					},
+					// 监听查看信息对话框的关闭事件
+					showDialogClosed() {
+						//this.$refs.addFormRef.resetFields()
+					},
+					// 展示信息的对话框
+					showUserDialog(id) {
+						//根据id
+						this.showDialogVisible = true
+					},
+					// 监听 switch 开关状态的改变
+					userStateChanged(row) {
+						//向后台审核
+						this.$message.success('审核通过！')
+					},
+					// 展示信息的对话框
+					showActivityDialog(id) {
+						//根据id
+						this.activitys = [
+							{
+								id: '1',
+								name: '党课培训',
+								actTime: '2020/10/16',
+								username: '廖盛浪',
+								record: [
+									'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+									'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+									'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+								]
+							},{
+								id: '2',
+								name: '三会一课',
+								actTime: '2020/10/16',
+								username: '廖盛浪',
+								record: [
+									'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+									'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+									'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+								]
+							},{
+								id: '3',
+								name: '民主评议会',
+								actTime: '2020/10/16',
+								username: '廖盛浪',
+								record: [
+									'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+									'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+									'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+								]
+							}
+						]
+						this.activityDialogVisible = true
+					},
+					innerDialog(act) {
+						//此处应向后台获取数据
+						this.url = act.record[0]
+						this.srcList = act.record
+						this.innerVisible = true
+					},
+					showFileDialog() {
+						//此处应向后台获取数据
+						this.files = [
+							{
+								id: '1',
+								fileName: '入党申请书',
+								uploadTime: '2020/10/13 20:00:00',
+								filePath: [
+									'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+									'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+									'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+								],
+								username: '赖乐宗'
+							}
+						]
+						this.fileDialogVisible = true
+					},
+					innerDialog2(file) {
+						//此处应向后台获取数据
+						this.url2 = file.filePath[0]
+						this.srcList2 = file.filePath
+						this.innerVisible2 = true
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

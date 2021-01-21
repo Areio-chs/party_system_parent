@@ -1,0 +1,38 @@
+
+.alert {
+    width: 98%;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #ffffff;
+}
+
+h3 {
+    margin-left: 15px;
+}
+
+
+.base li {
+    display: flex;
+    width: 95%;
+    padding: 5px;
+    background-color: #ffffff;
+}
+
+.base li span {
+    display: inline-block;
+    margin: 10px 15px;
+    font-size: 16px;
+}
+
+.base li span:nth-child(1) {
+
+}
+
+.base li span:nth-child(2) {
+    flex: 1;
+    box-sizing: border-box;
+    text-align: right;
+    font-size: 14px;
+    color: #9999a5;
+    word-break: break-all;
+}

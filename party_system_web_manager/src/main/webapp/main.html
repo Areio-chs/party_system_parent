@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="assets/css/elementui.css">
+
+		<style>
+			.el-card .el-link{
+				float: right;
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="admin-main" v-cloak>
+			<fieldset class="layui-elem-field">
+				<legend>您好，廖盛浪</legend>
+				<div class="layui-field-box">
+					<el-card>
+						<el-row :gutter="12">
+							<el-col :span="8">
+								<el-card shadow="hover">
+									组织关系转接审核
+									<el-link type="primary" id="add" @click="o">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
+									<el-divider></el-divider>
+									<el-timeline>
+										<el-timeline-item timestamp="2020/09/29" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/29 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2020/09/27" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/27 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2020/09/22" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/22 20:46</p>
+											</el-card>
+										</el-timeline-item>
+									</el-timeline>
+								</el-card>
+							</el-col>
+							<el-col :span="8">
+								<el-card shadow="hover">
+									积极分子待审核
+									<el-link type="primary">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
+									<el-divider></el-divider>
+									<el-timeline>
+										<el-timeline-item timestamp="2020/09/29" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/29 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2020/09/27" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/27 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2020/09/22" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/22 20:46</p>
+											</el-card>
+										</el-timeline-item>
+									</el-timeline>
+								</el-card>
+							</el-col>
+							<el-col :span="8">
+								<el-card shadow="hover">
+									发展对象待审核
+									<el-link type="primary">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
+									<el-divider></el-divider>
+									<el-timeline>
+										<el-timeline-item timestamp="2020/09/29" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/29 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2020/09/27" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/27 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2020/09/22" placement="top">
+											<el-card>
+												<h4>申请转入</h4>
+												<p>王小虎 提交于 2020/09/22 20:46</p>
+											</el-card>
+										</el-timeline-item>
+									</el-timeline>
+								</el-card>
+							</el-col>
+						</el-row>
+					</el-card>
+				</div>
+			</fieldset>
+
+
+		</div>
+	</body>
+	<!-- 引入组件库 -->
+	<script src="assets/js/vue.js"></script><!-- vue -->
+	<script src="assets/js/elementui.js"></script><!-- vue -->
+	<script src="assets/js/axios.js"></script>
+
+
+	<script type="text/javascript" src="plugins/layui/layui.js"></script>
+<!--	<script>-->
+<!--		//上面那个是页面渲染完就添加的-->
+<!--		layui.use(['layer'], function () {-->
+<!--			var $ = layui.jquery,-->
+<!--					layer = layui.layer;-->
+
+<!--			//这个是点击之后才添加的。-->
+<!--			$('#add').on('click', function () {-->
+<!--				parent.tab.tabAdd({-->
+<!--					href: 'study.html', //地址-->
+<!--					icon: 'fa-address-book',-->
+<!--					title: '廖盛浪'-->
+<!--				});-->
+
+<!--			});-->
+
+<!--		});-->
+<!--	</script>-->
+
+	<script>
+		new Vue({
+			el: '#app',
+			// router,
+			data() {
+				return {
+				}
+			},
+			created() {
+			},
+			methods: {
+				o() {
+					parent.tab.tabAdd({
+						href: 'study.html', //地址
+						icon: 'fa-address-book',
+						title: '廖盛浪'
+					});
+				}
+			}
+		})
+	</script>
+
+</html>

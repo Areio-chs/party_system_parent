@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/information.css">
+</head>
+<body>
+        <div id="app" class="app">
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                我的资料
+            </div>
+            <div class="info">
+                <img src="../images/logo.jpg">
+                <div>
+                    <span>{{ user.name }}</span>
+                    <span>{{ user.status }}</span>
+                </div>
+            </div>
+            <h3>基本信息<a href="edit-info.html" class="edit" v-show="!tuanyuan && !applicant"></a></h3>
+            <ul class="base" v-show="tuanyuan | applicant">
+                <li>
+                    <span>姓名</span>
+                    <span>{{ user.name }}</span>
+                </li>
+                <li>
+                    <span>所在团支部</span>
+                    <span>{{ user.youthLeagueBranch }}</span>
+                </li>
+            </ul>
+            <ul class="base" v-show="!tuanyuan && !applicant">
+                <li>
+                    <span>姓名</span>
+                    <span>{{ user.name }}</span>
+                </li>
+                <li>
+                    <span>性别</span>
+                    <span>{{ user.sex }}</span>
+                </li>
+                <li>
+                    <span>民族</span>
+                    <span>{{ user.nation }}</span>
+                </li>
+                <li>
+                    <span>籍贯</span>
+                    <span>{{ user.native }}</span>
+                </li>
+                <li>
+                    <span>户口所在地</span>
+                    <span>{{ user.nativePlace }}</span>
+                </li>
+                <li>
+                    <span>身份证号码</span>
+                    <span>{{ user.SID }}</span>
+                </li>
+                <li>
+                    <span>手机号码</span>
+                    <span>{{ user.phone }}</span>
+                </li>
+                <li>
+                    <span>级</span>
+                    <span>{{ user.grade }}</span>
+                </li>
+                <li>
+                    <span>班级</span>
+                    <span>{{ user.class }}</span>
+                </li>
+                <li>
+                    <span>学号</span>
+                    <span>201810214718</span>
+                </li>
+                <li>
+                    <span>宿舍</span>
+                    <span>{{ user.dormitory }}</span>
+                </li>
+                <li>
+                    <span>家庭地址</span>
+                    <span>{{ user.address }}</span>
+                </li>
+            </ul>
+
+            <h3 v-show="!tuanyuan && !applicant">党务信息</h3>
+            <ul class="base" v-show="!tuanyuan && !applicant">
+                <li>
+                    <span>所在党支部</span>
+                    <span>{{ user.party }}</span>
+                </li>
+                <li>
+                    <span>所在党小组</span>
+                    <span>{{ user.group }}</span>
+                </li>
+                <li>
+                    <span>所在团支部</span>
+                    <span>{{ user.youthLeagueBranch }}</span>
+                </li>
+                <li>
+                    <span>申请书落款日期</span>
+                    <span>{{ user.applyTime }}</span>
+                </li>
+                <li v-show="!tuanyuan && !applicant">
+                    <span>确认积极分子日期</span>
+                    <span>{{ user.activistTime }}</span>
+                </li>
+                <li v-show="!tuanyuan && !applicant && !activist">
+                    <span>确认发展对象日期</span>
+                    <span>{{ user.developTime }}</span>
+                </li>
+                <li v-show="!tuanyuan && !applicant && !activist && !develop">
+                    <span>确认预备党员日期</span>
+                    <span>{{ user.preMemberTime }}</span>
+                </li>
+                <li v-show="member">
+                    <span>确认正式党员日期</span>
+                    <span>{{ user.memberTime }}</span>
+                </li>
+                <li>
+                    <span>培养联系人</span>
+                    <span>{{ user.culturelName }}</span>
+                </li>
+            </ul>
+        </div>
+
+
+        <!-- 引入组件库 -->
+        <script src="../assets/js/vue.js"></script>
+        <script src="../assets/js/axios.js"></script>
+
+        <script>
+            new Vue({
+                el: '#app',
+                // router,
+                data() {
+                    return {
+                        user: {}
+                    };
+                },
+                created() {
+                    this.getUser()
+                },
+                computed: {
+                    tuanyuan:function () {
+                        return this.user.status == '团员' ? true : false
+                    },
+                    applicant:function () {
+                        return this.user.status == '入党申请人' ? true : false
+                    },
+                    activist:function () {
+                        return this.user.status == '积极分子' ? true : false
+                    },
+                    develop:function () {
+                        return this.user.status == '发展对象' ? true : false
+                    },
+                    yubei:function () {
+                        return this.user.status == '预备党员' ? true : false
+                    },
+                    member:function () {
+                        return this.user.status == '正式党员' ? true : false
+                    }
+                },
+                methods: {
+                    getUser() {
+                        this.user = {
+                            id: '1',
+                            name: '赖乐宗',
+                            sex: '男',
+                            nation: '民族',
+                            native: '广东广州',
+                            nativePlace: '广东广州',
+                            idCard: '440983333333333333',
+                            phone: '123456789',
+                            grade: '2018',
+                            class: '网络181',
+                            SID: '201810214718',
+                            dormitory: '6-104',
+                            address: '仲恺农业工程学院',
+                            applyTime: '2018/09/20',
+                            activistTime: '2019/09/20',
+                            developTime: '2020/09/20',
+                            preMemberTime: '2020/10/20',
+                            memberTime: '2020/10/20',
+                            culturelName: '陈惠珊、蔡梓哲',
+                            party: '信科院第二党支部',
+                            group: '信科院第二党小组',
+                            youthLeagueBranch: '信科院第二团支部',
+                            status: '积极分子'
+                        }
+                    }
+                }
+            })
+        </script>
+</body>
+</html>

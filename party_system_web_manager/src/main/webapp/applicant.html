@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>院系党务系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+				/*font-size: 14px !important;*/
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.block{
+				text-align: center;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div id="app" style="margin: 15px;" v-cloak>
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>成员管理</el-breadcrumb-item>
+						<el-breadcrumb-item>入党申请人管理</el-breadcrumb-item>
+					</el-breadcrumb>
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
+							<el-form-item label="姓名">
+								<el-input
+										@keyup.enter.native="searchUser"
+										@clear="searchUser"
+										clearable
+										v-model="queryInfo.name"
+										placeholder="请输入姓名查询"
+								></el-input>
+							</el-form-item>
+
+							<el-form-item>
+								<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
+								<el-button type="primary" icon="el-icon-search">查询</el-button>
+								<el-button type="success" icon="el-icon-plus" @click="addDialogVisible = true">新增</el-button>
+								<el-button
+										type="success"
+										icon="el-icon-plus"
+								>导入</el-button>
+								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
+							</el-form-item>
+						</el-form>
+
+						<el-table
+								ref="multipleTable"
+								:data="UserList"
+								tooltip-effect="dark"
+								style="width: 100%"
+								size="mini"
+								highlight-current-row
+								@selection-change="handleSelectionChange" fit>
+							<el-table-column
+									type="selection"
+									width="55">
+							</el-table-column>
+							<el-table-column 
+									type="index"
+									label="#">
+							</el-table-column>
+							<el-table-column
+									prop="name"
+									label="姓名"
+									width="80"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="sex"
+									label="性别"
+									width="80"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="nation"
+									label="民族"
+									width="80"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="nativePlace"
+									label="籍贯"
+									width="80"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="birth"
+									label="出生日期"
+									sortable
+									width="100">
+							</el-table-column>
+							<el-table-column
+									prop="idCard"
+									label="身份证"
+									width="150"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="phoneNum"
+									label="联系方式"
+									width="100"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="applyTime"
+									label="申请书落款日期"
+									width="150"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="class"
+									label="所在班级"
+									width="120"
+									:filters="selectClass"
+									:filter-method="filterCell"
+									filter-placement="bottom-end"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="youthLeagueBranch"
+									label="所属团支部"
+									width="120"
+									:filters="selectYouth"
+									:filter-method="filterCell2"
+									filter-placement="bottom-end"
+									sortable
+									align="center">
+							</el-table-column>
+							<el-table-column label="操作" width="180" fixed="right" align="center">
+								<template slot-scope="scope">
+									<!-- 编辑 -->
+									<el-tooltip effect="dark" content="查看更多信息" placement="top" :enterable="false">
+										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
+									</el-tooltip>
+									<!-- 删除按钮 -->
+									<el-tooltip effect="dark" content="删除信息" placement="top" :enterable="false">
+										<el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGroupById(scope.row.id)"></el-button>
+									</el-tooltip>
+									<!-- 查看其相关文档 -->
+									<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
+										<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+						</el-table>
+
+						<!-- 分页区域 -->
+						<el-pagination @size-change="handleSizeChange"
+									   @current-change="handleCurrentChange"
+									   :current-page="queryInfo.pagenum"
+									   :page-sizes="[1, 2, 5, 10]"
+									   :page-size="queryInfo.pagesize"
+									   layout="total, sizes, prev, pager, next, jumper"
+									   :total="total">
+						</el-pagination>
+					</el-card>
+
+					<!-- 查看上传文档情况的对话框 -->
+					<el-dialog title="查看上传文档情况" :visible.sync="fileDialogVisible" width="50%">
+						<el-timeline>
+							<el-timeline-item
+									v-for="file in files"
+									:key="file.id"
+									:timestamp="file.uploadTime"
+									placement="top">
+								<el-card>
+									<h4><el-link type="primary" @click="innerDialog">{{ file.fileName }}</el-link></h4>
+									<p>{{ file.username }} 提交于 {{ file.uploadTime }}</p>
+								</el-card>
+							</el-timeline-item>
+						</el-timeline>
+
+						<el-dialog
+								width="30%"
+								:visible.sync="innerVisible"
+								append-to-body>
+							<div class="demo-image">
+								<div class="block">
+									<el-image
+											style="width: 100px; height: 100px"
+											:src="url"
+											:preview-src-list="srcList">
+									</el-image>
+								</div>
+							</div>
+
+						</el-dialog>
+						<!-- 底部区域 -->
+						<span slot="footer" class="dialog-footer">
+							<el-button @click="addDialogVisible = false">取 消</el-button>
+							<el-button type="primary" @click="add">确 定</el-button>
+						</span>
+					</el-dialog>
+
+					<!-- 添加的对话框 -->
+					<el-dialog title="单个导入" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+						<!-- 内容主体区域 -->
+						<el-form :rules="addFormRules" :model="addForm" ref="addFormRef" label-width="80px">
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="姓名">
+										<el-input v-model="addForm.name"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="性别" label-width="60px">
+										<el-radio v-model="addForm.sex" label="1">男</el-radio>
+										<el-radio v-model="addForm.sex" label="2">女</el-radio>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="民族">
+										<el-input v-model="addForm.nation"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="10">
+									<el-form-item label="籍贯">
+										<el-input v-model="addForm.nativePlace"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="出生日期">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="身份证">
+										<el-input v-model="addForm.idCard"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="职务/职称">
+										<el-input v-model="addForm.duty"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="申请入党时间" label-width="80px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.applyTime" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="学历">
+										<el-input v-model="addForm.education"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="联系电话" prop="phoneNum">
+										<el-input v-model="addForm.phoneNum"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="电子邮箱">
+										<el-input v-model="addForm.email"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="团支部">
+										<el-input v-model="addForm.youthLeagueBranch"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="党小组">
+										<el-input v-model="addForm.delivery"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="党支部">
+										<el-input v-model="addForm.party"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="党总支">
+										<el-input v-model="addForm.general"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+
+							<el-form-item label="家庭地址(详细)">
+								<el-input v-model="addForm.address"></el-input>
+							</el-form-item>
+						</el-form>
+						<!-- 底部区域 -->
+						<span slot="footer" class="dialog-footer">
+									<el-button @click="addDialogVisible = false">取 消</el-button>
+									<el-button type="primary" @click="add">确 定</el-button>
+								</span>
+					</el-dialog>
+
+					<!-- 查看信息的对话框 -->
+					<el-dialog title="入党申请人基本信息" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
+						<table align="center" style="text-align: center" border="2px" width="500px" height="700px" cellspacing="0" cellpadding="2">
+							<tr>
+								<td align="center" colspan="7">一、基本信息</td>
+							</tr>
+							<tr>
+								<td>姓名</td>
+								<td width="15%">{{ UserList[0].name }}</td>
+								<td>性别</td>
+								<td width="15%">{{ UserList[0].sex }}</td>
+								<td>民族</td>
+								<td width="15%">{{ UserList[0].nation }}</td>
+								<td  width="18%" rowspan="2" align="center">照片</td>
+							</tr>
+							<tr>
+								<td >籍贯</td>
+								<td >{{ UserList[0].nativePlace }}</td>
+								<td >出生日期</td>
+								<td colspan="3">{{ UserList[0].birth }}</td>
+							</tr>
+							<tr>
+								<td >身份证号码</td>
+								<td colspan="6">{{ UserList[0].idCard }}</td>
+							</tr>
+							<tr>
+								<td>职务/职称</td>
+								<td >{{ UserList[0].duty }}</td>
+								<td colspan="2">申请入党时间</td>
+								<td colspan="3">{{ UserList[0].applyTime }}</td>
+							</tr>
+							<tr>
+								<td>学历</td>
+								<td >{{ UserList[0].education }}</td>
+								<td colspan="2">所属党小组</td>
+								<td colspan="3">{{ UserList[0].group }}</td>
+							</tr>
+							<tr>
+								<td>联系电话</td>
+								<td >{{ UserList[0].phoneNum }}</td>
+								<td colspan="2">电子邮箱</td>
+								<td colspan="3">{{ UserList[0].email }}</td>
+							</tr>
+							<tr>
+								<td>家庭地址(详细)</td>
+								<td colspan="6">{{ UserList[0].address }}</td>
+							</tr>
+						</table>
+						<span slot="footer" class="dialog-footer">
+
+        					<el-button @click="showDialogVisible = false">取 消</el-button>
+        					<el-button type="primary">确 定</el-button>
+      					</span>
+					</el-dialog>
+
+		</div>
+	</body>
+	<!-- 引入组件库 -->
+	<script src="assets/js/vue.js"></script><!-- vue -->
+	<script src="assets/js/elementui.js"></script><!-- vue -->
+	<script src="assets/js/axios.js"></script>
+
+	<script>
+		new Vue({
+			el: '#app',
+			// router,
+			data() {
+				// 验证手机号的规则
+				var checkMobile = (rule, value, cb) => {
+					// 验证手机号的正则表达式
+					const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+
+					if (regMobile.test(value)) {
+						return cb()
+					}
+
+					cb(new Error('请输入合法的手机号'))
+				}
+				return {
+					// 获取列表的参数对象
+					queryInfo: {
+						// 当前的页数
+						pagenum: 1,
+						// 当前每页显示多少条数据
+						pagesize: 2,
+						//按名字查询
+						name: ''
+					},
+					UserList: [],
+					//检索班级
+					selectClass: [],
+					//检索团支部
+					selectYouth: [],
+					//全选
+					multipleSelection: [],
+					//当前页
+					currentPage4: 1,
+					//总数
+					total: 10,
+					// 控制添加对话框的显示与隐藏
+					addDialogVisible: false,
+					// 添加的表单数据
+					addForm: {
+						name: '',
+						sex: '1',
+						nation: '',
+						nativePlace: '',
+						birth: '',
+						idCard: '',
+						phoneNum: '',
+						email: '',
+						education: '',
+						duty: '',
+						address: '',
+						applyTime: '',
+						activistTime: '',
+						culturel1Nmae: '',
+						culturel2Nmae: '',
+						group: '',
+						youthLeagueBranch: '',
+						party: '',
+						general: ''
+					},
+					// 添加表单的验证规则对象
+					addFormRules: {
+						phoneNum: [
+							{ required: true, message: '请输入手机号', trigger: 'blur' },
+							{ validator: checkMobile, trigger: 'blur' }
+						]
+					},
+					// 控制查看信息对话框的显示与隐藏
+					showDialogVisible: false,
+					// 控制查看文档对话框的显示与隐藏
+					fileDialogVisible: false,
+					//文件对象
+					files: {
+						id: '',
+						fileName: '',
+						uploadTime: '',
+						filePath: '',
+						username: ''
+					},
+					// 控制查看文档对话框里面的对话框的显示与隐藏
+					innerVisible: false,
+					url: '',
+					srcList: [],
+					// 控制关系转移对话框的显示与隐藏
+					relationshipDialogVisible: false,
+					formLabelAlign: {
+						organization: '',
+						sum: ''
+					},
+					//关系转移的级联选择器
+					options: []
+				}
+			},
+			created() {
+				this.getUserList()
+			},
+			methods: {
+				getUserList() {
+					//向后台获取数据列表
+					this.UserList = [
+							{
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '网络工程181',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '计机183',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '网络工程181',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '计机183',
+						youthLeagueBranch: '信科院第二团支部'
+					}, {
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '网络工程181',
+						youthLeagueBranch: '信科院第二团支部'
+					}, {
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '计机183',
+						youthLeagueBranch: '信科院第二团支部'
+					}, {
+						name: '赖乐宗',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2020-09-20',
+						class: '网络工程181',
+						youthLeagueBranch: '信科院第二团支部'
+					}]
+					this.selectClass = [{
+						text: '网络工程181',
+						value: '网络工程181'
+					}, {
+						text: '计机183',
+						value: '计机183'
+					}]
+					this.selectYouth = [{
+						text: '信科院第一团支部',
+						value: '信科院第一团支部'
+					}, {
+						text: '信科院第二团支部',
+						value: '信科院第二团支部'
+					}]
+				},
+				filterCell(value, row) {
+					return row.class === value;
+				},
+				filterCell2(value, row) {
+					return row.youthLeagueBranch === value;
+				},
+				/**
+				 * 重置
+				 */
+				reset(){
+					this.queryInfo= {
+						pagenum: 1,
+						pagesize: 6,
+						name: "",
+						sex: ""
+					}
+				},
+				/**
+				 * 搜索用户
+				 */
+				searchUser() {
+					this.queryInfo.pageNum = 1;
+					this.getUserList();
+				},
+				toggleSelection(rows) {
+					if (rows) {
+						rows.forEach(row => {
+							this.$refs.multipleTable.toggleRowSelection(row);
+						});
+					} else {
+						this.$refs.multipleTable.clearSelection();
+					}
+				},
+				handleSelectionChange(val) {
+					this.multipleSelection = val;//val是一个数组
+				},
+				handleSizeChange(val) {
+					console.log(`每页 ${val} 条`);
+				},
+				handleCurrentChange(val) {
+					console.log(`当前页: ${val}`);
+				},
+				// 点击按钮单个导入成员
+				add() {
+					this.$refs.addFormRef.validate(async valid => {
+						if (!valid) return
+						// 可以发起添加成员的网络请求
+
+						this.$message.success('添加成员成功！')
+						// 隐藏添加成员的对话框
+						this.addDialogVisible = false
+						// 重新获取成员列表数据
+						this.getUserList()
+					})
+				},
+				// 监听添加成员对话框的关闭事件
+				addDialogClosed() {
+					this.$refs.addFormRef.resetFields()
+				},
+				// 监听查看信息对话框的关闭事件
+				showDialogClosed() {
+					//this.$refs.addFormRef.resetFields()
+				},
+				// 展示信息的对话框
+				showUserDialog(id) {
+					//根据id
+					this.showDialogVisible = true
+				},
+				// 根据Id删除对应的党小组信息
+				async removeGroupById(id) {
+					// 弹框询问党小组是否删除数据
+					const confirmResult = await this.$confirm(
+							'此操作将永久删除该党小组, 是否继续?',
+							'提示',
+							{
+								confirmButtonText: '确定',
+								cancelButtonText: '取消',
+								type: 'warning'
+							}
+					).catch(err => err)
+
+					// 如果党小组确认删除，则返回值为字符串 confirm
+					// 如果党小组取消了删除，则返回值为字符串 cancel
+					// console.log(confirmResult)
+					if (confirmResult !== 'confirm') {
+						return this.$message.info('已取消删除')
+					}
+
+					//此处向后台发请求进行删除
+
+					this.$message.success('删除党小组成功！')
+					this.getUserList()
+				},
+				showFileDialog() {
+					//此处应向后台获取数据
+					this.files = [
+						{
+							id: '1',
+							fileName: '入党申请书',
+							uploadTime: '2020/10/13 20:00:00',
+							filePath: 'assets/img/avatar/头像.png',
+							username: '赖乐宗'
+						}
+					]
+					this.fileDialogVisible = true
+				},
+				innerDialog() {
+					//此处应向后台获取数据
+					this.url = 'assets/img/avatar/头像.png'
+					this.srcList = [
+						'assets/img/avatar/头像.png',
+						'assets/img/avatar/avatar-1.jpeg'
+					]
+					this.innerVisible = true
+				},
+				showRelationshipDialog() {
+					if(this.multipleSelection.length == 0){
+						this.$message.error('请选择你想转移的成员')
+						return
+					}
+					//先统计多选框里选中的人数。得出sum
+					this.formLabelAlign.sum = 10
+					//此处应向后台获取options数据
+					this.options = [{
+						value: '信科院第一党总支',
+						label: '信科院第一党总支',
+						children: [{
+							value: '信科院第一党支部',
+							label: '信科院第一党支部',
+							children: [{
+								value: '第一党小组',
+								label: '第一党小组'
+							}, {
+								value: '第二党小组',
+								label: '第二党小组'
+							}, {
+								value: '第三党小组',
+								label: '第三党小组'
+							}, {
+								value: '第三党小组',
+								label: '第三党小组'
+							}]
+						}, {
+							value: '信科院第二党支部',
+							label: '信科院第二党支部',
+							children: [{
+								value: '第一党小组',
+								label: '第一党小组'
+							}, {
+								value: '第二党小组',
+								label: '第额党小组'
+							}]
+						}]
+					}, {
+						value: '信科院第二党总支',
+						label: '信科院第二党总支',
+						children: [{
+							value: '第一党支部',
+							label: '第一党支部',
+							children: [{
+								value: '第一党小组',
+								label: '第一党小组'
+							}, {
+								value: '第二党小组',
+								label: '第二党小组'
+							}, {
+								value: '第三党小组',
+								label: '第三党小组'
+							}, {
+								value: '第四党小组',
+								label: '第四党小组'
+							}, {
+								value: '第五党小组',
+								label: '第五党小组'
+							}]
+						}, {
+							value: '第二党支部',
+							label: '第二党支部',
+							children: [{
+								value: '第一党小组',
+								label: '第一党小组'
+							}, {
+								value: '第二党小组',
+								label: '第二党小组'
+							}, {
+								value: '第三党小组',
+								label: '第三党小组'
+							}, {
+								value: '第四党小组',
+								label: '第四党小组'
+							}, {
+								value: '第五党小组',
+								label: '第五党小组'
+							}]
+						}, {
+							value: '第三党支部',
+							label: '第三党支部',
+							children: [{
+								value: '第一党小组',
+								label: '第一党小组'
+							}, {
+								value: '第二党小组',
+								label: '第二党小组'
+							}, {
+								value: '第三党小组',
+								label: '第三党小组'
+							}, {
+								value: '第四党小组',
+								label: '第四党小组'
+							}, {
+								value: '第五党小组',
+								label: '第五党小组'
+							}]
+						}]
+					}]
+					this.relationshipDialogVisible  = true
+				},
+				// 监听分配权限对话框的关闭事件
+				setRelationshipDialogClosed() {
+					this.formLabelAlign = {
+						sum: ''
+					}
+				}
+			}
+		})
+	</script>
+</html>

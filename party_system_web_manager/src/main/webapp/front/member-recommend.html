@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/edit-info.css">
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+
+    <!-- 引入组件库 -->
+    <script src="../assets/js/vue.js"></script>
+    <script src="../assets/js/elementui.js"></script>
+    <script src="../assets/js/axios.js"></script>
+    <style>
+        .el-date-editor--monthrange.el-input, .el-date-editor--monthrange.el-input__inner{
+            width: 100%;
+        }
+        .el-alert {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+        <div id="app" class="app">
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                申请推选
+            </div>
+            <div class="info">
+                <img src="../images/logo.jpg">
+                <div>
+                    <span>廖盛浪</span>
+                    <span>预备党员</span>
+                </div>
+            </div>
+            <h3>申请推优</h3>
+            <div class="content">
+                <el-alert
+                        title="注:请填写当前学年你的成绩"
+                        type="error"
+                        center
+                        :closable="false">
+                </el-alert>
+                <el-form ref="editRef" :model="Form" label-width="80px">
+                    <el-form-item label="学年">
+                        <el-date-picker
+                                v-model="Form.year"
+                                type="monthrange"
+                                range-separator="至"
+                                start-placeholder="开始月份"
+                                end-placeholder="结束月份">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="第一学期绩点" label-width="107px">
+                        <el-input v-model="Form.GPA1"></el-input>
+                    </el-form-item>
+                    <el-form-item label="第二学期绩点" label-width="107px">
+                        <el-input v-model="Form.GPA2"></el-input>
+                    </el-form-item>
+                    <el-form-item label="任职情况" label-width="107px">
+                        <el-select v-model="Form.Appointment" placeholder="请选择">
+                        <el-option label="无" value=""></el-option>
+                        <el-option label="班长" value="班长"></el-option>
+                        <el-option label="副班长" value="副班长"></el-option>
+                        <el-option label="学习委员" value="学习委员"></el-option>
+                        <el-option label="纪律委员" value="纪律委员"></el-option>
+                        <el-option label="体育委员" value="体育委员"></el-option>
+                        <el-option label="宣传委员" value="宣传委员"></el-option>
+                        <el-option label="生活委员" value="生活委员"></el-option>
+                        <el-option label="心理委员" value="心理委员"></el-option>
+                    </el-select>
+                    </el-form-item>
+                    <div>
+                        <el-upload
+                                class="upload-demo"
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :on-change="handleChange"
+                                :file-list="fileList"
+                                :on-success="uploadSuccess">
+                            <el-button type="primary" size="mini">上传审核书</el-button>
+                        </el-upload>
+                    </div>
+                </el-form>
+            </div>
+
+            <button class="submit" @click="submit">确定</button>
+        </div>
+
+        <script>
+            new Vue({
+                el: '#app',
+                // router,
+                data() {
+                    return {
+                        Form: {
+                        },
+                        fileList: []
+                    };
+                },
+                created() {
+                },
+                methods: {
+                    submit() {
+                        //提交Form
+                        console.log(this.Form)
+                    },
+                    handleChange(file, fileList) {
+                        this.fileList = fileList.slice(-3);
+                    },
+                    uploadSuccess(response, file, fileList) {
+                        this.$message.success('上传成功');
+
+                    }
+                }
+            })
+        </script>
+</body>
+</html>

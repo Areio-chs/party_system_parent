@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>院系党务系统</title>
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="assets/css/elementui.css">
+
+		<style>
+			.el-table{
+				font-size: 14px !important;
+				margin-bottom: 20px;
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+				<div id="app" style="margin: 15px;" v-cloak>
+
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>组织管理</el-breadcrumb-item>
+						<el-breadcrumb-item>党总支</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
+							<el-form-item>
+								<el-input placeholder="请输入党总支名字" v-model="searchMap.generalName" clearable>
+									<el-button slot="append" icon="el-icon-search" type="primary" @click="fetchData"></el-button>
+								</el-input>
+							</el-form-item>
+
+							<el-form-item>
+								<el-button type="primary" icon="el-icon-plus" @click="addDialogVisible = true;addForm={}">添加</el-button>
+								<el-button type="success" icon="el-icon-download">导出</el-button>
+							</el-form-item>
+						</el-form>
+
+						<el-table
+								ref="multipleTable"
+								:data="tableData"
+								tooltip-effect="dark"
+								style="width: 100%"
+								size="mini"
+								@cell-click="cellClick"
+								:default-sort = "{prop: 'date', order: 'descending'}">
+							<el-table-column
+									type="selection"
+									width="55">
+							</el-table-column>
+							<el-table-column
+									type="index"
+									label="#">
+							</el-table-column>
+							<el-table-column
+									prop="generalName"
+									label="名称"
+									width="120"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="generalPhone"
+									label="联系方式"
+									width="120"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="generalAddress"
+									label="地址"
+									sortable
+									show-overflow-tooltip>
+							</el-table-column>
+							<el-table-column
+									prop="generalNote"
+									label="备注"
+									show-overflow-tooltip>
+							</el-table-column>
+							<el-table-column
+									prop="generalTime"
+									label="创建时间"
+									width="120"
+									sortable>
+							</el-table-column>
+							<el-table-column label="操作" width="180px">
+								<template slot-scope="scope">
+									<!-- 编辑 -->
+									<el-tooltip effect="dark" content="编辑信息" placement="top" :enterable="false">
+										<el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+									</el-tooltip>
+									<!-- 删除按钮 -->
+									<el-tooltip effect="dark" content="删除信息" placement="top" :enterable="false">
+										<el-button type="danger" icon="el-icon-delete" size="mini" @click="dele(scope.row.id)"></el-button>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+						</el-table>
+
+						<!-- 分页区域 -->
+						<el-pagination @size-change="handleSizeChange"
+									   @current-change="handleCurrentChange"
+									   :current-page.sync="currentPage"
+									   :page-sizes="[5, 10, 20, 30]"
+									   :page-size="size"
+									   layout="total, sizes, prev, pager, next, jumper"
+									   :total="total">
+						</el-pagination>
+
+						<!-- 添加党总支的对话框 -->
+						<el-dialog title="添加党总支" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+							<!-- 内容主体区域 -->
+							<el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+								<el-form-item label="名字" prop="generalName">
+									<el-input v-model="addForm.generalName"></el-input>
+								</el-form-item>
+								<el-form-item label="电话" prop="generalPhone">
+									<el-input v-model="addForm.generalPhone"></el-input>
+								</el-form-item>
+								<el-form-item label="地址" prop="generalAddress">
+									<el-input v-model="addForm.generalAddress"></el-input>
+								</el-form-item>
+								<el-form-item label="备注" prop="generalNote">
+									<el-input
+											type="textarea"
+											:rows="2"
+											placeholder="请输入内容"
+											v-model="addForm.generalNote">
+									</el-input>
+								</el-form-item>
+							</el-form>
+							<!-- 底部区域 -->
+							<span slot="footer" class="dialog-footer">
+        					<el-button @click="addDialogVisible = false">取 消</el-button>
+        					<el-button type="primary" @click="add()">确 定</el-button>
+      					</span>
+						</el-dialog>
+
+						<!-- 修改信息的对话框 -->
+						<el-dialog title="修改党总支信息" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed">
+							<el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px">
+								<el-form-item label="名字">
+									<el-input v-model="editForm.generalName"></el-input>
+								</el-form-item>
+								<el-form-item label="电话" prop="generalPhone">
+									<el-input v-model="editForm.generalPhone"></el-input>
+								</el-form-item>
+								<el-form-item label="地址" prop="generalAddress">
+									<el-input v-model="editForm.generalAddress"></el-input>
+								</el-form-item>
+								<el-form-item label="备注" prop="generalNote">
+									<el-input
+											type="textarea"
+											:rows="2"
+											placeholder="请输入内容"
+											v-model="editForm.generalNote">
+									</el-input>
+								</el-form-item>
+							</el-form>
+							<span slot="footer" class="dialog-footer">
+        					<el-button @click="editDialogVisible = false">取 消</el-button>
+        					<el-button type="primary" @click="edit()">确 定</el-button>
+      					</span>
+						</el-dialog>
+					</el-card>
+					
+				</div>
+	</body>
+
+	<!-- 引入组件库 -->
+	<script src="assets/js/vue.js"></script><!-- vue -->
+
+	<script src="assets/js/elementui.js"></script>
+
+	<script src="assets/js/axios.js"></script>
+
+	<script type="text/javascript" src="plugins/layui/layui.js"></script>
+
+	<script>
+		new Vue({
+			el: '#app',
+			// router,
+			data() {
+				// 验证手机号的规则
+				var checkMobile = (rule, value, cb) => {
+					// 验证手机号的正则表达式
+					const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+
+					if (regMobile.test(value)) {
+						return cb()
+					}
+
+					cb(new Error('请输入合法的手机号'))
+				}
+				return {
+
+					tableData: [],
+					//全选
+					multipleSelection: [],
+					//当前页
+					currentPage: 1,
+					//总数
+					total: 10,
+					//显示条数
+					size:10,
+					//查询条件
+					searchMap:{},
+					// 控制修改党总支对话框的显示与隐藏
+					editDialogVisible: false,
+					// 查询到的党总支信息对象
+					editForm: {},
+					// 修改表单的验证规则对象
+					editFormRules: {
+						generalPhone: [
+							{ required: true, message: '请输入手机号码', trigger: 'blur' },
+							{ validator: checkMobile, trigger: 'blur' }
+						]
+					},
+					// 控制添加党总支对话框的显示与隐藏
+					addDialogVisible: false,
+					// 添加党总支的表单数据
+					addForm: {},
+					// 添加表单的验证规则对象
+					addFormRules: {
+						generalPhone: [
+							{ required: true, message: '请输入手机号', trigger: 'blur' },
+							{ validator: checkMobile, trigger: 'blur' }
+						]
+					}
+				}
+			},
+			created() {
+				this.fetchData()
+			},
+			methods: {
+				fetchData() {
+					axios.post(`/general/findPage.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
+						this.tableData = response.data.rows;
+						this.total = response.data.total;
+					});
+				},
+				handleSizeChange(val) {
+					this.size = val;
+					this.fetchData();
+				},
+				handleCurrentChange(val) {
+					this.currentPage = val;
+					this.fetchData();
+				},
+				// 监听修改党总支对话框的关闭事件
+				editDialogClosed() {
+					this.$refs.editFormRef.resetFields()
+				},
+				// 点击按钮，添加新党总支
+				add() {
+					this.$refs.addFormRef.validate(async valid => {
+						if (!valid) return
+						axios.post(`/general/add.do`,this.addForm).then(response => {
+							this.$message.success('添加党总支成功！');
+							// 重新获取党支部列表数据
+							this.fetchData();
+							// 隐藏添加党支部的对话框
+							this.addDialogVisible = false;
+						});
+					})
+				},
+				// 监听添加党总支对话框的关闭事件
+				addDialogClosed() {
+					this.$refs.addFormRef.resetFields();
+				},
+				// 展示编辑党总支的对话框
+				showEditDialog(id) {
+					axios.get(`/general/findById.do?id=${id}`).then(response => {
+						this.editForm = response.data;
+					})
+					this.editDialogVisible = true
+				},
+				// 修改党总支信息并提交
+				edit() {
+					this.$refs.editFormRef.validate(async valid => {
+						if (!valid) return
+						// 发起修改党总支信息的数据请求
+						axios.post(`/general/update.do`,this.editForm).then(response => {
+							// 提示修改成功
+							this.$message.success('更新党总支信息成功！');
+							// 重新获取党支部列表数据
+							this.fetchData();
+							// 隐藏添加党支部的对话框
+							this.editDialogVisible = false;
+						});
+					})
+				},
+				// 根据Id删除对应的党总支信息
+				async dele(id) {
+					// 弹框询问党总支是否删除数据
+					const confirmResult = await this.$confirm(
+							'此操作将永久删除该党总支, 是否继续?',
+							'提示',
+							{
+								confirmButtonText: '确定',
+								cancelButtonText: '取消',
+								type: 'warning'
+							}
+					).catch(err => err)
+					// 如果党总支确认删除，则返回值为字符串 confirm
+					// 如果党总支取消了删除，则返回值为字符串 cancel
+					// console.log(confirmResult)
+					if (confirmResult !== 'confirm') {
+						return this.$message.info('已取消删除')
+					}
+					//此处向后台发请求进行删除
+					axios.get(`/general/delete.do?id=${id}`).then(response => {
+						this.$message.success('删除党总支成功！');
+						this.fetchData();
+					})
+				},
+				//单元格被点击
+				cellClick(row, column, cell, event) {
+					if (column.label != '操作'){
+						parent.tab.tabAdd({
+							href: 'general-party.html?'+row.id, //传党总支id过去
+							icon: 'fa-address-book',
+							title: '党总支详情'
+						});
+					}else {
+						return
+					}
+				}
+			}
+		})
+	</script>
+
+
+
+</html>

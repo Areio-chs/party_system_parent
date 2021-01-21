@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/activity-info.css">
+
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+    <style>
+        .upload-demo {
+            width: 98%;
+        }
+        .el-upload {
+            width: 100%;
+        }
+        .butt {
+            width: 100%;
+            background-color: #1AA094;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+        <div id="app" class="app">
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                培养教育详情
+            </div>
+            <div class="actHeader">
+                <div class="actLogo">
+                    <img src="../images/done.png">
+                </div>
+                <div class="actInfo">
+                    <span>
+                        {{ study.studyName }}
+                    </span>
+                </div>
+            </div>
+            <ul class="base">
+                <li>
+                    <span>学习地点</span>
+                    <span>{{ study.studyPlace }}</span>
+                </li>
+                <li>
+                    <span>学习积分</span>
+                    <span>{{ study.integral }}</span>
+                </li>
+                <li>
+                    <span>发布时间</span>
+                    <span>{{ study.studyTime}}</span>
+                </li>
+                <li>
+                    <span>截止时间</span>
+                    <span>{{ study.endTime }}</span>
+                </li>
+                <li>
+                    <span>学习备注</span>
+                    <span>{{ study.studyNote }}</span>
+                </li>
+            </ul>
+            <div>
+                <el-upload
+                        class="upload-demo"
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :on-change="handleChange"
+                        :file-list="fileList">
+                    <el-button class="butt">上传总结</el-button>
+                </el-upload>
+            </div>
+
+        </div>
+
+            <!-- 引入组件库 -->
+            <script src="../assets/js/vue.js"></script><!-- vue -->
+        <script src="../assets/js/elementui.js"></script>
+            <script src="../assets/js/axios.js"></script>
+
+            <script>
+                new Vue({
+                    el: '#app',
+                    // router,
+                    data() {
+                        return {
+                            study: {},
+                            fileList: [{
+                                name: 'food.jpeg',
+                                url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                            }, {
+                                name: 'food2.jpeg',
+                                url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                            }]
+                        };
+                    },
+                    created() {
+                        this.getData()
+                    },
+                    methods: {
+                        getData() {
+                            this.study = {
+                                id: 1,
+                                studyName: '党课',
+                                studyPlace: '教学楼B301',
+                                integral: '100',
+                                studyTime: '2020-09-23 24:00:00',
+                                endTime: '2020-09-23 24:00:00',
+                                studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+                                publisher: '廖盛浪'
+                            }
+                        },
+                        handleChange(file, fileList) {
+                            this.fileList = fileList.slice(-3);
+                        }
+                    }
+                })
+            </script>
+</body>
+</html>

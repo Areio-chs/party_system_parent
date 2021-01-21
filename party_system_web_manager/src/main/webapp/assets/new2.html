@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <!-- 引入组件库 -->
+    <script src="js/vue.js"></script><!-- vue -->
+    <link rel="stylesheet" href="css/elementui.css">
+    <script src="js/elementui.js"></script><!-- vue -->
+
+</head>
+<body>
+
+<div id="app">
+
+    <table align="center" border="2px" width="500px" height="700px" cellspacing="0" cellpadding="2">
+        <tr>
+            <td width="15%">姓名</td>
+            <td width="15%"></td>
+            <td width="15%">性别</td>
+            <td width="15%"></td>
+            <td>民族</td>
+            <td width="15%"></td>
+            <td  width="18%" rowspan="3" align="center">照片</td>
+        </tr>
+        <tr>
+            <td >籍贯</td>
+            <td ></td>
+            <td >出生日期</td>
+            <td colspan="3"></td>
+        </tr>
+        <tr>
+            <td >身份证号码</td>
+            <td colspan="3"></td>
+            <td>身份</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>学历</td>
+            <td ></td>
+            <td colspan="2">毕业院校</td>
+            <td colspan="3"></td>
+        </tr>
+        <tr>
+            <td>职务/职称</td>
+            <td ></td>
+            <td colspan="2">入团时间</td>
+            <td colspan="3"></td>
+        </tr>
+        <tr>
+            <td>申请入党时间</td>
+            <td ></td>
+            <td colspan="2">首次组织谈话时间</td>
+            <td colspan="3"></td>
+        </tr>
+        <tr>
+            <td rowspan="6" align="center">个人简历</td>
+            <td>自何年何月</td>
+            <td>至何年何月</td>
+            <td colspan="3">在何地、何单位工作(学习)</td>
+            <td>证明人</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="3">&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="3">&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="3">&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="3">&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="3">&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td rowspan="6" align="center">主要社会关系家庭成员</td>
+            <td>称谓</td>
+            <td>姓名</td>
+            <td>年龄</td>
+            <td>政治面貌</td>
+            <td colspan="2">工作单位、职务</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <tr>
+            <td height="100px" align="center">个人奖惩情况：</td>
+            <td colspan="7" ></td>
+        </tr>
+    </table>
+</div>
+
+
+<script>
+    new Vue({ //记得声明，不然看不到element的input组件
+        el: '#app',
+        data: {
+        },
+        methods: {//这里用于定义方法
+        },
+        computed: {//计算属性
+        }
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>院系党务系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+
+		<script src="assets/js/elementui.js"></script><!-- vue -->
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-top: 10px;
+				margin-bottom: 20px;
+				/*font-size: 14px !important;*/
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body class="app">
+		<div id="app" style="margin: 15px;" v-cloak>
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>集体活动</el-breadcrumb-item>
+						<el-breadcrumb-item>组织活动</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
+							<el-form-item label="活动名称">
+								<el-input
+										@keyup.enter.native="searchUser"
+										@clear="searchUser"
+										clearable
+										v-model="queryInfo.name"
+										placeholder="请输入活动名称查询"
+								></el-input>
+							</el-form-item>
+							<el-form-item label="状态">
+								<el-select v-model="queryInfo.status" clearable size="small" placeholder="请选择">
+									<el-option
+											v-for="item in options"
+											:key="item.value"
+											:label="item.label"
+											:value="item.value">
+									</el-option>
+								</el-select>
+							</el-form-item>
+
+							<el-form-item>
+								<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
+								<el-button type="primary" icon="el-icon-search">查询</el-button>
+								<el-button type="success" icon="el-icon-search" @click="addDialogOpen">新增活动</el-button>
+							</el-form-item>
+						</el-form>
+
+						<el-row>
+							<el-link icon="el-icon-c-scale-to-original" type="warning" @click="showDialogVisible = true" style="color: #E6A23C;">活动说明</el-link>
+						</el-row>
+
+						<el-table
+								ref="multipleTable"
+								:data="tableList"
+								tooltip-effect="dark"
+								:default-sort = "{prop: 'date', order: 'descending'}"
+								style="width: 100%"
+								size="mini"
+								@cell-click="cellClick">
+							<el-table-column 
+									type="index"
+									label="#">
+							</el-table-column>
+							<el-table-column
+									prop="actName"
+									label="活动名称"
+									width="100">
+							</el-table-column>
+							<el-table-column
+									prop="type"
+									label="活动类型"
+									width="120">
+							</el-table-column>
+							<el-table-column
+									prop="actAddress"
+									label="活动地点"
+									width="120">
+							</el-table-column>
+							<el-table-column
+									prop="actNote"
+									label="活动备注"
+									width="200">
+							</el-table-column>
+							<el-table-column
+									label="活动时间"
+									width="120"
+									sortable>
+								<template slot-scope="scope">{{ scope.row.date }}</template>
+							</el-table-column>
+							<el-table-column
+									prop="status"
+									label="活动状态"
+									width="100">
+							</el-table-column>
+							<el-table-column
+									prop="publisher"
+									label="发布人">
+							</el-table-column>
+							<el-table-column
+									prop="count"
+									label="参加人数">
+							</el-table-column>
+							<el-table-column label="操作" width="180" fixed="right">
+								<template slot-scope="scope">
+									<!-- 审核 -->
+									<el-tooltip effect="dark" content="上传活动记录" placement="top" :enterable="false">
+										<el-button icon="el-icon-upload2" size="mini" @click="editDialog(scope.row.id)"></el-button>
+									</el-tooltip>
+									<!-- 删除按钮 -->
+									<el-tooltip effect="dark" content="删除信息" placement="top" :enterable="false">
+										<el-button type="danger" icon="el-icon-delete" size="mini" @click="removeActivityById(scope.row.id)"></el-button>
+									</el-tooltip>
+									<!-- 查看活动记录按钮 -->
+									<el-tooltip effect="dark" content="查看活动记录" placement="top" :enterable="false">
+										<el-button type="info" icon="el-icon-info" size="mini"></el-button>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+						</el-table>
+
+						<!-- 分页区域 -->
+						<el-pagination @size-change="handleSizeChange"
+									   @current-change="handleCurrentChange"
+									   :current-page="queryInfo.pagenum"
+									   :page-sizes="[1, 2, 5, 10]"
+									   :page-size="queryInfo.pagesize"
+									   layout="total, sizes, prev, pager, next, jumper"
+									   :total="total">
+						</el-pagination>
+
+						<!-- 查看党费查询业务详情的对话框 -->
+						<el-dialog title="业务详情" :visible.sync="showDialogVisible" width="50%">
+							<!-- 内容主体区域 -->
+							<el-row>
+								<el-col :span="24">
+									<div class="dialogDiv">
+										<div>
+											<ul>
+												<li>
+													三会一课：即“党小组会”（每月1次）、“党员大会”（每季度1次）、“支委会”（每月1次）和党课（每学期1次）
+												</li>
+												<li>
+													党日活动：每月固定1日开展党日活动。比如志愿服务、参观学习等
+												</li>
+												<li>
+													组织生活会：每学期1次，会议形式召开，党小组成员或整个支部成员
+												</li>
+												<li>
+													民主评议会：每年1次，会议形式召开，年底召开，类似模块1“党员管理”的年度考核
+												</li>
+											</ul>
+										</div>
+									</div>
+								</el-col>
+							</el-row>
+							<!-- 底部区域 -->
+							<span slot="footer" class="dialog-footer">
+        					<el-button @click="showDialogVisible = false">取 消</el-button>
+							</span>
+						</el-dialog>
+
+						<!-- 修改的对话框 -->
+						<el-dialog title="上传活动记录" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed">
+							<el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px">
+								<el-form-item label="参加人员:" label-width="200px">
+									<el-button
+											type="success"
+											icon="el-icon-plus"
+									></el-button>
+									</el-input-number>
+								</el-form-item>
+								<el-form-item label="活动记录:" label-width="200px">
+									<el-upload
+											class="upload-demo"
+											action="https://jsonplaceholder.typicode.com/posts/"
+											:on-change="handleChange"
+											:file-list="fileList">
+										<el-button size="small" type="primary">点击上传</el-button>
+									</el-upload>
+								</el-form-item>
+							</el-form>
+							<span slot="footer" class="dialog-footer">
+								<el-button @click="editDialogVisible = false">取 消</el-button>
+								<el-button type="primary" >确定</el-button>
+      						</span>
+						</el-dialog>
+
+						<!-- 添加活动的对话框 -->
+						<el-dialog title="添加活动" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+							<el-alert
+									title="注：点击确认后系统自动通知参加人员"
+									type="warning"
+									show-icon
+									center
+									style="margin-bottom: 10px">
+							</el-alert>
+							<!-- 内容主体区域 -->
+							<el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+								<el-row>
+									<el-col :span="12">
+										<el-form-item label="活动名称" prop="actName" label-width="80px">
+											<el-input v-model="addForm.actName"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :span="12">
+										<el-form-item label="活动类型" prop="type" label-width="80px">
+											<el-select v-model="addForm.type" clearable placeholder="请选择">
+												<el-option
+														v-for="item in options"
+														:key="item.value"
+														:label="item.label"
+														:value="item.value">
+												</el-option>
+											</el-select>
+										</el-form-item>
+									</el-col>
+								</el-row>
+								<el-row>
+									<el-form-item label="参加人员" prop="people" label-width="80px">
+										<el-badge :value="count" class="item">
+											<el-cascader :options="people"
+														 :props="props"
+														 v-model="addForm.people"
+														 clearable
+														 @change="getValue(addForm.people)">
+											</el-cascader>
+										</el-badge>
+									</el-form-item>
+								</el-row>
+								<el-row>
+									<el-form-item label="活动时间" label-width="80px">
+										<el-date-picker
+												v-model="addForm.firstTime"
+												type="daterange"
+												range-separator="至"
+												start-placeholder="开始日期"
+												end-placeholder="结束日期">
+										</el-date-picker>
+									</el-form-item>
+									<el-form-item label="活动地址" prop="actAddress" label-width="80px">
+										<el-input v-model="addForm.actAddress"></el-input>
+									</el-form-item>
+								</el-row>
+								<el-form-item label="活动备注" label-width="80px">
+									<el-input
+											type="textarea"
+											:rows="2"
+											placeholder="请输入内容"
+											v-model="addForm.actNote">
+									</el-input>
+								</el-form-item>
+							</el-form>
+							<!-- 底部区域 -->
+							<span slot="footer" class="dialog-footer">
+        					<el-button @click="addDialogVisible = false">取 消</el-button>
+        					<el-button type="primary" @click="addActivity">确 定</el-button>
+      					</span>
+						</el-dialog>
+
+
+					</el-card>
+
+
+		</div>
+	</body>
+	<script>
+		new Vue({
+			el: '#app',
+			// router,
+			data() {
+				return {
+					// 获取党小组列表的参数对象
+					queryInfo: {
+						// 当前的页数
+						pagenum: 1,
+						// 当前每页显示多少条数据
+						pagesize: 2,
+						//按名字查询
+						name: '',
+						status: ''
+					},
+					//搜索框中的选择器
+					options: [{
+						value: '已结束',
+						label: '已结束'
+					}, {
+						value: '正在进行',
+						label: '正在进行'
+					}],
+					tableList: [],
+					//当前页
+					currentPage4: 1,
+					//总数
+					total: 10,
+					showDialogVisible: false,
+					// 控制查看修改对话框的显示与隐藏
+					editDialogVisible: false,
+					// 修改的表单数据
+					editForm: {},
+					// 修改表单的验证规则对象
+					editFormRules: {
+					},
+					// 控制添加党总支对话框的显示与隐藏
+					addDialogVisible: false,
+					// 添加活动的表单数据
+					addForm: {
+						actName: '',
+						type: '',
+						actAddress: '',
+						actNote: '',
+						people: '',
+						firstTime: '',
+						endTime: '',
+					},
+					// 添加表单的验证规则对象
+					addFormRules: {
+						actName: [
+							{ required: true, message: '请输入活动名称', trigger: 'blur' }
+						],
+						type: [
+							{ required: true, message: '请输入活动类型', trigger: 'blur' }
+						],
+						actAddress: [
+							{ required: true, message: '请输入活动地址', trigger: 'blur' }
+						],
+						people: [
+							{ required: true, message: '请确认参加人员', trigger: 'blur' }
+						]
+					},
+					//级联选择器的多选
+					props: { multiple: true },
+					people: [],
+					options: [{
+						value: '1',
+						label: '党小组会'
+					}, {
+						value: '2',
+						label: '党员大会'
+					}, {
+						value: '3',
+						label: '支委会'
+					}, {
+						value: '4',
+						label: '支委扩大会'
+					}, {
+						value: '5',
+						label: '专题组织生活会'
+					},{
+						value: '6',
+						label: '党日活动'
+					}],
+					//级联选择器统计人数
+					count: 0,
+					//上传组件
+					fileList: []
+				};
+			},
+			created() {
+				this.getTableList()
+			},
+			methods: {
+				getTableList() {
+					//向后台获取数据列表
+					this.tableList = [
+						{
+							actName: '三会一课',
+							type: '党小组会',
+							actAddress: '教学楼B301',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}, {
+							actName: '党日活动',
+							type: '党员大会',
+							actAddress: '教学楼B301',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}, {
+							actName: '主题党日活动',
+							type: '支委会',
+							actAddress: '教学楼B301',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}, {
+							actName: '组织生活会',
+							type: '支委扩大会',
+							actAddress: '腾讯课堂',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}, {
+							actName: '民主评议会',
+							type: '专题组织生活会',
+							actAddress: '腾讯课堂',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}, {
+							actName: '民主评议会',
+							type: '党日活动',
+							actAddress: '腾讯课堂',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}, {
+							actName: '三会一课',
+							type: '党日活动',
+							actAddress: '腾讯课堂',
+							actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+							date: '2020/09/23',
+							status: '已结束',
+							publisher: '廖盛浪',
+							count: 100
+						}
+					]
+				},
+				/**
+				 * 重置
+				 */
+				reset(){
+					this.queryInfo= {
+						pagenum: 1,
+						pagesize: 6,
+						name: ""
+					}
+				},
+				/**
+				 * 搜索用户
+				 */
+				searchUser() {
+					this.queryInfo.pageNum = 1;
+					this.getTableList();
+				},
+				handleSizeChange(val) {
+					console.log(`每页 ${val} 条`);
+				},
+				handleCurrentChange(val) {
+					console.log(`当前页: ${val}`);
+				},
+				// 监听审核对话框的关闭事件
+				editDialogClosed() {
+					//this.$refs.addFormRef.resetFields()
+				},
+				// 展示修改的对话框
+				editDialog(id) {
+					//根据活动id
+					this.editForm = {
+						id: '1',
+						actName: '主题党日活动',
+						type: '线上直播',
+						actAddress: '腾讯课堂',
+						actNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						firstTime: '2020/09/23',
+						endTime: '2020/09/23',
+						status: '正在进行'
+					}
+
+					this.editDialogVisible = true
+				},
+				addDialogOpen() {
+					//此处应向后台获取人数信息
+					this.people = [
+						{
+							value: '信科院第一党总支',
+							label: '信科院第一党总支',
+							children: [{
+								value: '信科院第一党支部',
+								label: '信科院第一党支部',
+								children: [{
+									value: '第一党小组',
+									label: '第一党小组'
+								}, {
+									value: '第二党小组',
+									label: '第二党小组'
+								}, {
+									value: '第三党小组',
+									label: '第三党小组'
+								}, {
+									value: '第三党小组',
+									label: '第三党小组'
+								}]
+							}, {
+								value: '信科院第二党支部',
+								label: '信科院第二党支部',
+								children: [{
+									value: '第一党小组',
+									label: '第一党小组'
+								}, {
+									value: '第二党小组',
+									label: '第二党小组'
+								}]
+							}]
+						}, {
+							value: '信科院第二党总支',
+							label: '信科院第二党总支',
+							children: [{
+								value: '第一党支部',
+								label: '第一党支部',
+								children: [{
+									value: '第一党小组',
+									label: '第一党小组'
+								}, {
+									value: '第二党小组',
+									label: '第二党小组'
+								}, {
+									value: '第三党小组',
+									label: '第三党小组'
+								}, {
+									value: '第四党小组',
+									label: '第四党小组'
+								}, {
+									value: '第五党小组',
+									label: '第五党小组'
+								}]
+							}, {
+								value: '第二党支部',
+								label: '第二党支部',
+								children: [{
+									value: '第一党小组',
+									label: '第一党小组'
+								}, {
+									value: '第二党小组',
+									label: '第二党小组'
+								}, {
+									value: '第三党小组',
+									label: '第三党小组'
+								}, {
+									value: '第四党小组',
+									label: '第四党小组'
+								}, {
+									value: '第五党小组',
+									label: '第五党小组'
+								}]
+							}, {
+								value: '第三党支部',
+								label: '第三党支部',
+								children: [{
+									value: '第一党小组',
+									label: '第一党小组'
+								}, {
+									value: '第二党小组',
+									label: '第二党小组'
+								}, {
+									value: '第三党小组',
+									label: '第三党小组'
+								}, {
+									value: '第四党小组',
+									label: '第四党小组'
+								}, {
+									value: '第五党小组',
+									label: '第五党小组'
+								}]
+							}]
+						}]
+					this.addDialogVisible = true
+				},
+				//选中值发生变化时触发
+				getValue(value) {
+					if (value == ''){
+
+						this.count = 0
+					}else {
+						//根据选中的值统计这个党小组有多少人
+						this.count = 100
+					}
+				},
+				// 点击按钮，添加新活动
+				addActivity() {
+					this.$refs.addFormRef.validate(async valid => {
+						if (!valid) return
+						// 可以发起添加活动的网络请求
+
+						this.$message.success('添加活动成功！')
+						// 隐藏添加活动的对话框
+						this.addDialogVisible = false
+						// 重新获取活动列表数据
+						this.getTableList()
+					})
+				},
+				// 监听添加活动对话框的关闭事件
+				addDialogClosed() {
+					this.$refs.addFormRef.resetFields()
+				},
+				// 根据Id删除对应的党总支信息
+				async removeActivityById(id) {
+					// 弹框询问党总支是否删除数据
+					const confirmResult = await this.$confirm(
+							'此操作将永久删除该活动, 是否继续?',
+							'提示',
+							{
+								confirmButtonText: '确定',
+								cancelButtonText: '取消',
+								type: 'warning'
+							}
+					).catch(err => err)
+
+					// 如果党总支确认删除，则返回值为字符串 confirm
+					// 如果党总支取消了删除，则返回值为字符串 cancel
+					// console.log(confirmResult)
+					if (confirmResult !== 'confirm') {
+						return this.$message.info('已取消删除')
+					}
+
+					//此处向后台发请求进行删除
+
+					this.$message.success('删除成功！')
+					this.getTableList()
+				},
+				//上传组件
+				handleChange(file, fileList) {
+					this.fileList = fileList.slice(-3);
+				},
+				//单元格被点击
+				cellClick(row, column, cell, event) {
+					if (column.label != '操作'){
+						parent.tab.tabAdd({
+							href: 'activity-detail.html?id='+row.id, //传党总支id过去
+							icon: 'fa-address-book',
+							title: '活动详情'
+						});
+					} else {
+						return
+					}
+				}
+			}
+		})
+	</script>
+</html>

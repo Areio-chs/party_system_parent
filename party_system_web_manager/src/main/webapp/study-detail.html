@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script><!-- vue -->
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+				/*font-size: 14px !important;*/
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+	<div id="app" style="margin: 15px;" v-cloak>
+		<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+			<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+			<el-breadcrumb-item>培养教育</el-breadcrumb-item>
+		</el-breadcrumb>
+
+		<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-form :inline="true" ref="form" :model="query" size="mini" label-width="70px">
+							<el-form-item>
+								<el-input
+										clearable
+										v-model="query.name"
+										placeholder="请输入姓名查询"
+								></el-input>
+							</el-form-item>
+							<el-form-item>
+								<el-button type="primary" icon="el-icon-search">查询</el-button>
+								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
+							</el-form-item>
+						</el-form>
+
+						<el-table
+								ref="multipleTable"
+								:data="childrenData"
+								tooltip-effect="dark"
+								:default-sort = "{prop: 'date', order: 'descending'}"
+								style="width: 100%"
+								stripe
+								border
+								size="mini">
+							<el-table-column
+									type="index"
+									label="#">
+							</el-table-column>
+							<el-table-column
+									prop="name"
+									label="姓名"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="outlook"
+									label="政治面貌"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									prop="phone"
+									label="手机号码"
+									sortable>
+							</el-table-column>
+							<el-table-column
+									label="已学时长"
+									sortable>
+								<template slot-scope="scope">{{ scope.row.haveSeen }}</template>
+							</el-table-column>
+							<el-table-column
+									prop="status"
+									label="是否学完"
+									sortable>
+							</el-table-column>>
+						</el-table>
+
+						<!-- 分页区域 -->
+						<el-pagination @size-change="handleSizeChange"
+									   @current-change="handleCurrentChange"
+									   :current-page="query.pagenum"
+									   :page-sizes="[1, 2, 5, 10]"
+									   :page-size="query.pagesize"
+									   layout="total, sizes, prev, pager, next, jumper"
+									   :total="total">
+						</el-pagination>
+					</el-card>
+
+
+	</div>
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						childrenData: [],
+						query: {
+							// 当前的页数
+							pagenum: 1,
+							// 当前每页显示多少条数据
+							pagesize: 2,
+							//按名字查询
+							name: '',
+						},
+						total: 10
+					};
+				},
+				created() {
+					this.getTableList()
+				},
+				methods: {
+					getTableList() {
+						//向后台获取数据列表
+						this.childrenData = [
+							{
+								name: '王小虎',
+								outlook: '正式党员',
+								phone: '123456789',
+								haveSeen: '00:30:00',
+								status: '已学完'
+							}, {
+								name: '王小虎',
+								outlook: '正式党员',
+								phone: '123456789',
+								haveSeen: '00:30:00',
+								status: '已学完'
+							}, {
+								name: '王小虎',
+								outlook: '正式党员',
+								phone: '123456789',
+								haveSeen: '00:30:00',
+								status: '已学完'
+							}, {
+								name: '王小虎',
+								outlook: '正式党员',
+								phone: '123456789',
+								haveSeen: '00:30:00',
+								status: '已学完'
+							},{
+								name: '王小虎',
+								outlook: '正式党员',
+								phone: '123456789',
+								haveSeen: '00:30:00',
+								status: '已学完'
+							}]
+					},
+					/**
+					 * 重置
+					 */
+					reset(){
+						this.queryInfo= {
+							pagenum: 1,
+							pagesize: 6,
+							name: ""
+						}
+					},
+					/**
+					 * 搜索用户
+					 */
+					search() {
+						this.queryInfo.pageNum = 1;
+						this.getTableList();
+					},
+					handleSizeChange(val) {
+						console.log(`每页 ${val} 条`);
+					},
+					handleCurrentChange(val) {
+						console.log(`当前页: ${val}`);
+					},
+				}
+			})
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script><!-- vue -->
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+			}
+			.el-row{
+				margin-bottom: 20px;
+			}
+			.el-col {
+				border-radius: 4px;
+			}
+			.bg-purple-dark {
+				background: #99a9bf;
+			}
+			.dialogDiv div{
+				margin-bottom: 10px;
+			}
+			.el-drawer__header{
+				margin-bottom: 0;
+				padding: 0;
+			}
+			[v-bloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-bloak>
+
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>党费管理</el-breadcrumb-item>
+						<el-breadcrumb-item>党费查询</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<!-- 卡片视图区域 -->
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-row :gutter="20">
+							<el-col :span="5">
+								<el-date-picker
+										v-model="queryInfo.time"
+										type="month"
+										placeholder="选择月">
+								</el-date-picker>
+							</el-col>
+							<el-col :span="4">
+								<el-button type="primary" icon="el-icon-search" @click="getTableData">查询</el-button>
+							</el-col>
+						</el-row>
+						<el-row :gutter="20">
+								<el-link icon="el-icon-edit" type="warning" style="color: #E6A23C;" @click="showDialogVisible = true">党费查询业务说明</el-link>
+						</el-row>
+
+						<el-table
+								:data="tableData"
+								border
+								stripe
+								style="width: 100%"
+								size="mini"
+								@row-click="rowClick">
+							<el-table-column
+									type="index"
+									label="#">
+							</el-table-column>
+							<el-table-column
+									prop="name"
+									label="组织"
+									>
+							</el-table-column>
+							<el-table-column
+									prop="memberTotal"
+									label="组织党员总数">
+							</el-table-column>
+							<el-table-column
+									prop="payTotal"
+									label="应交费党员数">
+							</el-table-column>
+							<el-table-column
+									prop="paidTotal"
+									label="已交费党员数">
+							</el-table-column>
+							<el-table-column
+									prop="unpaidTotal"
+									label="未交费党员数">
+							</el-table-column>
+							<el-table-column
+									prop="unpaidTotal"
+									label="当月缴费总额">
+							</el-table-column>
+							<el-table-column
+									label="统计时间"
+									sortable
+									width="150">
+								<template slot-scope="scope">{{ scope.row.amountTime }}</template>
+							</el-table-column>
+							<el-table-column
+									prop="unpaidTotal1"
+									label="7~9个月未交党费人数">
+							</el-table-column>
+							<el-table-column
+									prop="unpaidTotal2"
+									label="10~21个月未交党费人数">
+							</el-table-column>
+						</el-table>
+
+
+						<!-- 查看党费查询业务详情的对话框 -->
+						<el-dialog title="业务详情" :visible.sync="showDialogVisible" width="50%">
+							<!-- 内容主体区域 -->
+							<el-row>
+								<el-col :span="24">
+									<div class="dialogDiv">
+										<div>
+											党员使用微信支付，按月交纳党费（可由支部内其他党员代交），
+											系统每个自然月1日，以党员资料所填“收入”为依据计算生成应交党费。
+										</div>
+										<div>
+											党费标准:
+											<ul>
+												<li>
+													学生党员：0.2元/月
+												</li>
+												<li>
+													农民党员：0.5 元/月
+												</li>
+												<li>
+													其他收入：按收入计算，最高不超过20元/月
+												</li>
+											</ul>
+										</div>
+										<div>
+											如果对应交党费有疑问，请检查党员收入、政治面貌等信息是否正确及是否党员报到已审核通过。
+										</div>
+										<div>
+											组织可查看本组织及所有下级组织党费交纳概况。:
+											<ul>
+												<li>
+													“党费查询”支持按月、按年度进行统计筛选
+												</li>
+												<li>
+													点击表格行，可查看该组织下所有党员（包括直属下级党员）交费的明细
+												</li>
+												<li>
+													系统每天凌晨更新党费统计状态，非实时更新。
+												</li>
+											</ul>
+										</div>
+									</div>
+							</el-col>
+							</el-row>
+							<!-- 底部区域 -->
+							<span slot="footer" class="dialog-footer">
+        					<el-button @click="showDialogVisible = false">取 消</el-button>
+							</span>
+						</el-dialog>
+
+						<el-drawer
+								:visible.sync="table"
+								direction="btt"
+								size="80%">
+							<el-card>
+								<el-row :gutter="20">
+									<el-col :span="5">
+										<el-date-picker
+												v-model="queryInfo.time"
+												type="month"
+												placeholder="选择月">
+										</el-date-picker>
+									</el-col>
+									<el-col :span="5">
+										<el-select v-model="value" placeholder="请选择">
+											<el-option
+													v-for="item in options"
+													:key="item.value"
+													:label="item.label"
+													:value="item.value">
+											</el-option>
+										</el-select>
+									</el-col>
+									<el-col :span="4">
+										<el-button type="primary" icon="el-icon-search">查询</el-button>
+									</el-col>
+								</el-row>
+								<div style="margin-bottom: 10px;margin-left: 20px">
+									<span>组织名称:</span>
+									<span>仲恺农业工程学院信息科学与技术学院第一党支部第一党小组</span>
+								</div>
+								<el-table
+										:data="gridData"
+										border
+										style="width: 100%"
+										size="mini"
+										:before-close="handleClose">
+									<el-table-column
+											type="index"
+											label="#">
+									</el-table-column>
+									<el-table-column
+											prop="name"
+											label="姓名">
+									</el-table-column>
+									<el-table-column
+											prop="outlook"
+											label="政治面貌">
+									</el-table-column>
+									<el-table-column
+											prop="phone"
+											label="手机号码">
+									</el-table-column>
+									<el-table-column
+											prop="pay1"
+											label="当月应交金额(元)">
+									</el-table-column>
+									<el-table-column
+											prop="pay2"
+											label="自愿交费金额(元)">
+									</el-table-column>
+									<el-table-column
+											prop="status"
+											label="当月交费状态">
+									</el-table-column>
+									<el-table-column
+											prop="unpaidTotal"
+											label="累计未交团费总数">
+									</el-table-column>
+								</el-table>
+								<!-- 分页区域 -->
+								<el-pagination @size-change="handleSizeChange"
+											   @current-change="handleCurrentChange"
+											   :current-page="queryInfo.pagenum"
+											   :page-sizes="[1, 2, 5, 10]"
+											   :page-size="queryInfo.pagesize"
+											   layout="total, sizes, prev, pager, next, jumper"
+											   :total="total">
+								</el-pagination>
+							</el-card>
+
+						</el-drawer>
+
+					</el-card>
+
+				</div>
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						// 获取用户列表的参数对象
+						queryInfo: {
+							query: '',
+							// 当前的页数
+							pagenum: 1,
+							// 当前每页显示多少条数据
+							pagesize: 2,
+							time: ''
+						},
+						tableData: [],
+						showDialogVisible: false,
+						table: false,
+						dialog: false,
+						loading: false,
+						gridData: [],
+						//当前页
+						currentPage4: 1,
+						//总数
+						total: 10,
+						options: [{
+							value: '选项1',
+							label: '已交'
+						}, {
+							value: '选项2',
+							label: '未交'
+						}],
+						value: ''
+					}
+				},
+				created() {
+					this.getTableData()
+				},
+				methods: {
+					getTableData() {
+						this.tableData = [{
+							id: '12987122',
+							name: '信科院第一党支部',
+							memberTotal: 0,
+							payTotal: 0,
+							paidTotal: 10,
+							unpaidTotal: 0,
+							amountTime: '2020-09-26 24:00:00',
+							unpaidTotal1: 0,
+							unpaidTotal2: 0
+						},{
+							id: '12987122',
+							name: '信科院第一党小组',
+							memberTotal: 0,
+							payTotal: 0,
+							paidTotal: 10,
+							unpaidTotal: 0,
+							amountTime: '2020-09-26 24:00:00',
+							unpaidTotal1: 0,
+							unpaidTotal2: 0
+						},{
+							id: '12987122',
+							name: '信科院第二党小组',
+							memberTotal: 0,
+							payTotal: 0,
+							paidTotal: 10,
+							unpaidTotal: 0,
+							amountTime: '2020-09-26 24:00:00',
+							unpaidTotal1: 0,
+							unpaidTotal2: 0
+						},{
+							id: '12987122',
+							name: '信科院第一党支部',
+							memberTotal: 0,
+							payTotal: 0,
+							paidTotal: 10,
+							unpaidTotal: 0,
+							amountTime: '2020-09-26 24:00:00',
+							unpaidTotal1: 0,
+							unpaidTotal2: 0
+						},{
+							id: '12987122',
+							name: '信科院第一党支部',
+							memberTotal: 0,
+							payTotal: 0,
+							paidTotal: 10,
+							unpaidTotal: 0,
+							amountTime: '2020-09-26 24:00:00',
+							unpaidTotal1: 0,
+							unpaidTotal2: 0
+						},{
+							id: '12987122',
+							name: '信科院第一党支部',
+							memberTotal: 0,
+							payTotal: 0,
+							paidTotal: 10,
+							unpaidTotal: 0,
+							amountTime: '2020-09-26 24:00:00',
+							unpaidTotal1: 0,
+							unpaidTotal2: 0
+						}]
+					},
+					//当某一行被点击
+					rowClick(row, column, event) {
+						this.gridData = [{
+							name: '王小虎',
+							outlook: '正式党员',
+							phone: '123456789',
+							pay1: '0.2',
+							pay2: '0',
+							status: "已缴费",
+							unpaidTotal: 0
+						}, {
+							name: '王小虎',
+							outlook: '正式党员',
+							phone: '123456789',
+							pay1: '0.2',
+							pay2: '0',
+							status: "已缴费",
+							unpaidTotal: 0
+						}, {
+							name: '王小虎',
+							outlook: '正式党员',
+							phone: '123456789',
+							pay1: '0.2',
+							pay2: '0',
+							status: "已缴费",
+							unpaidTotal: 0
+						}, {
+							name: '王小虎',
+							outlook: '正式党员',
+							phone: '123456789',
+							pay1: '0.2',
+							pay2: '0',
+							status: "已缴费",
+							unpaidTotal: 0
+						},{
+							name: '王小虎',
+							outlook: '正式党员',
+							phone: '123456789',
+							pay1: '0.2',
+							pay2: '0',
+							status: "已缴费",
+							unpaidTotal: 0
+						},]
+						this.table = true
+					},
+					handleSizeChange(val) {
+						console.log(`每页 ${val} 条`);
+					},
+					handleCurrentChange(val) {
+						console.log(`当前页: ${val}`);
+					},
+					handleClose(done) {
+						this.$confirm('确认关闭？')
+								.then(_ => {
+									done();
+								})
+								.catch(_ => {});
+					}
+				}
+			})
+		</script>
+
+
+	</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script>
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+			}
+			.el-row{
+				margin-bottom: 20px;
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-cloak>
+
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>权限管理</el-breadcrumb-item>
+						<el-breadcrumb-item>用户列表</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<!-- 卡片视图区域 -->
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-row :gutter="20">
+							<el-col :span="6">
+								<el-input placeholder="请输入内容" size="mini" v-model="queryInfo.query" clearable @clear="getUserList">
+									<el-button slot="append" size="mini" icon="el-icon-search" @click="getUserList"></el-button>
+								</el-input>
+							</el-col>
+							<el-col :span="4">
+								<el-button type="primary" size="mini" icon="el-icon-plus" @click="addDialogVisible = true">新增</el-button>
+							</el-col>
+						</el-row>
+
+						<!-- 用户列表区域 -->
+						<el-table :data="userlist" size="mini" border stripe fit>
+							<el-table-column type="index"></el-table-column>
+							<el-table-column label="姓名" prop="username"></el-table-column>
+							<el-table-column label="联系方式" prop="phone"></el-table-column>
+							<el-table-column label="是否禁用">
+								<template slot-scope="scope">
+									<el-switch v-model="scope.row.status" @change="userStateChanged(scope.row)">
+									</el-switch>
+								</template>
+							</el-table-column>
+							<el-table-column label="操作" width="180px">
+								<template slot-scope="scope">
+									<!-- 删除按钮 -->
+									<el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
+									<!-- 分配角色按钮 -->
+									<el-tooltip
+											class="item"
+											effect="dark"
+											content="分配角色"
+											placement="top"
+											:enterable="false"
+									>
+										<el-button
+												type="warning"
+												size="mini"
+												icon="el-icon-s-tools"
+												@click="assignRoles(scope.row.id)"
+										></el-button>
+									</el-tooltip>
+								</template>
+							</el-table-column>
+						</el-table>
+
+						<!-- 分页区域 -->
+						<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pagenum" :page-sizes="[1, 2, 5, 10]" :page-size="queryInfo.pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+						</el-pagination>
+
+						<!-- 添加用户的对话框 -->
+						<el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%" @close="addDialogClosed">
+							<!-- 内容主体区域 -->
+							<el-form :model="addForm" status-icon :rules="addFormRules" ref="addFormRef" label-width="70px">
+								<el-form-item label="名字" prop="username">
+									<el-input v-model="addForm.username"></el-input>
+								</el-form-item>
+								<el-form-item label="电话" prop="phone">
+									<el-input v-model="addForm.phone"></el-input>
+								</el-form-item>
+								<el-form-item label="密码" prop="password">
+									<el-input type="password" v-model="addForm.password"></el-input>
+								</el-form-item>
+								<el-form-item label="确认密码" prop="checkPass">
+									<el-input type="password" v-model="addForm.checkPass" autocomplete="off"></el-input>
+								</el-form-item>
+							</el-form>
+							<!-- 底部区域 -->
+							<span slot="footer" class="dialog-footer">
+        					<el-button @click="addDialogVisible = false">取 消</el-button>
+        					<el-button type="primary" @click="addUser">确 定</el-button>
+							</span>
+						</el-dialog>
+
+						<!-- 分配角色对话框 -->
+						<el-dialog center title="分配角色" :visible.sync="assignDialogVisible" width="63%">
+								  <el-transfer v-model="value"
+											   filterable
+											   :data="roles"
+											   :titles="['未拥有','已拥有']"
+											   :button-texts="['到左边', '到右边']"
+								  ></el-transfer>
+							<span slot="footer" class="dialog-footer">
+							  <el-button @click="assignDialogVisible = false" class="el-icon-close">取消分配</el-button>
+							  <el-button
+									  type="primary"
+									  @click="doAssignRoles"
+									  class="el-icon-check"
+									  :loading="btnLoading"
+									  :disabled="btnDisabled"
+							  >确定分配</el-button>
+       						 </span>
+						</el-dialog>
+
+					</el-card>
+
+				</div>
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					// 验证手机号的规则
+					var checkMobile = (rule, value, cb) => {
+						// 验证手机号的正则表达式
+						const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+
+						if (regMobile.test(value)) {
+							return cb()
+						}
+
+						cb(new Error('请输入合法的手机号'))
+					}
+					var validatePass = (rule, value, callback) => {
+						if (value === '') {
+							callback(new Error('请输入密码'));
+						} else {
+							if (this.addForm.checkPass !== '') {
+								this.$refs.ruleForm.validateField('checkPass');
+							}
+							callback();
+						}
+					}
+					var validatePass2 = (rule, value, callback) => {
+						if (value === '') {
+							callback(new Error('请再次输入密码'));
+						} else if (value !== this.addForm.password) {
+							callback(new Error('两次输入密码不一致!'));
+						} else {
+							callback();
+						}
+					}
+					return {
+						// 获取用户列表的参数对象
+						queryInfo: {
+							query: '',
+							// 当前的页数
+							pagenum: 1,
+							// 当前每页显示多少条数据
+							pagesize: 2
+						},
+						userlist: [],
+						total: 0,
+						// 需要被分配角色的用户信息
+						userInfo: {},
+						// 控制添加用户对话框的显示与隐藏
+						addDialogVisible: false,
+						// 添加用户的表单数据
+						addForm: {
+							username: '',
+							phone: '',
+							password: '',
+							checkPass: ''
+						},
+						// 添加表单的验证规则对象
+						addFormRules: {
+							phone: [
+								{ required: true, message: '请输入手机号', trigger: 'blur' },
+								{ validator: checkMobile, trigger: 'blur' }
+							],
+							password: [
+								{ validator: validatePass, trigger: 'blur' }
+							],
+							checkPass: [
+								{ validator: validatePass2, trigger: 'blur' }
+							]
+						},
+						assignDialogVisible: false, //分配角色对话框
+						btnLoading: false,
+						btnDisabled: false,
+						roles: [], //角色
+						value: [1,4], //用户选中的角色
+						uid: ""
+					}
+				},
+				created() {
+					this.getUserList()
+				},
+				methods: {
+					getUserList() {
+						this.userlist = [
+							{
+								username: '小龙女',
+								phone: '133456789',
+								status: false
+							},
+							{
+								username: '杨过',
+								phone: '133456789',
+								status: false
+							},
+							{
+								username: '周芷若',
+								phone: '133456789',
+								status: false
+							},
+							{
+								username: '周伯通',
+								phone: '133456789',
+								status: false
+							}
+						]
+						this.total = 10
+						const data = [];
+						for (let i = 1; i <= 15; i++) {
+							data.push({
+								key: i,
+								label: `备选项 ${i}`,
+								disabled: i % 4 === 0
+							});
+						}
+						this.roles = data;
+					},
+					// 监听 pagesize 改变的事件
+					handleSizeChange(newSize) {
+						// console.log(newSize)
+						this.queryInfo.pagesize = newSize
+						this.getUserList()
+					},
+					// 监听 页码值 改变的事件
+					handleCurrentChange(newPage) {
+						this.queryInfo.pagenum = newPage
+						this.getUserList()
+					},
+					// 监听 switch 开关状态的改变
+					userStateChanged(userinfo) {
+
+						this.$message.success('更新用户状态成功！')
+					},
+					// 根据Id删除对应的用户信息
+					async removeUserById(id) {
+						// 弹框询问用户是否删除数据
+						const confirmResult = await this.$confirm(
+								'此操作将永久删除该用户, 是否继续?',
+								'提示',
+								{
+									confirmButtonText: '确定',
+									cancelButtonText: '取消',
+									type: 'warning'
+								}
+						).catch(err => err)
+
+						// 如果用户确认删除，则返回值为字符串 confirm
+						// 如果用户取消了删除，则返回值为字符串 cancel
+						if (confirmResult !== 'confirm') {
+							return this.$message.info('已取消删除')
+						}
+
+						this.$message.success('删除用户成功！')
+						this.getUserList()
+					},
+					// 点击按钮，添加新用户
+					addUser() {
+						this.$refs.addFormRef.validate(async valid => {
+							if (!valid) return
+							// 可以发起添加用户的网络请求
+
+							this.$message.success('添加党总支成功！')
+							// 隐藏添加用户的对话框
+							this.addDialogVisible = false
+							// 重新获取用户列表数据
+							this.getUserList()
+						})
+					},
+					// 监听添加用户对话框的关闭事件
+					addDialogClosed() {
+						this.$refs.addFormRef.resetFields()
+					},
+					/**
+					 * 弹出用户分配角色
+					 */
+					async assignRoles(id) {
+						const loading = this.$loading({
+							lock: true,
+							text: "Loading",
+							spinner: "el-icon-loading",
+							background: "rgba(0, 0, 0, 0.7)"
+						});
+						// const { data: res } = await this.$http.get("user/" + id + "/roles");
+						// if (res.code == 200) {
+						// 	this.roles = res.data.roles;
+						// 	this.value = res.data.values;
+						// 	this.uid = id;
+						//
+						// 	setTimeout(() => {
+						// 		loading.close();
+						// 		this.assignDialogVisible = true;
+						// 	}, 400);
+						// }
+						setTimeout(() => {
+							loading.close();
+							this.assignDialogVisible = true;
+						}, 400);
+					},
+					/**
+					 * 确定分配角色
+					 */
+					async doAssignRoles() {
+						this.assignDialogVisible = true;
+						this.btnLoading = true;
+						this.btnDisabled = true;
+						// const { data: res } = await this.$http.post(
+						// 		"user/" + this.uid + "/assignRoles",
+						// 		this.value
+						// );
+						// if (res.code == 200) {
+						// 	this.$notify.success({
+						// 		title:'操作成功',
+						// 		message:'用户分配角色成功',
+						// 	});
+						// } else {
+						// 	this.$message.error("分配角色失败:" + res.msg);
+						// }
+						this.assignDialogVisible = false;
+						this.btnLoading = false;
+						this.btnDisabled = false;
+					},
+				}
+			})
+		</script>
+
+	</body>
+</html>

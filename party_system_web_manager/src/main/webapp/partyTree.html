@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script>
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-tree{
+				font-size: 14px !important;
+			}
+			/*.tree-style .el-tree-node__children .el-tree-node__children .el-tree-node__content {*/
+			/*	float: left;*/
+			/*}*/
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-cloak>
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>组织管理</el-breadcrumb-item>
+						<el-breadcrumb-item>党组织关系树</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<el-card>
+						<!-- 树形控件 -->
+						<el-tree class="tree-style"
+								 :data="partytree"
+								 :props="treeProps"
+								 node-key="id"
+								 default-expand-all
+								 :default-checked-keys="defKeys"
+								 ref="treeRef">
+						</el-tree>
+					</el-card>
+
+				</div>
+	<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						partytree: [
+							{
+								name: '第一党总支',
+								level: 1,
+								children: [
+									{
+										name: '第一党支部',
+										level: 2,
+										children: [
+											{
+												name: '第一党小组',
+												level: 3,
+												children: [{
+													name: '第一团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第二团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第三团支部',
+													level: 4,
+													children: []
+												}]
+											},
+											{
+												name: '第二党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第三党小组',
+												level: 3,
+												children: [{
+													name: '第一团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第二团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第三团支部',
+													level: 4,
+													children: []
+												}]
+											}
+										]
+									},
+									{
+										name: '第二党支部',
+										level: 2,
+										children: [
+											{
+												name: '第一党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第二党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第三党小组',
+												level: 3,
+												children: [{
+													name: '第一团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第二团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第三团支部',
+													level: 4,
+													children: []
+												}]
+											}
+										]
+									},
+									{
+										name: '第三党支部',
+										level: 2,
+										children: [
+											{
+												name: '第一党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第二党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第三党小组',
+												level: 3,
+												children: []
+											}
+										]
+									}
+								]
+							},
+							{
+								name: '第二党总支',
+								level: 1,
+								children: [
+									{
+										name: '第一党支部',
+										level: 2,
+										children: [
+											{
+												name: '第一党小组',
+												level: 3,
+												children: [{
+													name: '第一团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第二团支部',
+													level: 4,
+													children: []
+												},{
+													name: '第三团支部',
+													level: 4,
+													children: []
+												}]
+											},
+											{
+												name: '第二党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第三党小组',
+												level: 3,
+												children: []
+											}
+										]
+									},
+									{
+										name: '第二党支部',
+										level: 2,
+										children: [
+											{
+												name: '第一党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第二党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第三党小组',
+												level: 3,
+												children: []
+											}
+										]
+									},
+									{
+										name: '第三党支部',
+										level: 2,
+										children: [
+											{
+												name: '第一党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第二党小组',
+												level: 3,
+												children: []
+											},
+											{
+												name: '第三党小组',
+												level: 3,
+												children: []
+											}
+										]
+									}
+								]
+							}
+						],
+						// 树形控件的属性绑定对象
+						treeProps: {
+							label: 'name',
+							children: 'children'
+						},
+						// 默认选中的节点Id值数组
+						defKeys: []
+					}
+				},
+				created() {
+
+				},
+				methods: {
+
+				}
+			})
+		</script>
+
+	</body>
+</html>

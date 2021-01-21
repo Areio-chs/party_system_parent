@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>院系党务系统</title>
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script><!-- vue -->
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+				font-size: 14px !important;
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.organization{
+				height: 30px;
+				line-height: 30px;
+				margin-bottom: 10px;
+				font-size: 16px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-cloak>
+		<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+			<el-breadcrumb-item><a href="index.html">首页</a></el-breadcrumb-item>
+			<el-breadcrumb-item>组织管理</el-breadcrumb-item>
+			<el-breadcrumb-item>团支部</el-breadcrumb-item>
+			</el-breadcrumb>
+
+
+			<el-card>
+
+				<!-- 搜索与添加区域 -->
+				<el-form :inline="true" ref="form" :model="query" size="mini" label-width="70px">
+					<el-form-item>
+						<el-input
+								clearable
+								v-model="query.name"
+								placeholder="请输入姓名查询"
+						></el-input>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="primary" icon="el-icon-search">查询</el-button>
+					</el-form-item>
+				</el-form>
+
+				<el-row :gutter="20">
+					<el-col :span="24">
+						<div class="organization">
+							当前组织:
+							<el-link type="warning" :underline="false" style="font-size: 16px">{{ organization }}</el-link>
+						</div>
+					</el-col>
+				</el-row>
+
+				<el-table
+						ref="multipleTable"
+						:data="childrenData"
+						tooltip-effect="dark"
+						style="width: 100%"
+						size="mini"
+						border
+						stripe>
+					<el-table-column type="index" label="#">
+					</el-table-column>
+					<el-table-column
+							prop="name"
+							label="名字"
+							width="120"
+							sortable>
+					</el-table-column>
+					<el-table-column
+							prop="phone"
+							label="联系方式"
+							width="120"
+							sortable>
+					</el-table-column>
+					<el-table-column
+							prop="status"
+							label="身份"
+							width="120">
+						<template slot-scope="scope">
+							<el-tag size="mini" type="danger" v-if="scope.row.status=='团员'">团员</el-tag>
+							<el-tag size="mini" type="success" v-if="scope.row.status=='入党申请人'">入党申请人</el-tag>
+						</template>
+					</el-table-column>
+					<el-table-column
+							prop="group"
+							label="所属党小组"
+							sortable
+							show-overflow-tooltip>
+					</el-table-column>
+				</el-table>
+
+				<!-- 分页区域 -->
+				<el-pagination @size-change="handleSizeChange"
+							   @current-change="handleCurrentChange"
+							   :current-page="query.pagenum"
+							   :page-sizes="[1, 2, 5, 10]"
+							   :page-size="query.pagesize"
+							   layout="total, sizes, prev, pager, next, jumper"
+							   :total="total">
+				</el-pagination>
+		</el-card>
+
+
+	</div>
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						//当前支部
+						organization: '',
+						childrenData: [],
+						query: {
+							// 当前的页数
+							pagenum: 1,
+							// 当前每页显示多少条数据
+							pagesize: 2,
+							//按名字查询
+							name: '',
+						},
+						total: 10
+					}
+				},
+				created() {
+					this.getChildrenData()
+				},
+				methods: {
+					getChildrenData() {
+						//获取当前组织
+						this.organization = '信科院第一党总支信科院第一党支部信科院第一党小组信科院第一团支部'
+						this.childrenData = [
+							{
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '入党申请人',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '团员',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '入党申请人',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '入党申请人',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '团员',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '入党申请人',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '团员',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '团员',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '团员',
+								group: '信科院第一党小组'
+							}, {
+								name: '赖乐宗',
+								phone: '1375464634',
+								status: '团员',
+								group: '信科院第一党小组'
+							}]
+					},
+					handleSizeChange(val) {
+						console.log(`每页 ${val} 条`);
+					},
+					handleCurrentChange(val) {
+						console.log(`当前页: ${val}`);
+					}
+				}
+			})
+		</script>
+
+	</body>
+</html>

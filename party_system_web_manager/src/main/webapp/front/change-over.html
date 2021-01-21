@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/change-over.css">
+
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+    <style>
+
+        /*.el-input--suffix .el-input__inner {*/
+        /*    width: 200px;*/
+        /*}*/
+        .el-select {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+        <div id="app" class="app">
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                组织关系转接
+            </div>
+            <div class="content">
+                <el-form label-position="right" label-width="80px" :model="form" style="margin-top: 20px">
+                    <el-form-item label="申请转入">
+                        <el-select v-model="form.organization" filterable placeholder="可搜索...">
+                            <el-option
+                                    v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="转入原因">
+                        <el-select v-model="form.reason" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in reasons"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+
+                <button class="submit" @click="onSubmit">确定</button>
+            </div>
+        </div>
+
+        <!-- 引入组件库 -->
+        <script src="../assets/js/vue.js"></script><!-- vue -->
+        <script src="../assets/js/elementui.js"></script><!-- vue -->
+        <script src="../assets/js/axios.js"></script>
+
+        <script>
+            new Vue({
+                el: '#app',
+                // router,
+                data() {
+                    return {
+                        form: {},
+                        options: []
+                    };
+                },
+                created() {
+                    this.getOptions()
+                },
+                methods: {
+                    getOptions() {
+                        //此处应向后台获取options数据
+                        this.options = [{
+                            value: '信科院第一党总支第一党支部第一党小组',
+                            label: '信科院第二党总支第二党支部第一党小组'
+                        }, {
+                            value: '信科院第一党总支第二党支部第一党小组',
+                            label: '信科院第一党总支第二党支部第三党小组'
+                        }, {
+                            value: '信科院第二党总支第三党支部第二党小组',
+                            label: '信科院第一党总支第二党支部第四党小组'
+                        }, {
+                            value: '信科院第一党总支第一党支部第二党小组',
+                            label: '信科院第一党总支第二党支部第二党小组'
+                        }, {
+                            value: '信科院第一党总支第二党支部第四党小组',
+                            label: '信科院第二党总支第一党支部第二党小组'
+                        }]
+                        this.reasons = [{
+                            value: '升学',
+                            label: '升学'
+                        }, {
+                            value: '工作',
+                            label: '工作'
+                        }, {
+                            value: '入伍',
+                            label: '入伍'
+                        }]
+                    },
+                    onSubmit() {
+                        this.$message.success('申请成功！');
+                    }
+                }
+            })
+        </script>
+</body>
+</html>

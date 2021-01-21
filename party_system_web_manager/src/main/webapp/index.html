@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta charset="utf-8">
+		<title>院系党务系统</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="format-detection" content="telephone=no">
+
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="assets/css/elementui.css">
+
+	</head>
+
+	<body>
+		<div id="app" class="layui-layout layui-layout-admin" style="border-bottom: solid 5px #1aa094;">
+			<div class="layui-header header header-demo">
+				<div class="layui-main">
+					<div class="admin-login-box">
+						<a class="logo" style="left: 0;" href="index.html">
+							<span style="font-size: 28px;">院系党务系统</span>
+						</a>
+						<div class="admin-side-toggle">
+							<i class="fa fa-bars" aria-hidden="true"></i>
+						</div>
+					</div>
+					<ul class="layui-nav admin-header-item">
+						<li class="layui-nav-item">
+							<a href="javascript:;" class="admin-header-user">
+								<img src="images/0.jpg" />
+								<span>廖盛浪</span>
+							</a>
+							<dl class="layui-nav-child">
+								<dd>
+									<a href="javascript:;"  @click = "dialogVisible = true">
+										<i class="fa fa-gear" aria-hidden="true"></i>
+										设置
+									</a>
+								</dd>
+								<dd>
+									<a href="login.html"><i class="fa fa-sign-out" aria-hidden="true"></i> 注销</a>
+								</dd>
+							</dl>
+						</li>
+					</ul>
+					<ul class="layui-nav admin-header-item-mobile">
+						<li class="layui-nav-item">
+							<a href="login.html"><i class="fa fa-sign-out" aria-hidden="true"></i> 注销</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layui-side layui-bg-black" id="admin-side">
+				<div class="layui-side-scroll" id="admin-navbar-side" lay-filter="side"></div>
+			</div>
+			<div class="layui-body" style="bottom: 0;border-left: solid 2px #1AA094;" id="admin-body">
+				<div class="layui-tab admin-nav-card layui-tab-brief" lay-filter="admin-tab">
+					<ul class="layui-tab-title">
+						<li class="layui-this">
+							<i class="fa fa-dashboard" aria-hidden="true"></i>
+							<cite>首页</cite>
+						</li>
+					</ul>
+					<div class="layui-tab-content" style="min-height: 150px; padding: 5px 0 0 0;">
+						<div class="layui-tab-item layui-show">
+							<iframe src="main.html"></iframe>
+							<el-dialog
+									title="系统设置"
+									:visible.sync="dialogVisible"
+									width="50%">
+								<el-tabs tab-position="left" style="height: 200px;">
+									<el-tab-pane label="入党申请">
+										<el-form label-position="top" ref="form" :model="form" label-width="80px">
+											<el-form-item label="设置时间">
+												<el-date-picker
+														v-model="form.time"
+														type="datetimerange"
+														range-separator="至"
+														start-placeholder="开始日期"
+														end-placeholder="结束日期">
+												</el-date-picker>
+											</el-form-item>
+											<el-form-item>
+												<el-button type="primary" size="mini">设置</el-button>
+											</el-form-item>
+										</el-form>
+									</el-tab-pane>
+									<el-tab-pane label="申请积极分子">申请积极分子</el-tab-pane>
+									<el-tab-pane label="申请发展对象">申请发展对象</el-tab-pane>
+									<el-tab-pane label="申请预备党员">申请预备党员</el-tab-pane>
+									<el-tab-pane label="申请正式党员">申请正式党员</el-tab-pane>
+								</el-tabs>
+								<span slot="footer" class="dialog-footer">
+									<el-button @click="dialogVisible = false">取 消</el-button>
+								  </span>
+							</el-dialog>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-footer footer footer-demo" id="admin-footer">
+				<div class="layui-main">
+					<p>联系我们<a href="#">  | 仲恺农业工程学院</a>
+					</p>
+				</div>
+			</div>
+			<div class="site-tree-mobile layui-hide">
+				<i class="layui-icon">&#xe602;</i>
+			</div>
+			<div class="site-mobile-shade"></div>
+
+		</div>
+
+
+	</body>
+
+	<!-- 引入组件库 -->
+	<script src="assets/js/vue.js"></script><!-- vue -->
+
+	<script src="assets/js/elementui.js"></script><!-- vue -->
+	<script src="assets/js/axios.js"></script>
+
+	<script>
+		new Vue({
+			el: '#app',
+			// router,
+			data() {
+				return {
+					//控制对话框的显示
+					dialogVisible: false,
+					form: {
+						time: ''
+					}
+				}
+			},
+			created() {
+
+			},
+			methods: {
+			}
+		})
+	</script>
+
+
+	<script type="text/javascript" src="plugins/layui/layui.js"></script>
+	<script type="text/javascript" src="datas/nav.js"></script>
+	<script src="js/index.js"></script>
+	<script>
+		layui.use('layer', function() {
+			var $ = layui.jquery,
+					layer = layui.layer;
+
+			$('#video1').on('click', function() {
+				layer.open({
+					title: 'YouTube',
+					maxmin: true,
+					type: 2,
+					content: 'video.html',
+					area: ['800px', '500px']
+				});
+			});
+			$('#pay').on('click', function () {
+				layer.open({
+					title: false,
+					type: 1,
+					content: '<img src="images/xx.png" />',
+					area: ['500px', '250px'],
+					shadeClose: true
+				});
+			});
+
+
+		});
+	</script>
+
+</html>

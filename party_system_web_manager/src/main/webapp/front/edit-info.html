@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/edit-info.css">
+
+    <!-- 引入组件库 -->
+    <script src="../assets/js/vue.js"></script>
+    <script src="../assets/js/axios.js"></script>
+</head>
+<body>
+        <div id="app" class="app">
+            <a href="#" class="return">
+                <
+            </a>
+            <div class="header">
+                编辑资料
+            </div>
+            <div class="info">
+                <img src="../images/logo.jpg">
+                <div>
+                    <span>廖盛浪</span>
+                    <span>正式党员</span>
+                </div>
+            </div>
+            <h3>编辑信息</h3>
+            <form>
+                <ul class="base">
+                    <li>
+                        <label>姓名</label>
+                        <input type="text" name="username" v-model="editForm.name">
+                    </li>
+                    <li>
+                        <label>性别</label>
+                        <div class="sex">
+                            <input type="radio" name="sex" v-model="editForm.sex" value="男">男
+                            <input type="radio" name="sex" v-model="editForm.sex" value="女">女
+                        </div>
+                    </li>
+                    <li>
+                        <label>籍贯</label>
+                        <input type="text" v-model="editForm.native">
+                    </li>
+                    <li>
+                        <label>户口所在地</label>
+                        <input type="text" v-model="editForm.nativePlace">
+                    </li>
+                    <li>
+                        <label>身份证号码</label>
+                        <input type="text" v-model="editForm.idCard">
+                    </li>
+                    <li>
+                        <label>手机号码</label>
+                        <input type="text" v-model="editForm.phone">
+                    </li>
+                    <li>
+                        <label>级</label>
+                        <input type="text" v-model="editForm.grade">
+                    </li>
+                    <li>
+                        <label>班级</label>
+                        <input type="text" v-model="editForm.class">
+                    </li>
+                    <li>
+                        <label>学号</label>
+                        <input type="text" v-model="editForm.SID">
+                    </li>
+                    <li>
+                        <label>宿舍</label>
+                        <input type="text" v-model="editForm.dormitory">
+                    </li>
+                    <li>
+                        <label>家庭地址(详细)</label>
+                        <input type="text" v-model="editForm.address">
+                    </li>
+                </ul>
+            </form>
+            <button class="submit" @click="submit">确定</button>
+        </div>
+
+        <script>
+            new Vue({
+                el: '#app',
+                // router,
+                data() {
+                    return {
+                        editForm: {
+
+                        }
+                    };
+                },
+                created() {
+                    this.getForm()
+                },
+                methods: {
+                    getForm() {
+                        //根据id响应数据
+                        this.editForm = {
+                            id: 1,
+                            name: '赖乐宗',
+                            sex: '男',
+                            nation: '民族',
+                            native: '广东广州',
+                            nativePlace: '广东广州',
+                            idCard: '440983333333333333',
+                            phone: '123456789',
+                            grade: '2018',
+                            class: '网络181',
+                            SID: '201810214718',
+                            dormitory: '6-104',
+                            address: '广东省广州市海珠区滨江街道纺织路东沙街24号'
+                        }
+                    },
+                    submit() {
+                        //提交editForm
+                        console.log(this.editForm)
+                    }
+                }
+            })
+        </script>
+</body>
+</html>

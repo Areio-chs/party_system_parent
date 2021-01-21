@@ -1,0 +1,70 @@
+
+.tip {
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 16px;
+    color: #9999a5;
+}
+
+.act {
+    position: relative;
+    display: flex;
+    width: 98%;
+    padding: 5px 0 3px 13px;
+    margin-bottom: 5px;
+    background-color: #FFFFFF;
+}
+
+.act div:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.act .actLogo img {
+    width: 72px;
+    height: 75.4px;
+}
+
+.act .actInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 3px 0 0 10px;
+    overflow: hidden;
+}
+
+.act .actInfo div:nth-child(1) {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.act .actInfo div:nth-child(2) {
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #9999a5;
+}
+
+.act span {
+    position: absolute;
+    right: 15px;
+    bottom: 50%;
+    transform: translateY(50%);
+    width: 60px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background-color: #45d7aa;
+    color: #ffffff;
+}
+
+.wait span {
+    background-color: #FA5A55;
+}
+
+.none {
+    width: 98%;
+    padding: 5px 0 5px 15px;
+    background-color: #FFFFFF;
+}

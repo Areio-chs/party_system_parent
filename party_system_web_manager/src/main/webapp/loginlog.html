@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>党员信息管理系统</title>
+
+
+		<link rel="stylesheet" href="assets/css/elementui.css">
+		<!-- 引入组件库 -->
+		<script src="assets/js/vue.js"></script><!-- vue -->
+		<script src="assets/js/elementui.js"></script><!-- vue -->
+		<script src="assets/js/axios.js"></script>
+
+		<style>
+			.el-table{
+				margin-bottom: 20px;
+			}
+			.el-row{
+				margin-bottom: 20px;
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+	<div id="app" style="margin: 15px;" v-cloak>
+					<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+						<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+						<el-breadcrumb-item>日志管理</el-breadcrumb-item>
+						<el-breadcrumb-item>登入日志</el-breadcrumb-item>
+					</el-breadcrumb>
+
+					<!-- 卡片视图 -->
+					<el-card>
+						<!-- 搜索与添加区域 -->
+						<el-row :gutter="20">
+							<el-form :inline="true" :model="formInline" size="mini" class="demo-form-inline">
+								<el-form-item label="用户名">
+									<el-input v-model="formInline.user" placeholder="用户名"></el-input>
+								</el-form-item>
+								<el-form-item label="登录位置">
+									<el-input v-model="formInline.user" placeholder="用户名"></el-input>
+								</el-form-item>
+								<el-form-item>
+									<el-button type="primary" icon="el-icon-search" @click="onSubmit">查询</el-button>
+									<el-button icon="el-icon-delete-solid">批量删除</el-button>
+								</el-form-item>
+							</el-form>
+						</el-row>
+						<el-row>
+							<el-table
+									:data="tableData"
+									border
+									stripe
+									style="width: 100%"
+									@selection-change="handleSelectionChange"
+									fit
+									size="mini">
+								<el-table-column
+										type="selection"
+										width="55">
+								</el-table-column>
+								<el-table-column type="index"></el-table-column>
+								<el-table-column
+										prop="username"
+										label="用户名"
+								>
+								</el-table-column>
+								<el-table-column
+										label="登录时间"
+										sortable
+										>
+									<template slot-scope="scope">{{ scope.row.loginTime }}</template>
+								</el-table-column>
+								<el-table-column
+										prop="browser"
+										label="游览器">
+								</el-table-column>
+								<el-table-column
+										prop="system"
+										label="登录系统">
+								</el-table-column>
+								<el-table-column
+										prop="ip"
+										label="IP地址">
+								</el-table-column>
+								<el-table-column
+										prop="location"
+										label="登录位置">
+								</el-table-column>
+							</el-table>
+						</el-row>
+						<!-- 分页区域 -->
+						<el-pagination
+								@size-change="handleSizeChange"
+								@current-change="handleCurrentChange"
+								:current-page="queryInfo.pagenum"
+								:page-sizes="[1, 2, 5, 10]"
+								:page-size="queryInfo.pagesize"
+								layout="total, sizes, prev, pager, next, jumper"
+								:total="total">
+						</el-pagination>
+					</el-card>
+
+				</div>
+
+
+		<script>
+			new Vue({
+				el: '#app',
+				// router,
+				data() {
+					return {
+						tableData: [],
+						multipleSelection: [],
+						// 获取日志列表的参数对象
+						queryInfo: {
+							// 当前的页数
+							pagenum: 1,
+							// 当前每页显示多少条数据
+							pagesize: 2
+						},
+						total: 10,
+						formInline: {
+							user: '',
+							region: ''
+						}
+					}
+				},
+				created() {
+					this.getLogList()
+				},
+				methods: {
+					getLogList() {
+						this.tableData = [
+							{
+								"id": 1,
+								"username": "廖盛浪",
+								"system": "Windows 10",
+								"browser": "Chrome 8",
+								"ip": "127.0.0.1",
+								"location": "广州",
+								"loginTime": "2020-08-18 07:47:34"
+							},
+							{
+								"id": 2,
+								"username": "廖盛浪",
+								"system": "Windows 10",
+								"browser": "Chrome 8",
+								"ip": "127.0.0.1",
+								"location": "广州",
+								"loginTime": "2020-08-18 07:47:34"
+							}
+						]
+					},
+					// 监听 pagesize 改变的事件
+					handleSizeChange(newSize) {
+						// console.log(newSize)
+						this.queryInfo.pagesize = newSize
+						this.getLogList()
+					},
+					// 监听 页码值 改变的事件
+					handleCurrentChange(newPage) {
+						this.queryInfo.pagenum = newPage
+						this.getLogList()
+					},
+					handleSelectionChange(val) {
+						this.multipleSelection = val
+						console.log(this.multipleSelection)
+					},
+					onSubmit() {
+						console.log('submit!')
+					}
+				}
+			})
+		</script>
+
+	</body>
+</html>
