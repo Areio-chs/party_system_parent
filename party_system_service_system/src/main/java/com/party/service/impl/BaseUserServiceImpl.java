@@ -2,9 +2,9 @@ package com.party.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.party.dao.BaseUserMapper;
+import com.party.dao.*;
 import com.party.entity.PageResult;
-import com.party.pojo.system.BaseUser;
+import com.party.pojo.system.*;
 import com.party.service.system.BaseUserService;
 import com.party.vo.Activist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,14 @@ public class BaseUserServiceImpl implements BaseUserService {
 
     @Autowired
     private BaseUserMapper baseUserMapper;
+    @Autowired
+    private GeneralMapper generalMapper;
+    @Autowired
+    private LeagueBranchMapper leagueBranchMapper;
+    @Autowired
+    private PartyMapper partyMapper;
+    @Autowired
+    private GroupMapper groupMapper;
 
     /**
      * 返回全部记录
@@ -98,7 +106,42 @@ public class BaseUserServiceImpl implements BaseUserService {
 
     @Override
     public List<Activist> findActivist() {
-        return baseUserMapper.findActivist();
+        List<Activist> activistList = baseUserMapper.findActivist();
+
+        for (Activist activist:activistList){
+            //1.查出党总支的名字
+            General general = generalMapper.selectByPrimaryKey(activist.getGeneralId());
+            activist.setGeneralName(general.getGeneralName());
+            //2.团支部名字
+            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(activist.getLeagueBranchId());
+            activist.setLeagueBranchName(leagueBranch.getName());
+            //3.党支部名字
+            Party party = partyMapper.selectByPrimaryKey(activist.getPartyId());
+            activist.setPartyName(party.getPartyName());
+            //4.党小组名字
+            Group group = groupMapper.selectByPrimaryKey(activist.getGroupId());
+            activist.setGroupName(group.getGroupName());
+            //5.培养人1名字
+            if (activist.getCulture1Id()!=null && !"".equals(activist.getCulture1Id())){
+                Example example = new Example(BaseUser.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("id",activist.getCulture1Id());
+                List<BaseUser> baseUsers = baseUserMapper.selectByExample(example);
+                BaseUser baseUser = baseUsers.get(0);
+                activist.setCulture1Name(baseUser.getName());
+            }
+
+            if (activist.getCulture2Id()!=null && !"".equals(activist.getCulture2Id())){
+                Example example = new Example(BaseUser.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("id",activist.getCulture2Id());
+                List<BaseUser> baseUsers = baseUserMapper.selectByExample(example);
+                BaseUser baseUser = baseUsers.get(0);
+                activist.setCulture2Name(baseUser.getName());
+            }
+
+        }
+        return activistList;
     }
 
 

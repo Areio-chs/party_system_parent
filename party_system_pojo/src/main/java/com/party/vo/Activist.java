@@ -67,17 +67,29 @@ public class Activist implements Serializable {
 
     private String wechat;//微信
 
+    private String generalId;//党总支id
+
+    private String generalName;
+
     private String leagueBranchId;//团支部id
 
-    private String generalId;//党总支id
+    private String leagueBranchName;
 
     private String partyId;//党支部id
 
+    private String partyName;
+
     private String groupId;//党小组id
+
+    private String groupName;
 
     private java.util.Date activistTime;//成为积极分子时间
 
     private String culture1Id;//培养人id1
 
+    private String culture1Name;
+
     private String culture2Id;//培养人id2
+
+    private String culture2Name;
 }
