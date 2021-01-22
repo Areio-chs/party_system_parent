@@ -6,6 +6,7 @@ import com.party.dao.BaseUserMapper;
 import com.party.entity.PageResult;
 import com.party.pojo.system.BaseUser;
 import com.party.service.system.BaseUserService;
+import com.party.vo.Activist;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
@@ -94,6 +95,12 @@ public class BaseUserServiceImpl implements BaseUserService {
     public void delete(String id) {
         baseUserMapper.deleteByPrimaryKey(id);
     }
+
+    @Override
+    public List<Activist> findActivist() {
+        return baseUserMapper.findActivist();
+    }
+
 
     /**
      * 构建查询条件

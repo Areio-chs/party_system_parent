@@ -27,6 +27,7 @@
 				</bean>
 			</array>
 		</property>
+
 	</bean>
 	<!-- mybatis配置驼峰形式的设置类 -->
 	<bean id="settings" class="org.apache.ibatis.session.Configuration">

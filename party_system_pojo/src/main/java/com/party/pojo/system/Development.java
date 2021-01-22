@@ -13,9 +13,6 @@ public class Development implements Serializable{
 	@Id
 	private String id;//主键id
 
-
-	
-
 	private java.util.Date applyTime;//申请时间
 
 	private String isActivist;//是否积极分子

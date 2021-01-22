@@ -1,6 +1,7 @@
 package com.party.service.system;
 import com.party.entity.PageResult;
 import com.party.pojo.system.BaseUser;
+import com.party.vo.Activist;
 
 import java.util.*;
 
@@ -32,4 +33,7 @@ public interface BaseUserService {
 
     public void delete(String id);
 
+//    void addActivist(BaseUser baseUser);
+
+    public List<Activist> findActivist();
 }

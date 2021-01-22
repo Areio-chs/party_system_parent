@@ -9,12 +9,8 @@ import java.io.Serializable;
  */
 @Table(name="tb_base_user")
 public class BaseUser implements Serializable{
-
 	@Id
 	private String id;//id
-
-
-	
 
 	private String sid;//学号
 

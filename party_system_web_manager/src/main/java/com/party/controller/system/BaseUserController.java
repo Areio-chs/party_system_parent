@@ -2,9 +2,11 @@ package com.party.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.party.entity.PageResult;
+import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.BaseUser;
 import com.party.service.system.BaseUserService;
+import com.party.vo.Activist;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -30,6 +32,17 @@ public class BaseUserController {
     public List<BaseUser> findList(@RequestBody Map<String,Object> searchMap){
         return baseUserService.findList(searchMap);
     }
+
+    @PostMapping("/findActivist")
+    public R findActivistPage(){
+        List<Activist> activistList = baseUserService.findActivist();
+        return R.ok().data("items",activistList);
+    }
+//    @PostMapping("/addActivist")
+//    public Result addActivist(@RequestBody BaseUser baseUser){
+//        baseUserService.addActivist(baseUser);
+//        return new Result();
+//    }
 
     @PostMapping("/findPage")
     public PageResult<BaseUser> findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
