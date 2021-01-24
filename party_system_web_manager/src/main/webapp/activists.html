@@ -237,7 +237,7 @@
 									@size-change="handleSizeChange"
 									@current-change="handleCurrentChange"
 									:current-page.sync="currentPage"
-									:page-sizes="[4, 6, 8, 10]"
+									:page-sizes="[1, 2, 4, 8, 10]"
 									:page-size="size"
 									layout="total, sizes, prev, pager, next, jumper"
 									:total="total">
@@ -711,7 +711,6 @@
 			},
 			methods: {
 				handleSizeChange(val){
-					alert(val+"当前每页几条数据");
 					this.size=val;
 					this.getActivistList();
 				},
@@ -723,8 +722,6 @@
 					axios.post(`/baseUser/findActivist.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
 						this.activistList = response.data.data.activist.rows;
 						this.total = response.data.data.activist.total;
-						// alert(JSON.stringify(this.activistList));
-						alert(JSON.stringify(this.total));
 					});
 
 					//检索党支部里数据是上面表格里面党支部的汇总数组
