@@ -1,12 +1,15 @@
 package com.party.controller.system;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.github.pagehelper.StringUtil;
 import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.BaseUser;
 import com.party.service.system.BaseUserService;
 import com.party.vo.Activist;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -34,9 +37,18 @@ public class BaseUserController {
     }
 
     @PostMapping("/findActivist")
-    public R findActivistPage(){
-        List<Activist> activistList = baseUserService.findActivist();
-        return R.ok().data("items",activistList);
+    public R findActivistPage(@RequestBody Map<String,Object> searchMap,int page, int size){
+        String searchName = "";
+        if(searchMap!=null){
+            searchName= (String) searchMap.get("name");
+        }
+        PageResult<Activist> activist = baseUserService.findActivist(searchName,page,size);
+        return R.ok().data("activist",activist);
+    }
+    @PostMapping("/findTest")
+    public R findTest(@RequestBody String name){
+        List<BaseUser> test = baseUserService.findTest(name);
+        return R.ok().data("items",test);
     }
 //    @PostMapping("/addActivist")
 //    public Result addActivist(@RequestBody BaseUser baseUser){

@@ -35,5 +35,7 @@ public interface BaseUserService {
 
 //    void addActivist(BaseUser baseUser);
 
-    public List<Activist> findActivist();
+    public PageResult<Activist>  findActivist(String name, int page, int size);
+
+    public List<BaseUser> findTest(String activistName);
 }

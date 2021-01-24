@@ -120,6 +120,7 @@
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>
             </dependency>
+
             <dependency>
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper</artifactId>

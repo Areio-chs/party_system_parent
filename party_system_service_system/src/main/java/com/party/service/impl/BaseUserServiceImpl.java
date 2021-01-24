@@ -105,8 +105,9 @@ public class BaseUserServiceImpl implements BaseUserService {
     }
 
     @Override
-    public List<Activist> findActivist() {
-        List<Activist> activistList = baseUserMapper.findActivist();
+    public PageResult<Activist> findActivist(String name, int page, int size) {
+        PageHelper.startPage(page, size);
+        Page<Activist> activistList = (Page<Activist>)baseUserMapper.findActivist(name);
 
         for (Activist activist:activistList){
             //1.查出党总支的名字
@@ -141,7 +142,12 @@ public class BaseUserServiceImpl implements BaseUserService {
             }
 
         }
-        return activistList;
+        return new PageResult<Activist>(activistList.getTotal(),activistList.getResult()) ;
+    }
+
+    @Override
+    public List<BaseUser> findTest(String activistName) {
+        return baseUserMapper.findTest(activistName);
     }
 
 

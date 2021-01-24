@@ -39,17 +39,15 @@
 						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
 							<el-form-item label="姓名">
 								<el-input
-										@keyup.enter.native="searchUser"
-										@clear="searchUser"
-										clearable
-										v-model="queryInfo.name"
+
+										v-model="searchMap.name"
 										placeholder="请输入姓名查询"
 								></el-input>
 							</el-form-item>
 
 							<el-form-item>
 								<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
-								<el-button type="primary" icon="el-icon-search" @click="getUserList">查询</el-button>
+								<el-button type="primary" icon="el-icon-search" @click="getActivistList">查询</el-button>
 								<el-button type="success" icon="el-icon-plus" @click="addDialogOpen">新增</el-button>
 								<el-button
 										type="success"
@@ -64,7 +62,7 @@
 						<!--显示主体------------------------------------------------------>
 						<el-table
 								ref="multipleTable"
-								:data="UserList"
+								:data="activistList"
 								tooltip-effect="dark"
 								style="width: 100%"
 								size="mini"
@@ -84,70 +82,70 @@
 							</el-table-column>
 							<el-table-column label="基本信息" align="center">
 								<el-table-column
-										prop="baseUserVo.name"
+										prop="name"
 										label="姓名"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.sex"
+										prop="sex"
 										label="性别"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.idCard"
+										prop="idCard"
 										label="身份证"
 										width="150"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.nativePlace"
+										prop="nativePlace"
 										label="籍贯"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.residence"
+										prop="residence"
 										label="户籍所在地"
 										width="110"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.phone"
+										prop="phone"
 										label="电话"
 										width="100"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.grade"
+										prop="grade"
 										label="年级"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.classNum"
+										prop="classNum"
 										label="班级"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.sid"
+										prop="sid"
 										label="学号"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.room"
+										prop="room"
 										label="宿舍"
 										width="80"
 										sortable
@@ -176,7 +174,7 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.leagueBranchName"
+										prop="leagueBranchName"
 										label="所属团支部"
 										width="120"
 										:filters="selectYouth"
@@ -186,7 +184,7 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="baseUserVo.petitionConfirm"
+										prop="petitionConfirm"
 										label="申请书落款时间"
 										width="150"
 										sortable
@@ -200,14 +198,14 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="cultureName1"
+										prop="culture1Name"
 										label="培养联系人1"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="cultureName2"
+										prop="culture2Name"
 										label="培养联系人2"
 										width="120"
 										sortable
@@ -639,13 +637,10 @@
 				return {
 						// 获取列表的参数对象
 						queryInfo: {
-							// 当前的页数
-							// pagenum: 1,
-							// // 当前每页显示多少条数据
-							// pagesize: 2,
-							// //按名字查询
-							// name: ''
 						   },
+					    searchMap:{
+							name:''
+						},
 						//当选中某人要进行修改或者删除，需要把id赋值给该变量
 						id:'',
 						//检索党支部
@@ -656,9 +651,9 @@
 						selectYouth: [],
 						//全选
 						multipleSelection: [],
+					    activistList: [],
 					    //以下3个与分页有关
 						//当前页
-					    UserList: [],
 						currentPage: 1,
 						//总数
 						total: 10,
@@ -712,267 +707,26 @@
 				}
 			},
 			created() {
-				this.getUserList();
+				this.getActivistList();
 			},
 			methods: {
 				handleSizeChange(val){
 					alert(val+"当前每页几条数据");
 					this.size=val;
-					this.getUserList();
+					this.getActivistList();
 				},
 				handleCurrentChange(val){
 					this.currentPage=val;
-					this.getUserList();
+					this.getActivistList();
 				},
-				getUserList() {
-					axios.post(`/activist/findPage.do?page=${this.currentPage}&size=${this.size}`,this.queryInfo).then(response => {
-						this.UserList = response.data.list;
-						this.total = response.data.total;
+				getActivistList() {
+					axios.post(`/baseUser/findActivist.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
+						this.activistList = response.data.data.activist.rows;
+						this.total = response.data.data.activist.total;
+						// alert(JSON.stringify(this.activistList));
+						alert(JSON.stringify(this.total));
 					});
-					//向后台获取数据列表
-					// this.UserList = [
-					// 	{
-					// 		id: 1,
-					// 		name: '赖乐宗',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第二党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第二团支部'
-					// 	}, {
-					// 		name: '廖盛浪',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第一党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第二团支部'
-					// 	}, {
-					// 		name: '赖乐宗',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第二党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第一团支部'
-					// 	}, {
-					// 		name: '赖乐宗',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第二党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第二团支部'
-					// 	}, {
-					// 		name: '赖乐宗',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第二党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第一团支部'
-					// 	}, {
-					// 		name: '廖盛浪',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第一党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第一团支部'
-					// 	}, {
-					// 		name: '廖盛浪',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第一党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第二团支部'
-					// 	}, {
-					// 		name: '廖盛浪',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第一党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第二团支部'
-					// 	}, {
-					// 		name: '廖盛浪',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第一党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第一团支部'
-					// 	}, {
-					// 		name: '廖盛浪',
-					// 		sex: '男',
-					// 		nation: '民族',
-					// 		native: '广东广州',
-					// 		nativePlace: '广东广州',
-					// 		birth: '2020/09/19',
-					// 		idCard: '440983333333333333',
-					// 		phone: '123456789',
-					// 		grade: '2018',
-					// 		class: '网络181',
-					// 		SID: '201810214718',
-					// 		dormitory: '6-104',
-					// 		email: '454305375@qq.com',
-					// 		education: '本科',
-					// 		duty: '班长',
-					// 		address: '仲恺农业工程学院',
-					// 		applyTime: '2018/09/20',
-					// 		activistTime: '2019/09/20',
-					// 		culturel1Name: '小龙女',
-					// 		culturel2Name: '杨过',
-					// 		party: '信科院第一党支部',
-					// 		group: '信科院第二党小组',
-					// 		youthLeagueBranch: '信科院第一团支部'
-					// 	}]
+
 					//检索党支部里数据是上面表格里面党支部的汇总数组
 					this.selectParty = [{ 
 						text: '信科院第一党支部',
@@ -1021,7 +775,7 @@
 				 */
 				searchUser() {
 					this.queryInfo.pageNum = 1;
-					this.getUserList();
+					this.getActivistList();
 				},
 				toggleSelection(rows) {
 					if (rows) {
@@ -1461,7 +1215,7 @@
 						// 隐藏添加成员的对话框
 						this.addDialogVisible = false
 						// 重新获取成员列表数据
-						this.getUserList()
+						this.getActivistList()
 					})
 				},
 				// 监听添加成员对话框的关闭事件
@@ -1529,7 +1283,7 @@
 					//此处向后台发请求进行删除
 
 					this.$message.success('删除党小组成功！')
-					this.getUserList()
+					this.getActivistList()
 				},
 				showFileDialog() {
 					//此处应向后台获取数据
