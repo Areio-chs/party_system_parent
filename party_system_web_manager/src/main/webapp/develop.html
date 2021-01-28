@@ -622,7 +622,9 @@
 									<el-cascader
 											placeholder="请选择培养联系人"
 											:options="contacts"
+											:props.checkStrictly ="false"
 											v-model="dynamicValidateForm.culture21Name"
+											:change-on-select="false"
 											:show-all-levels="false"
 											filterable
 											clearable>

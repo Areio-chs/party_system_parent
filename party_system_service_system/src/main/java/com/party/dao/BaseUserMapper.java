@@ -1,7 +1,7 @@
 package com.party.dao;
 
 import com.party.pojo.system.BaseUser;
-import com.party.vo.Activist;
+import com.party.vo.ActivistVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import tk.mybatis.mapper.common.Mapper;
@@ -15,8 +15,8 @@ public interface BaseUserMapper extends Mapper<BaseUser> {
             "            reward_punish_info rewardPunishInfo,account_id accountId,type_id typeId,integral,qq,wechat," +
             "            league_branch_id leagueBranchId ,general_id generalId,party_id partyId,group_id groupId," +
             "            activist_time activistTime,culture1_id culture1Id,culture2_id culture2Id" +
-            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.name LIKE concat('%',#{name},'%')")
-    public List<Activist> findActivist(@Param("name") String name);
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=0 and bu.name LIKE concat('%',#{name},'%')")
+    public List<ActivistVo> findActivist(@Param("name") String name);
 
     @Select("select * from tb_base_user WHERE NAME LIKE concat('%',#{name},'%')")
 //    @Select("SELECT * FROM tb_base_user WHERE NAME=#{name}")

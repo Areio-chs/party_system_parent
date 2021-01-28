@@ -1,19 +1,26 @@
 package com.party.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
+
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.party.dao.*;
 import com.party.entity.PageResult;
 import com.party.pojo.system.*;
 import com.party.service.system.BaseUserService;
-import com.party.vo.Activist;
+import com.party.util.IdWorker;
+import com.party.vo.ActivistVo;
+import net.sf.json.JSONArray;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.lang.System;
 import java.util.List;
 import java.util.Map;
 
-@Service
+
+@Service(interfaceClass =BaseUserService.class )
 public class BaseUserServiceImpl implements BaseUserService {
 
     @Autowired
@@ -26,6 +33,10 @@ public class BaseUserServiceImpl implements BaseUserService {
     private PartyMapper partyMapper;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private IdWorker idWorker;
+    @Autowired
+    private DevelopmentMapper developmentMapper;
 
     /**
      * 返回全部记录
@@ -82,12 +93,48 @@ public class BaseUserServiceImpl implements BaseUserService {
 
     /**
      * 新增
-     * @param baseUser
+     * @param activistVo
      */
-    public void add(BaseUser baseUser) {
+    @Transactional
+    public void add(ActivistVo activistVo) {
+        System.out.println(activistVo.toString());
+        //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(activistVo,baseUser);
+        baseUser.setId(idWorker.nextId()+"");
+        baseUser.setTypeId(0);//积极分子的类型都是0
         baseUserMapper.insert(baseUser);
+        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
+        Development development = new Development();
+        development.setUserId(baseUser.getId());
+        development= developmentMapper.selectOne(development);
+        Development development2 = new Development();
+//        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
+        if (development!=null){
+            development2.setId(development.getId());
+            developmentMapper.updateByPrimaryKey(development2);
+        }else {//新增
+            //处理培养人id，前端传过来是json数组["1","","",""]
+            if (activistVo.getCulture1Id()!=null && !"".equals(activistVo.getCulture1Id())){
+                String cul1 = handleCultureId(activistVo.getCulture1Id());
+                development2.setCulture1Id(cul1);
+            }
+            if (activistVo.getCulture2Id()!=null && !"".equals(activistVo.getCulture2Id())){
+                String cul2 = handleCultureId(activistVo.getCulture2Id());
+                development2.setCulture2Id(cul2);
+            }
+            development2.setActivistTime(activistVo.getActivistTime());
+            development2.setId(idWorker.nextId()+"");
+            development2.setIsActivist("1");
+            development2.setUserId(baseUser.getId());
+            developmentMapper.insert(development2);
+        }
     }
 
+    public String handleCultureId(String cultureId){
+            JSONArray jsonArray = JSONArray.fromObject(cultureId);
+            return  (String) jsonArray.get(jsonArray.size() - 1);
+    }
     /**
      * 修改
      * @param baseUser
@@ -105,23 +152,30 @@ public class BaseUserServiceImpl implements BaseUserService {
     }
 
     @Override
-    public PageResult<Activist> findActivist(String name, int page, int size) {
+    public PageResult<ActivistVo> findActivist(String name, int page, int size) {
         PageHelper.startPage(page, size);
-        Page<Activist> activistList = (Page<Activist>)baseUserMapper.findActivist(name);
+        Page<ActivistVo> activistList = (Page<ActivistVo>)baseUserMapper.findActivist(name);
 
-        for (Activist activist:activistList){
+        for (ActivistVo activist:activistList){
             //1.查出党总支的名字
-            General general = generalMapper.selectByPrimaryKey(activist.getGeneralId());
-            activist.setGeneralName(general.getGeneralName());
+            if (activist.getGeneralId()!=null) {
+                General general = generalMapper.selectByPrimaryKey(activist.getGeneralId());
+                activist.setGeneralName(general.getGeneralName());
+            }
             //2.团支部名字
+            if (activist.getLeagueBranchId()!=null){
             LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(activist.getLeagueBranchId());
             activist.setLeagueBranchName(leagueBranch.getName());
+            }
             //3.党支部名字
-            Party party = partyMapper.selectByPrimaryKey(activist.getPartyId());
-            activist.setPartyName(party.getPartyName());
+            if (activist.getPartyId()!=null) {
+                Party party = partyMapper.selectByPrimaryKey(activist.getPartyId());
+                activist.setPartyName(party.getPartyName());
+            }
             //4.党小组名字
+            if (activist.getGroupId()!=null){
             Group group = groupMapper.selectByPrimaryKey(activist.getGroupId());
-            activist.setGroupName(group.getGroupName());
+            activist.setGroupName(group.getGroupName());}
             //5.培养人1名字
             if (activist.getCulture1Id()!=null && !"".equals(activist.getCulture1Id())){
                 Example example = new Example(BaseUser.class);
@@ -142,7 +196,7 @@ public class BaseUserServiceImpl implements BaseUserService {
             }
 
         }
-        return new PageResult<Activist>(activistList.getTotal(),activistList.getResult()) ;
+        return new PageResult<ActivistVo>(activistList.getTotal(),activistList.getResult()) ;
     }
 
     @Override

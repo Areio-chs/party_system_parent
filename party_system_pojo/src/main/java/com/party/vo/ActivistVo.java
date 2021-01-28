@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class Activist implements Serializable {
+public class ActivistVo implements Serializable {
     private String id;//id
     private String sid;//学号
 

@@ -13,9 +13,6 @@ public class LeagueBranch implements Serializable{
 	@Id
 	private String id;//id
 
-
-	
-
 	private String name;//name
 
 	private String phone;//phone

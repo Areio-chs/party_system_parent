@@ -2,6 +2,7 @@ package com.party.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.party.entity.PageResult;
+import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.General;
 import com.party.service.system.GeneralService;
@@ -17,8 +18,9 @@ public class GeneralController {
     private GeneralService generalService;
 
     @GetMapping("/findAll")
-    public List<General> findAll(){
-        return generalService.findAll();
+    public R findAll(){
+        List<General> list = generalService.findAll();
+        return R.ok().data("items",list);
     }
 
     @GetMapping("/findPage")

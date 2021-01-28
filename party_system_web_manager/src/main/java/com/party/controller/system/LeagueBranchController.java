@@ -2,6 +2,7 @@ package com.party.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.party.entity.PageResult;
+import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.LeagueBranch;
 import com.party.service.system.LeagueBranchService;
@@ -17,8 +18,9 @@ public class LeagueBranchController {
     private LeagueBranchService leagueBranchService;
 
     @GetMapping("/findAll")
-    public List<LeagueBranch> findAll(){
-        return leagueBranchService.findAll();
+    public R findAll(){
+        List<LeagueBranch> list = leagueBranchService.findAll();
+        return R.ok().data("items",list);
     }
 
     @GetMapping("/findPage")
@@ -59,5 +61,6 @@ public class LeagueBranchController {
         leagueBranchService.delete(id);
         return new Result();
     }
+
 
 }

@@ -1,7 +1,7 @@
 package com.party.service.system;
 import com.party.entity.PageResult;
 import com.party.pojo.system.BaseUser;
-import com.party.vo.Activist;
+import com.party.vo.ActivistVo;
 
 import java.util.*;
 
@@ -25,7 +25,7 @@ public interface BaseUserService {
 
     public BaseUser findById(String id);
 
-    public void add(BaseUser baseUser);
+    public void add(ActivistVo activistVo);
 
 
     public void update(BaseUser baseUser);
@@ -35,7 +35,7 @@ public interface BaseUserService {
 
 //    void addActivist(BaseUser baseUser);
 
-    public PageResult<Activist>  findActivist(String name, int page, int size);
+    public PageResult<ActivistVo>  findActivist(String name, int page, int size);
 
     public List<BaseUser> findTest(String activistName);
 }
