@@ -219,6 +219,32 @@ public class Development implements Serializable{
 		this.status = status;
 	}
 
-
-	
+	@Override
+	public String toString() {
+		return "Development{" +
+				"id='" + id + '\'' +
+				", applyTime=" + applyTime +
+				", isActivist='" + isActivist + '\'' +
+				", activistFileId='" + activistFileId + '\'' +
+				", linkActivist='" + linkActivist + '\'' +
+				", activistTime=" + activistTime +
+				", isDevelop='" + isDevelop + '\'' +
+				", linkDevelop='" + linkDevelop + '\'' +
+				", developTime=" + developTime +
+				", developFileId='" + developFileId + '\'' +
+				", isPre='" + isPre + '\'' +
+				", linkPre='" + linkPre + '\'' +
+				", preFileId='" + preFileId + '\'' +
+				", preMemberTime=" + preMemberTime +
+				", isMember='" + isMember + '\'' +
+				", linkMember='" + linkMember + '\'' +
+				", memberTime=" + memberTime +
+				", isGraduate='" + isGraduate + '\'' +
+				", graduateTime=" + graduateTime +
+				", userId='" + userId + '\'' +
+				", culture1Id='" + culture1Id + '\'' +
+				", culture2Id='" + culture2Id + '\'' +
+				", status=" + status +
+				'}';
+	}
 }

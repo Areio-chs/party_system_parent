@@ -1,12 +1,14 @@
 package com.party.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.support.Parameter;
 import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.BaseUser;
 import com.party.service.system.BaseUserService;
 import com.party.vo.ActivistVo;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -48,11 +50,6 @@ public class BaseUserController {
         List<BaseUser> test = baseUserService.findTest(name);
         return R.ok().data("items",test);
     }
-//    @PostMapping("/addActivist")
-//    public Result addActivist(@RequestBody BaseUser baseUser){
-//        baseUserService.addActivist(baseUser);
-//        return new Result();
-//    }
 
     @PostMapping("/findPage")
     public PageResult<BaseUser> findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
@@ -60,8 +57,20 @@ public class BaseUserController {
     }
 
     @GetMapping("/findById")
-    public BaseUser findById(String id){
-        return baseUserService.findById(id);
+    public R findById(String id){
+//        ActivistVo activistVo = baseUserService.findById(id);
+//        return R.ok().data("items",activistVo);
+        ActivistVo activistVo = baseUserService.findById(id);
+        List<String> cul1List = new ArrayList<>();
+        List<String> cul2List = new ArrayList<>();
+        if (!StringUtils.isEmpty(activistVo.getCulture1Id())){
+            cul1List = baseUserService.handleCul(activistVo.getCulture1Id());
+        }
+        if (!StringUtils.isEmpty(activistVo.getCulture2Id())){
+            cul2List = baseUserService.handleCul(activistVo.getCulture2Id());
+        }
+
+        return R.ok().data("items",activistVo).data("cul1",cul1List).data("cul2",cul2List);
     }
 
 
@@ -72,15 +81,21 @@ public class BaseUserController {
     }
 
     @PostMapping("/update")
-    public Result update(@RequestBody BaseUser baseUser){
-        baseUserService.update(baseUser);
-        return new Result();
+    public R update(@RequestBody ActivistVo activistVo){
+
+        baseUserService.update(activistVo);
+        return R.ok();
     }
 
     @GetMapping("/delete")
-    public Result delete(String id){
+    public R delete(String id){
         baseUserService.delete(id);
-        return new Result();
+        return R.ok();
     }
 
+    @PostMapping("/transfer")
+    public R transfer(@RequestBody Map<String,Object> formLabelAlign){
+        baseUserService.transfer(formLabelAlign);
+        return R.ok();
+    }
 }

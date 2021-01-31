@@ -23,4 +23,11 @@ public class OptionController {
         List<OptionVo> optionList = optionService.getOption();
         return R.ok().data("items",optionList);
     }
+
+    @GetMapping("/getTransferOption")
+    public R getTransferOption() {
+        //list集合泛型是一级分类
+        List<OptionVo> optionList = optionService.getTransferOption();
+        return R.ok().data("items",optionList);
+    }
 }

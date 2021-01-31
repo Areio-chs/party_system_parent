@@ -23,12 +23,15 @@ public interface BaseUserService {
     public PageResult<BaseUser> findPage(Map<String,Object> searchMap,int page, int size);
 
 
-    public BaseUser findById(String id);
+    public ActivistVo findById(String id);
+
+
+    public List<String> handleCul(String cultureId);
 
     public void add(ActivistVo activistVo);
 
 
-    public void update(BaseUser baseUser);
+    public void update(ActivistVo activistVo);
 
 
     public void delete(String id);
@@ -38,4 +41,7 @@ public interface BaseUserService {
     public PageResult<ActivistVo>  findActivist(String name, int page, int size);
 
     public List<BaseUser> findTest(String activistName);
+
+
+    void transfer(Map<String,Object> formLabelAlign);
 }

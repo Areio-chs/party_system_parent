@@ -225,7 +225,7 @@
 							<el-table-column label="操作" width="200" fixed="right" align="center">
 								<template slot-scope="scope">
 									<!-- 编辑 -->
-									<el-tooltip effect="dark" content="查看更多信息" placement="top" :enterable="false">
+									<el-tooltip effect="dark" content="查看个人信息" placement="top" :enterable="false">
 										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
 									</el-tooltip>
 									<!-- 查看其相关文档 -->
@@ -292,7 +292,7 @@
 					</el-dialog>
 
 					<!-- 添加的对话框 -->
-					<el-dialog title="单个导入" :close-on-click-modal="false" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+					<el-dialog title="新增/修改" :close-on-click-modal="false" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
 						<!-- 内容主体区域 -->
 						<el-form :rules="addFormRules" :model="addForm" ref="addFormRef" label-width="80px">
 							<el-row>
@@ -314,7 +314,7 @@
 								</el-col>
 							</el-row>
 							<el-row>
-								<el-col :span="10">
+								<el-col :span="12">
 									<el-form-item label="籍贯">
 										<el-input v-model="addForm.nativePlace"></el-input>
 									</el-form-item>
@@ -428,63 +428,84 @@
 							</el-row>
 
 							<el-row>
-
-								<el-col :span="8">
+								<el-col :span="24">
 									<el-form-item
 											prop="culturel1Name"
 											label="培养联系人1"
 											label-width="120px">
-										<el-cascader
-												placeholder="请选择培养联系人"
-												:options="contacts"
-												v-model="addForm.culture1Id"
-												:show-all-levels="false"
-												filterable
-												clearable>
-										</el-cascader>
-									</el-form-item>
-								</el-col>
-								<el-col :span="8">
-									<el-form-item
-											prop="culturel2Name"
-											label="培养联系人2"
-											label-width="120px">
-										<el-cascader
-												placeholder="请选择培养联系人"
-												:options="contacts"
+<!--										<el-cascader-->
+<!--												placeholder="请选择培养联系人"-->
+<!--												:options="contacts"-->
+<!--												v-model="addForm.culture1Id"-->
+<!--												:show-all-levels="false"-->
+<!--												filterable-->
+<!--												clearable>-->
+<!--										</el-cascader>-->
+											<el-cascader
+													style="width:100%;"
+													placeholder="请选择培养联系人"
+													v-model="addForm.culture1Id"
+													:options="contacts"
+													:props="{ checkStrictly: true }"
+													clearable>
 
-												v-model="addForm.culture2Id"
-												:show-all-levels="false"
-												filterable
-												clearable>
-										</el-cascader>
+											</el-cascader>
+
 									</el-form-item>
 								</el-col>
+							</el-row>
+
+								<el-row>
+									<el-col :span="24">
+										<el-form-item
+												prop="culturel2Name"
+												label="培养联系人2"
+												label-width="120px">
+											<!--										<el-cascader-->
+											<!--												placeholder="请选择培养联系人"-->
+											<!--												:options="contacts"-->
+
+											<!--												v-model="addForm.culture2Id"-->
+											<!--												:show-all-levels="false"-->
+											<!--												filterable-->
+											<!--												clearable>-->
+											<!--										</el-cascader>-->
+											<el-cascader
+													style="width:100%;"
+													placeholder="请选择培养联系人"
+													v-model="addForm.culture2Id"
+													:options="contacts"
+													:props="{ checkStrictly: true }"
+													clearable></el-cascader>
+										</el-form-item>
+									</el-col>
+								</el-row>
+
+							<el-row>
 								<el-col :span="8">
 									<el-form-item label="职务">
 										<el-input v-model="addForm.duty"></el-input>
 									</el-form-item>
 								</el-col>
-							</el-row>
-							<el-row>
+
 								<el-col :span="8">
 									<el-form-item label="职称">
 										<el-input v-model="addForm.title"></el-input>
 									</el-form-item>
 								</el-col>
-								<el-col :span="16">
-									<el-form-item label="申请书落款日期" label-width="120px">
-										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.petitionConfirm" style="width: 100%;"></el-date-picker>
-									</el-form-item>
-								</el-col>
-							</el-row>
-							<el-row>
 								<el-col :span="8">
 									<el-form-item label="学历">
 										<el-input v-model="addForm.aducation"></el-input>
 									</el-form-item>
 								</el-col>
-								<el-col :span="16">
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="申请书落款日期" label-width="120px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.petitionConfirm" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
 									<el-form-item label="确定积极分子日期" label-width="130px">
 										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.activistTime" style="width: 100%;"></el-date-picker>
 									</el-form-item>
@@ -605,14 +626,14 @@
 
 								</el-form-item>
 								<el-form-item label="申请转入">
-									<el-cascader :options="options" v-model="formLabelAlign.organization" clearable></el-cascader>
+									<el-cascader :options="options" v-model="formLabelAlign.organization" style="width: 100%" clearable></el-cascader>
 								</el-form-item>
 							</el-form>
 						</el-card>
 
 						<span slot="footer" class="dialog-footer">
 									<el-button @click="relationshipDialogVisible = false">取 消</el-button>
-									<el-button type="primary">确 定</el-button>
+									<el-button type="primary" @click="transfer">确 定</el-button>
 								</span>
 					</el-dialog>
 
@@ -649,7 +670,7 @@
 									<el-cascader
 											placeholder="请选择培养联系人"
 											:options="contacts"
-											v-model="dynamicValidateForm.culture21Name"
+											v-model="dynamicValidateForm.culture12Name"
 											:show-all-levels="false"
 											filterable
 											clearable>
@@ -711,7 +732,7 @@
 						//检索团支部
 						selectYouth: [],
 						//全选
-						multipleSelection: [],
+						multipleSelection: '',
 					    activistList: [],
 					    //以下3个与分页有关
 						//当前页
@@ -724,6 +745,8 @@
 						// 添加的表单数据
 						addForm: {
 						},
+
+
 					    general:[],
 					    party:[],
 						youthLeagueBranch: [],
@@ -755,8 +778,6 @@
 						// 控制关系转移对话框的显示与隐藏
 						relationshipDialogVisible: false,
 						formLabelAlign: {
-							organization: '',
-							sum: ''
 						},
 						//关系转移的级联选择器
 						options: [],
@@ -841,6 +862,7 @@
 					axios.get(`/option/getOption.do`).then(response => {
 						this.contacts = response.data.data.items;
 					});
+
 				},
 				//添加积极分子时党小组的下拉列表
 				filterCell(value, row) {
@@ -875,11 +897,18 @@
 					}
 				},
 				handleSelectionChange(val) {
-					val = JSON.stringify(val);
-					alert(val);
-					this.multipleSelection = val;//val是一个数组
+					// val = JSON.stringify(val);
+					// alert(val);
+					this.multipleSelection = val;
+					// alert(this.multipleSelection)
+					var array=[];
+					val.forEach((val,index)=>{
+						array.push(val.id);
+					})
+					this.formLabelAlign.select=array;
 				},
-				addDialogOpen() {
+				addDialogOpen() {//打开弹框
+					this.addForm={}
 					this.getGeneralList()
 					this.getYouthLeagueBranchList()
 					this.getGroupList()
@@ -893,7 +922,11 @@
 						if (!valid) return
 						// 可以发起添加成员的网络请求
 						axios.post(`/baseUser/${this.addForm.id==null?'add':'update'}.do`,this.addForm).then(response => {
+							if (this.addForm.id==null){
 							this.$message.success('添加成员成功！')
+							}else {
+								this.$message.success('修改成员成功！')
+							}
 							// 隐藏添加成员的对话框
 							this.addDialogVisible = false
 							// 重新获取成员列表数据
@@ -913,64 +946,33 @@
 					//this.$refs.addFormRef.resetFields()
 				},
 				// 展示信息的对话框
-				showUserDialog() {
-					axios.get(`/party/findAll.do`).then(response => {
-						this.tableData = response.data.data.items;
+				showUserDialog(id) {
+					this.addDialogVisible = true
+					this.getGeneralList()
+					this.getYouthLeagueBranchList()
+					this.getGroupList()
+					this.getPartyList()
+					this.getAllOption()
+					axios.get(`/baseUser/findById.do?id=${id}`).then(response => {
+						this.addForm = response.data.data.items;
+						this.addForm.culture1Id=response.data.data.cul1;
+						this.addForm.culture2Id=response.data.data.cul2;
 					});
 
-					this.tableData = {
-
-						name: '赖乐宗',
-						sex: '男',
-						nation: '民族',
-						native: '广东广州',
-						nativePlace: '广东广州',
-						birth: '2020/09/19',
-						idCard: '440983333333333333',
-						phone: '123456789',
-						grade: '2018',
-						class: '网络181',
-						SID: '201810214718',
-						dormitory: '6-104',
-						url: 'assets/img/avatar/头像.png',
-						email: '454305375@qq.com',
-						education: '本科',
-						duty: '班长',
-						address: '仲恺农业工程学院',
-						applyTime: '2018/09/20',
-						activistTime: '2019/09/20',
-						culturel1Name: '小龙女',
-						culturel2Name: '杨过',
-						party: '信科院第二党支部',
-						group: '信科院第二党小组',
-						youthLeagueBranch: '信科院第二团支部'
-					}
-					this.showDialogVisible = true
 				},
-				// 根据Id删除对应的党小组信息
+				// 根据Id删除对应的积极分子
 				async removeGroupById(id) {
 					// 弹框询问党小组是否删除数据
-					const confirmResult = await this.$confirm(
-							'此操作将永久删除该党小组, 是否继续?',
-							'提示',
-							{
-								confirmButtonText: '确定',
-								cancelButtonText: '取消',
-								type: 'warning'
-							}
-					).catch(err => err)
-
-					// 如果党小组确认删除，则返回值为字符串 confirm
-					// 如果党小组取消了删除，则返回值为字符串 cancel
-					// console.log(confirmResult)
-					if (confirmResult !== 'confirm') {
-						return this.$message.info('已取消删除')
-					}
-
-					//此处向后台发请求进行删除
-
-					this.$message.success('删除党小组成功！')
-					this.getActivistList()
+					this.$confirm('确定要删除此记录吗?', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then( () => {
+						axios.get(`/baseUser/delete.do?id=${id}`).then(response => {
+							this.$message.success('删除党小组成功！')
+							this.getActivistList()
+						})
+					})
 				},
 				showFileDialog() {
 					//此处应向后台获取数据
@@ -1039,107 +1041,26 @@
 					this.fileDialogVisible = false
 				},
 				showRelationshipDialog() {
-					if(this.multipleSelection.length == 0){
+					if(this.multipleSelection.length==0){//选择了多少项
 						this.$message.error('请选择你想转移的成员')
 						return
 					}
 					//先统计多选框里选中的人数。得出sum
-					this.formLabelAlign.sum = 10
+					this.formLabelAlign.sum = this.multipleSelection.length
 					//此处应向后台获取options数据
-					this.options = [
-							{
-						value: '信科院第一党总支',
-						label: '信科院第一党总支',
-						children: [{
-							value: '信科院第一党支部',
-							label: '信科院第一党支部',
-							children: [{
-								value: '第一党小组',
-								label: '第一党小组'
-							}, {
-								value: '第二党小组',
-								label: '第二党小组'
-							}, {
-								value: '第三党小组',
-								label: '第三党小组'
-							}, {
-								value: '第三党小组',
-								label: '第三党小组'
-							}]
-						}, {
-							value: '信科院第二党支部',
-							label: '信科院第二党支部',
-							children: [{
-								value: '第一党小组',
-								label: '第一党小组'
-							}, {
-								value: '第二党小组',
-								label: '第额党小组'
-							}]
-						}]
-					}, {
-						value: '信科院第二党总支',
-						label: '信科院第二党总支',
-						children: [{
-							value: '第一党支部',
-							label: '第一党支部',
-							children: [{
-								value: '第一党小组',
-								label: '第一党小组'
-							}, {
-								value: '第二党小组',
-								label: '第二党小组'
-							}, {
-								value: '第三党小组',
-								label: '第三党小组'
-							}, {
-								value: '第四党小组',
-								label: '第四党小组'
-							}, {
-								value: '第五党小组',
-								label: '第五党小组'
-							}]
-						}, {
-							value: '第二党支部',
-							label: '第二党支部',
-							children: [{
-								value: '第一党小组',
-								label: '第一党小组'
-							}, {
-								value: '第二党小组',
-								label: '第二党小组'
-							}, {
-								value: '第三党小组',
-								label: '第三党小组'
-							}, {
-								value: '第四党小组',
-								label: '第四党小组'
-							}, {
-								value: '第五党小组',
-								label: '第五党小组'
-							}]
-						}, {
-							value: '第三党支部',
-							label: '第三党支部',
-							children: [{
-								value: '第一党小组',
-								label: '第一党小组'
-							}, {
-								value: '第二党小组',
-								label: '第二党小组'
-							}, {
-								value: '第三党小组',
-								label: '第三党小组'
-							}, {
-								value: '第四党小组',
-								label: '第四党小组'
-							}, {
-								value: '第五党小组',
-								label: '第五党小组'
-							}]
-						}]
-					}]
+					axios.get(`/option/getTransferOption.do`).then(response =>{
+						this.options = response.data.data.items
+					})
 					this.relationshipDialogVisible  = true
+				},
+				transfer(){
+					// alert(JSON.stringify(this.formLabelAlign))
+					//要传选中的人的id过去，还要传选中的党小组id
+					axios.post(`/baseUser/transfer.do`,this.formLabelAlign).then(response => {
+						this.$message.success('关系转移成功！')
+						this.getActivistList()
+						this.relationshipDialogVisible = false
+					})
 				},
 				// 监听分配权限对话框的关闭事件
 				setRelationshipDialogClosed() {
@@ -1548,7 +1469,7 @@
 				submitForm(formName) {
 					this.$refs[formName].validate((valid) => {
 						if (valid) {
-							alert('提交!');
+							// alert('提交!');
 						} else {
 							console.log('error submit!!');
 							return false;

@@ -281,6 +281,7 @@
                 });
             },
             save (){
+
                 // this.pojo.image= this.imageUrl; //如页面有图片上传功能放开注释
                 axios.post(`/baseUser/${this.pojo.id==null?'add':'update'}.do`,this.pojo).then(response => {
                     this.fetchData (); //刷新列表

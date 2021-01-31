@@ -1,6 +1,7 @@
 package com.party.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.party.dao.*;
@@ -10,14 +11,18 @@ import com.party.service.system.BaseUserService;
 import com.party.util.IdWorker;
 import com.party.vo.ActivistVo;
 import net.sf.json.JSONArray;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.System;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.alibaba.fastjson.JSON.toJSONString;
 
 
 @Service(interfaceClass =BaseUserService.class )
@@ -87,8 +92,44 @@ public class BaseUserServiceImpl implements BaseUserService {
      * @param id
      * @return
      */
-    public BaseUser findById(String id) {
-        return baseUserMapper.selectByPrimaryKey(id);
+    public ActivistVo findById(String id) {
+        //1.涉及多个表，建议用sql查询
+//        ActivistVo activistVo = new ActivistVo();
+//        BaseUser baseUser = new BaseUser();
+//        baseUser.setId(id);
+//        baseUser = baseUserMapper.selectByPrimaryKey(baseUser);
+//        BeanUtils.copyProperties(baseUser,activistVo);//查出来复制到vo
+//        Example example = new Example(Development.class);
+//        Example.Criteria criteria = example.createCriteria();
+//        criteria.andEqualTo("userId",id);
+//        Development development = developmentMapper.selectOneByExample(example);
+//        BeanUtils.copyProperties(development,activistVo);
+        ActivistVo activistVo = baseUserMapper.findById(id);
+        return activistVo;
+    }
+
+    public List<String> handleCul(String cultureId){
+        BaseUser baseUser=new BaseUser();
+        baseUser.setId(cultureId);
+        baseUser = baseUserMapper.selectByPrimaryKey(baseUser);//查出培养人的基本信息
+        List<String> cul=new ArrayList<>();
+        cul.add(baseUser.getGeneralId()) ;
+        cul.add(baseUser.getPartyId());
+        cul.add(baseUser.getGroupId());
+        cul.add(cultureId);
+
+        return cul;
+
+    }
+    //拼接成["1","1","1"]
+    public String all(BaseUser baseUser,String cultureId){
+        List<String> cul=new ArrayList<>();
+        cul.add(baseUser.getGeneralId()) ;
+        cul.add(baseUser.getPartyId());
+        cul.add(baseUser.getGroupId());
+        cul.add(cultureId);
+        String json = JSON.toJSONString(cul);
+        return json;
     }
 
     /**
@@ -112,9 +153,9 @@ public class BaseUserServiceImpl implements BaseUserService {
 //        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
         if (development!=null){
             development2.setId(development.getId());
-            developmentMapper.updateByPrimaryKey(development2);
+            developmentMapper.updateByPrimaryKeySelective(development2);
         }else {//新增
-            //处理培养人id，前端传过来是json数组["1","","",""]
+
             if (activistVo.getCulture1Id()!=null && !"".equals(activistVo.getCulture1Id())){
                 String cul1 = handleCultureId(activistVo.getCulture1Id());
                 development2.setCulture1Id(cul1);
@@ -130,24 +171,53 @@ public class BaseUserServiceImpl implements BaseUserService {
             developmentMapper.insert(development2);
         }
     }
-
+    //处理培养人id，前端传过来是json数组["1","","",""]
     public String handleCultureId(String cultureId){
             JSONArray jsonArray = JSONArray.fromObject(cultureId);
             return  (String) jsonArray.get(jsonArray.size() - 1);
     }
     /**
      * 修改
-     * @param baseUser
+     * @param activistVo
      */
-    public void update(BaseUser baseUser) {
+    @Transactional
+    public void update(ActivistVo activistVo) {
+        System.out.println("修改成员长什么样？"+activistVo.toString());
+        //修改baseuser表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(activistVo,baseUser);
         baseUserMapper.updateByPrimaryKeySelective(baseUser);
+        //修改development
+        Development development =new Development();
+        development.setUserId(activistVo.getId());
+        Development development1 = developmentMapper.selectOne(development);
+        development1.setActivistTime(activistVo.getActivistTime());
+        if (activistVo.getCulture1Id()!="[]" && !"[]".equals(activistVo.getCulture1Id())){
+            String cul1 = handleCultureId(activistVo.getCulture1Id());
+            development1.setCulture1Id(cul1);
+        }else {
+            development1.setCulture1Id(null);
+        }
+        if (activistVo.getCulture2Id()!="[]" && !"[]".equals(activistVo.getCulture2Id())){
+            String cul2 = handleCultureId(activistVo.getCulture2Id());
+            development1.setCulture2Id(cul2);
+        }else {
+            development1.setCulture2Id(null);
+        }
+        developmentMapper.updateByPrimaryKey(development1);
     }
 
     /**
      *  删除
      * @param id
      */
+    @Transactional
     public void delete(String id) {
+        //先删development再删除baseuser里面的，
+        Development development = new Development();
+        development.setUserId(id);
+        development = developmentMapper.selectOne(development);
+        developmentMapper.deleteByPrimaryKey(development);
         baseUserMapper.deleteByPrimaryKey(id);
     }
 
@@ -202,6 +272,28 @@ public class BaseUserServiceImpl implements BaseUserService {
     @Override
     public List<BaseUser> findTest(String activistName) {
         return baseUserMapper.findTest(activistName);
+    }
+    @Transactional
+    @Override
+    public void transfer(Map<String,Object> formLabelAlign) {
+        //如果传回来的有三个id，说明是转移到另外一个小组，而不是党支部
+        //如果需要审核?这里应该不马上改变了，可以新增一条，状态设置为0，审核后，给审核的那条设置状态1，然后删掉旧的。
+        List<String> orgs = (List<String>) formLabelAlign.get("organization");
+        String generalId = orgs.get(orgs.size()-3);
+        String partyId = orgs.get(orgs.size()-2);
+        String groupId = orgs.get(orgs.size()-1);
+        List<String> ids = (List<String>) formLabelAlign.get("select");//选中的所有人的id
+        BaseUser baseUser = new BaseUser();
+        for (String id:ids){
+            //每个人的党小组进行改变
+            baseUser.setId(id);
+            baseUser.setGeneralId(generalId);
+            baseUser.setPartyId(partyId);
+            baseUser.setGroupId(groupId);
+            baseUserMapper.updateByPrimaryKeySelective(baseUser);
+        }
+        //向嫦娥表插入数据
+
     }
 
 

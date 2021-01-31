@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface OptionService {
     List<OptionVo> getOption();
+
+    List<OptionVo> getTransferOption();
 }
