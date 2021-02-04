@@ -1,7 +1,9 @@
 package com.party.service.system;
 import com.party.entity.PageResult;
+import com.party.excel.ActivistData;
 import com.party.pojo.system.BaseUser;
 import com.party.vo.ActivistVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -11,7 +13,7 @@ import java.util.*;
 public interface BaseUserService {
 
 
-    public List<BaseUser> findAll();
+    public List<ActivistData> findActivistOut();
 
 
     public PageResult<BaseUser> findPage(int page, int size);
@@ -29,7 +31,7 @@ public interface BaseUserService {
     public List<String> handleCul(String cultureId);
 
     public void add(ActivistVo activistVo);
-
+    public void excelAdd(ActivistVo activistVo);
 
     public void update(ActivistVo activistVo);
 
@@ -44,4 +46,7 @@ public interface BaseUserService {
 
 
     void transfer(Map<String,Object> formLabelAlign);
+
+
+    int uniqueSid(String sid);
 }

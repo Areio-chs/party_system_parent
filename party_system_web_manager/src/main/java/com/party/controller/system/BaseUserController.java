@@ -1,10 +1,8 @@
 package com.party.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.config.support.Parameter;
 import com.party.entity.PageResult;
 import com.party.entity.R;
-import com.party.entity.Result;
 import com.party.pojo.system.BaseUser;
 import com.party.service.system.BaseUserService;
 import com.party.vo.ActivistVo;
@@ -20,10 +18,10 @@ public class BaseUserController {
     @Reference
     private BaseUserService baseUserService;
 
-    @GetMapping("/findAll")
-    public List<BaseUser> findAll(){
-        return baseUserService.findAll();
-    }
+//    @GetMapping("/findAll")
+//    public List<BaseUser> findAll(){
+//        return baseUserService.findAll();
+//    }
 
     @GetMapping("/findPage")
     public PageResult<BaseUser> findPage(int page, int size){
@@ -72,16 +70,18 @@ public class BaseUserController {
 
         return R.ok().data("items",activistVo).data("cul1",cul1List).data("cul2",cul2List);
     }
-
-
     @PostMapping("/add")
     public R add(@RequestBody ActivistVo activistVo){
         baseUserService.add(activistVo);
         return R.ok();
     }
-
+    @GetMapping("/uniqueSid")
+    public R uniqueSid(String sid){
+        int result = baseUserService.uniqueSid(sid);//0说明里面现在没这个学号
+        return R.ok().data("items",result);
+    }
     @PostMapping("/update")
-    public R update(@RequestBody ActivistVo activistVo){
+    public R update(@RequestBody ActivistVo activistVo) throws Exception{
 
         baseUserService.update(activistVo);
         return R.ok();

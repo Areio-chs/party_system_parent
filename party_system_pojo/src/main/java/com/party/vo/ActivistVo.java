@@ -87,9 +87,13 @@ public class ActivistVo implements Serializable {
 
     private String culture1Id;//培养人id1
 
+    private String culture1Sid;
+
     private String culture1Name;
 
     private String culture2Id;//培养人id2
+
+    private String culture2Sid;
 
     private String culture2Name;
 }

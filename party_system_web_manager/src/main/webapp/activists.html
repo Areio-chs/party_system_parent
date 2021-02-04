@@ -48,13 +48,31 @@
 								<el-button  @click="reset('searchMap')" icon="el-icon-refresh">重置</el-button>
 								<el-button type="primary" icon="el-icon-search" @click="getActivistList">查询</el-button>
 								<el-button type="success" icon="el-icon-plus" @click="addDialogOpen">新增</el-button>
-								<el-button
-										type="success"
-										icon="el-icon-plus"
-								>导入</el-button>
-								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
+<!--								<el-button type="danger" icon="el-icon-upload2" ><a :href="'/excel/leadOutActivist.do'">导出</a></el-button>-->
+
 								<el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">关系转移</el-button>
 								<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog(id)">变更培养人</el-button>
+								<el-button type="danger"  icon="el-icon-upload2" @click="downExcel" >导出</el-button>
+							</el-form-item>
+							<el-form-item>
+								<el-upload
+										ref="upload"
+										:auto-upload="true"
+										:on-success="fileUploadSuccess"
+										:on-error="fileUploadError"
+										:disabled="importBtnDisabled"
+										:loading="loading"
+										:limit="1"
+										action="http://localhost:9101/excel/leadInActivist.do"
+										name="file"
+										accept="application/vnd.ms-excel">
+									<el-button slot="trigger" type="success" icon="el-icon-plus">导入</el-button>
+								</el-upload>
+
+							</el-form-item>
+							<el-form-item>
+
+								<el-button icon="el-icon-download" @click="downModel">点击下载模版</el-button>
 								<el-button icon="el-icon-download">入党积极分子预审表</el-button>
 							</el-form-item>
 						</el-form>
@@ -116,6 +134,13 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
+										prop="nation"
+										label="民族"
+										width="80"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
 										prop="phone"
 										label="电话"
 										width="100"
@@ -147,6 +172,27 @@
 										prop="room"
 										label="宿舍"
 										width="80"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+									prop="duty"
+									label="职务"
+									width="100"
+									sortable
+									align="center">
+							    </el-table-column>
+								<el-table-column
+										prop="title"
+										label="职称"
+										width="100"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="aducation"
+										label="学历"
+										width="100"
 										sortable
 										align="center">
 								</el-table-column>
@@ -352,7 +398,7 @@
 							<el-row>
 								<el-col :span="8">
 									<el-form-item label="学号" prop="sid" >
-										<el-input v-model="addForm.sid"></el-input>
+										<el-input v-model="addForm.sid" ></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :span="8">
@@ -446,7 +492,6 @@
 													placeholder="请选择培养联系人"
 													v-model="addForm.culture1Id"
 													:options="contacts"
-													:props="{ checkStrictly: true }"
 													clearable>
 
 											</el-cascader>
@@ -461,21 +506,11 @@
 												prop="culturel2Name"
 												label="培养联系人2"
 												label-width="120px">
-											<!--										<el-cascader-->
-											<!--												placeholder="请选择培养联系人"-->
-											<!--												:options="contacts"-->
-
-											<!--												v-model="addForm.culture2Id"-->
-											<!--												:show-all-levels="false"-->
-											<!--												filterable-->
-											<!--												clearable>-->
-											<!--										</el-cascader>-->
 											<el-cascader
 													style="width:100%;"
 													placeholder="请选择培养联系人"
 													v-model="addForm.culture2Id"
 													:options="contacts"
-													:props="{ checkStrictly: true }"
 													clearable></el-cascader>
 										</el-form-item>
 									</el-col>
@@ -712,10 +747,21 @@
 					const regSid = /\b\d{12}\b/
 
 					if (regSid.test(value)) {
-						return cb()
+						axios.get(`/baseUser/uniqueSid.do?sid=${this.addForm.sid}`).then(response => {
+							if (response.data.data.items==1){
+								cb(new Error('当前学号已被用'))
+							}else {
+								return cb()
+							}
+							// alert(JSON.stringify(response.data));
+						});
+					}else {
+						cb(new Error('请输入合法的学号'))
 					}
 
-					cb(new Error('请输入合法的学号'))
+
+
+
 				}
 				return {
 					    searchMap:{
@@ -785,6 +831,8 @@
 						contactsDialogVisible: false,
 						//可选择培养联系人列表
 						contacts: [],
+					   importBtnDisabled: false, // 按钮是否禁用,
+					   loading: false,
 						dynamicValidateForm: {
 							contacts: [{
 								value: ''
@@ -797,6 +845,28 @@
 				this.getActivistList();
 			},
 			methods: {
+				handleRemove(file, fileList) {
+					alert(1)
+				},
+				handlePreview(file) {
+					this.$message.success("导入成功");
+				},
+				handleExceed() {
+					this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件`);
+				},
+				beforeRemove() {
+					return this.$confirm(`确定移除 ${ file.name }？`);
+				},
+				fileUploadSuccess(response){
+					//提示信息
+					this.loading = false
+					this.$message.success("导入成功");
+					this.getActivistList();
+				},
+				fileUploadError() {
+					this.loading = false
+					this.$message.error("导入失败");
+				},
 				handleSizeChange(val){
 					this.size=val;
 					this.getActivistList();
@@ -907,6 +977,12 @@
 					})
 					this.formLabelAlign.select=array;
 				},
+				downModel(){
+					window.location.href="model/模板表.xlsx";
+				},
+				downExcel(){
+					window.location.href="/excel/leadOutActivist.do";
+				},
 				addDialogOpen() {//打开弹框
 					this.addForm={}
 					this.getGeneralList()
@@ -916,6 +992,16 @@
 					this.getAllOption()
 					this.addDialogVisible = true
 				},
+				// uniqueSid(){
+				// 	// alert(this.addForm.sid);
+				// 	axios.get(`/baseUser/uniqueSid.do?sid=${this.addForm.sid}`).then(response => {
+				// 		if (response.data.data.items==1){
+				// 			this.$message.error('当前学号已被占用')
+				// 			return
+				// 		}
+				// 		// alert(JSON.stringify(response.data));
+				// 	});
+				// },
 				// 点击按钮单个导入成员
 				add() {
 					this.$refs.addFormRef.validate(async valid => {

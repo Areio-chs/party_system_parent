@@ -1,4 +1,6 @@
 package com.party.pojo.system;
+import lombok.Data;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -7,6 +9,7 @@ import java.io.Serializable;
  * @author Administrator
  *
  */
+@Data
 @Table(name="tb_base_user")
 public class BaseUser implements Serializable{
 	@Id
@@ -74,258 +77,18 @@ public class BaseUser implements Serializable{
 
 	private String leagueBranchId;//团支部id
 
+	private String leagueBranchName;//团支部名称
+
 	private String generalId;//党总支id
+
+	private String generalName;//党总支名称
 
 	private String partyId;//党支部id
 
+	private String partyName;//党支部名称
+
 	private String groupId;//党小组id
 
-	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+	private String groupName;//党小组id
 
-	public String getSid() {
-		return sid;
-	}
-	public void setSid(String sid) {
-		this.sid = sid;
-	}
-
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getSex() {
-		return sex;
-	}
-	public void setSex(String sex) {
-		this.sex = sex;
-	}
-
-	public java.util.Date getBirth() {
-		return birth;
-	}
-	public void setBirth(java.util.Date birth) {
-		this.birth = birth;
-	}
-
-	public String getGrade() {
-		return grade;
-	}
-	public void setGrade(String grade) {
-		this.grade = grade;
-	}
-
-	public String getClassNum() {
-		return classNum;
-	}
-	public void setClassNum(String classNum) {
-		this.classNum = classNum;
-	}
-
-	public String getRoom() {
-		return room;
-	}
-	public void setRoom(String room) {
-		this.room = room;
-	}
-
-	public String getIamge() {
-		return iamge;
-	}
-	public void setIamge(String iamge) {
-		this.iamge = iamge;
-	}
-
-	public String getIdCard() {
-		return idCard;
-	}
-	public void setIdCard(String idCard) {
-		this.idCard = idCard;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getIdentity() {
-		return identity;
-	}
-	public void setIdentity(String identity) {
-		this.identity = identity;
-	}
-
-	public String getNativePlace() {
-		return nativePlace;
-	}
-	public void setNativePlace(String nativePlace) {
-		this.nativePlace = nativePlace;
-	}
-
-	public String getResidence() {
-		return residence;
-	}
-	public void setResidence(String residence) {
-		this.residence = residence;
-	}
-
-	public String getNation() {
-		return nation;
-	}
-	public void setNation(String nation) {
-		this.nation = nation;
-	}
-
-	public String getDuty() {
-		return duty;
-	}
-	public void setDuty(String duty) {
-		this.duty = duty;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getAducation() {
-		return aducation;
-	}
-	public void setAducation(String aducation) {
-		this.aducation = aducation;
-	}
-
-	public String getGraInstitution() {
-		return graInstitution;
-	}
-	public void setGraInstitution(String graInstitution) {
-		this.graInstitution = graInstitution;
-	}
-
-	public java.util.Date getWorkTime() {
-		return workTime;
-	}
-	public void setWorkTime(java.util.Date workTime) {
-		this.workTime = workTime;
-	}
-
-	public java.util.Date getJoinTime() {
-		return joinTime;
-	}
-	public void setJoinTime(java.util.Date joinTime) {
-		this.joinTime = joinTime;
-	}
-
-	public java.util.Date getPetitionConfirm() {
-		return petitionConfirm;
-	}
-	public void setPetitionConfirm(java.util.Date petitionConfirm) {
-		this.petitionConfirm = petitionConfirm;
-	}
-
-	public java.util.Date getFirstTalkTime() {
-		return firstTalkTime;
-	}
-	public void setFirstTalkTime(java.util.Date firstTalkTime) {
-		this.firstTalkTime = firstTalkTime;
-	}
-
-	public String getRewardPunishInfo() {
-		return rewardPunishInfo;
-	}
-	public void setRewardPunishInfo(String rewardPunishInfo) {
-		this.rewardPunishInfo = rewardPunishInfo;
-	}
-
-	public String getAccountId() {
-		return accountId;
-	}
-	public void setAccountId(String accountId) {
-		this.accountId = accountId;
-	}
-
-	public Integer getTypeId() {
-		return typeId;
-	}
-	public void setTypeId(Integer typeId) {
-		this.typeId = typeId;
-	}
-
-	public String getIntegral() {
-		return integral;
-	}
-	public void setIntegral(String integral) {
-		this.integral = integral;
-	}
-
-	public String getQq() {
-		return qq;
-	}
-	public void setQq(String qq) {
-		this.qq = qq;
-	}
-
-	public String getWechat() {
-		return wechat;
-	}
-	public void setWechat(String wechat) {
-		this.wechat = wechat;
-	}
-
-	public String getLeagueBranchId() {
-		return leagueBranchId;
-	}
-	public void setLeagueBranchId(String leagueBranchId) {
-		this.leagueBranchId = leagueBranchId;
-	}
-
-	public String getGeneralId() {
-		return generalId;
-	}
-	public void setGeneralId(String generalId) {
-		this.generalId = generalId;
-	}
-
-	public String getPartyId() {
-		return partyId;
-	}
-	public void setPartyId(String partyId) {
-		this.partyId = partyId;
-	}
-
-	public String getGroupId() {
-		return groupId;
-	}
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-
-	
 }

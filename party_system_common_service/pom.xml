@@ -12,6 +12,7 @@
     <artifactId>party_system_common_service</artifactId>
 
     <dependencies>
+
         <dependency>
             <groupId>com.party</groupId>
             <artifactId>party_system_common</artifactId>

@@ -1,5 +1,6 @@
 package com.party.dao;
 
+import com.party.excel.ActivistData;
 import com.party.pojo.system.BaseUser;
 import com.party.vo.ActivistVo;
 import org.apache.ibatis.annotations.Param;
@@ -14,7 +15,8 @@ public interface BaseUserMapper extends Mapper<BaseUser> {
             "            work_time workTime,join_time joinTime,petition_confirm petitionConfirm,first_talk_time firstTalkTime," +
             "            reward_punish_info rewardPunishInfo,account_id accountId,type_id typeId,integral,qq,wechat," +
             "            league_branch_id leagueBranchId ,general_id generalId,party_id partyId,group_id groupId," +
-            "            activist_time activistTime,culture1_id culture1Id,culture2_id culture2Id" +
+            "            league_branch_name leagueBranchName, general_name generalName,party_name partyName,group_name groupName,"+
+            "            activist_time activistTime,culture1_id culture1Id,culture2_id culture2Id,culture1_name culture1Name,culture2_name culture2Name" +
             "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=0 and bu.name LIKE concat('%',#{name},'%')")
     public List<ActivistVo> findActivist(@Param("name") String name);
 
@@ -31,6 +33,12 @@ public interface BaseUserMapper extends Mapper<BaseUser> {
             "                       FROM tb_base_user bu,tb_development d   WHERE bu.`id` = d.`user_id`  AND bu.type_id=0 " +
             "                        AND bu.`id`=#{id} ")
     public ActivistVo findById(@Param("id") String id);
+
+    @Select("SELECT  NAME,sex,id_card idCard,native_place nativePlace,residence,nation,phone,grade,class_num classNum,sid,room," +
+            "           duty,title,aducation,general_name generalName,party_name partyName,group_name groupName,league_branch_name leagueBranchName,petition_confirm petitionConfirm," +
+            "            activist_time activistTime,culture1_name culture1Name,culture1_sid culture1Sid,culture2_name culture2Name,culture2_sid culture2Sid"+
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=0")
+    public List<ActivistData> findActivistOut();
 
 //    @Select("SELECT  bu.id,sid,NAME,sex,birth,grade,class_num classNum,room,iamge,id_card idCard,phone," +
 //            "                       email,address,identity,native_place nativePlace,residence,nation,duty,title,aducation,gra_institution graInstitution," +
