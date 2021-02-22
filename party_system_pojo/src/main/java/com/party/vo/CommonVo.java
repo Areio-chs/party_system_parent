@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class ActivistVo implements Serializable {
+public class CommonVo implements Serializable {
     private String id;//id
     private String sid;//学号
 
@@ -85,6 +85,11 @@ public class ActivistVo implements Serializable {
 
     private java.util.Date activistTime;//成为积极分子时间
 
+    private java.util.Date developTime;
+
+    private java.util.Date preMemberTime;
+
+    private java.util.Date memberTime;//成为正式党员时间
 
     private String culture1Id;//培养人id1
 

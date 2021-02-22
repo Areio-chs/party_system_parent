@@ -12,6 +12,8 @@ import com.party.pojo.system.*;
 import com.party.service.system.BaseUserService;
 import com.party.util.IdWorker;
 import com.party.vo.ActivistVo;
+import com.party.vo.CommonVo;
+import com.party.vo.DevelopmentVo;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -192,51 +194,11 @@ public class BaseUserServiceImpl implements BaseUserService {
         }
     }
     @Transactional
-    public void excelAdd(ActivistVo activistVo) {
-        System.out.println(activistVo.toString());
-        //根据名字查党总支id
-        Example example1 = new Example(General.class);
-        Example.Criteria criteria1 = example1.createCriteria();
-        criteria1.andEqualTo("generalName",activistVo.getGeneralName());
-        General general = generalMapper.selectOneByExample(example1);
-        if (general==null) {
-            throw new PartyException(20001,"该党支部不存在");
-        }else {
-            activistVo.setGeneralId(general.getId());
-        }
-        //党总支
-        Example example2 = new Example(Party.class);
-        Example.Criteria criteria2 = example2.createCriteria();
-        criteria2.andEqualTo("partyName",activistVo.getPartyName());
-        Party party = partyMapper.selectOneByExample(example2);
-        if (party==null) {
-            throw new PartyException(20001,"该党总支不存在");
-        }else {
-            activistVo.setPartyId(party.getId());
-        }
-        //党小组
-        Example example3 = new Example(Group.class);
-        Example.Criteria criteria3 = example3.createCriteria();
-        criteria3.andEqualTo("groupName",activistVo.getGroupName());
-        Group group = groupMapper.selectOneByExample(example3);
-        if (party==null) {
-            throw new PartyException(20001,"该党小组不存在");
-        }else {
-            activistVo.setGroupId(group.getId());
-        }
-        //团支部
-        Example example4 = new Example(LeagueBranch.class);
-        Example.Criteria criteria4 = example4.createCriteria();
-        criteria4.andEqualTo("name",activistVo.getLeagueBranchName());
-        LeagueBranch leagueBranch = leagueBranchMapper.selectOneByExample(example4);
-        if (leagueBranch==null){
-            throw new PartyException(20001,"该团支部不存在");
-        }else {
-            activistVo.setLeagueBranchId(leagueBranch.getId());
-        }
+    public void excelAdd(CommonVo commonVo) {
+        commonExcel(commonVo);
         //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
         BaseUser baseUser = new BaseUser();
-        BeanUtils.copyProperties(activistVo,baseUser);
+        BeanUtils.copyProperties(commonVo,baseUser);
         baseUser.setId(idWorker.nextId()+"");
         baseUser.setTypeId(0);//积极分子的类型都是0
         baseUserMapper.insert(baseUser);
@@ -250,28 +212,31 @@ public class BaseUserServiceImpl implements BaseUserService {
             development2.setId(development.getId());
             developmentMapper.updateByPrimaryKeySelective(development2);
         }else {//新增
-            if (StringUtils.isNotEmpty(activistVo.getCulture1Sid())){
+            if (StringUtils.isNotEmpty(commonVo.getCulture1Sid())){
                 //根据学号查出这个培养人的id
                 Example example= new Example(BaseUser.class);
                 Example.Criteria criteria = example.createCriteria();
-                criteria.andEqualTo("sid",activistVo.getCulture1Sid());
+                criteria.andEqualTo("sid",commonVo.getCulture1Sid());
                 BaseUser baseUser1 = baseUserMapper.selectOneByExample(example);
                 development2.setCulture1Id(baseUser1.getId());
+                development2.setCulture1Sid(baseUser1.getSid());
                 development2.setCulture1Name(baseUser1.getName());
             }
-            if (StringUtils.isNotEmpty(activistVo.getCulture2Sid())){
+            if (StringUtils.isNotEmpty(commonVo.getCulture2Sid())){
                 //查出这个培养人的id
                 Example example= new Example(BaseUser.class);
                 Example.Criteria criteria = example.createCriteria();
-                criteria.andEqualTo("sid",activistVo.getCulture2Sid());
+                criteria.andEqualTo("sid",commonVo.getCulture2Sid());
                 BaseUser baseUser1 = baseUserMapper.selectOneByExample(example);
                 development2.setCulture2Id(baseUser1.getId());
+                development2.setCulture2Sid(baseUser1.getSid());
                 development2.setCulture2Name(baseUser1.getName());
             }
 
-            development2.setActivistTime(activistVo.getActivistTime());
+            development2.setActivistTime(commonVo.getActivistTime());
             development2.setId(idWorker.nextId()+"");
             development2.setIsActivist("1");
+            development2.setStatus(1);
             development2.setUserId(baseUser.getId());
             developmentMapper.insert(development2);
         }
@@ -287,6 +252,8 @@ public class BaseUserServiceImpl implements BaseUserService {
         }
         return 1;
     }
+
+
 
     //处理培养人id，前端传过来是json数组["1","","",""]
     public String handleCultureId(String cultureId){
@@ -330,16 +297,24 @@ public class BaseUserServiceImpl implements BaseUserService {
         if (activistVo.getCulture1Id()!="[]" && !"[]".equals(activistVo.getCulture1Id())){
             String cul1 = handleCultureId(activistVo.getCulture1Id());
             development1.setCulture1Id(cul1);
-            development1.setCulture1Name(baseUserMapper.selectByPrimaryKey(cul1).getName());
+            BaseUser baseUser1 = baseUserMapper.selectByPrimaryKey(cul1);
+            development1.setCulture1Sid(baseUser1.getSid());
+            development1.setCulture1Name(baseUser1.getName());
         }else {
             development1.setCulture1Id(null);
+            development1.setCulture1Name(null);
+            development1.setCulture1Sid(null);
         }
         if (activistVo.getCulture2Id()!="[]" && !"[]".equals(activistVo.getCulture2Id())){
             String cul2 = handleCultureId(activistVo.getCulture2Id());
+            BaseUser baseUser1 = baseUserMapper.selectByPrimaryKey(cul2);
             development1.setCulture2Id(cul2);
-            development1.setCulture2Name(baseUserMapper.selectByPrimaryKey(cul2).getName());
+            development1.setCulture2Sid(baseUser1.getSid());
+            development1.setCulture2Name(baseUser1.getName());
         }else {
             development1.setCulture2Id(null);
+            development1.setCulture2Name(null);
+            development1.setCulture2Sid(null);
         }
         developmentMapper.updateByPrimaryKey(development1);
     }
@@ -366,11 +341,44 @@ public class BaseUserServiceImpl implements BaseUserService {
         return baseUserMapper.findActivistOut();
     }
 
-    @Override
-    public PageResult<ActivistVo> findActivist(String name, int page, int size) {
+//    @Override
+//    public PageResult<ActivistVo> findActivist(Map<String,Object> searchMap, int page, int size) {
+//        String name = "";
+//        String generalId = "";
+//        String partyId="";
+//        String groupId="";
+//        String leagueBranchId="";
+//        if(searchMap!=null){
+//            name= (String) searchMap.get("name");
+//            generalId=(String)searchMap.get("generalId");
+//            partyId=(String)searchMap.get("partyId");
+//            groupId=(String)searchMap.get("groupId");
+//            leagueBranchId=(String)searchMap.get("leagueBranchId");
+//        }
+//        PageHelper.startPage(page, size);
+//        Page<ActivistVo> activistList = (Page<ActivistVo>)baseUserMapper.findActivist(name,generalId,partyId,groupId,leagueBranchId);
+//        return new PageResult<ActivistVo>(activistList.getTotal(),activistList.getResult()) ;
+//    }
+
+    public PageResult<CommonVo> findCommonPage(Map<String,Object> searchMap, int page, int size, int type) {
+        System.out.println(type+"------------------------------------");
+        String name = "";
+        String generalId = "";
+        String partyId="";
+        String groupId="";
+        String leagueBranchId="";
+        if(searchMap!=null){
+            name= (String) searchMap.get("name");
+            generalId=(String)searchMap.get("generalId");
+            partyId=(String)searchMap.get("partyId");
+            groupId=(String)searchMap.get("groupId");
+            leagueBranchId=(String)searchMap.get("leagueBranchId");
+        }
         PageHelper.startPage(page, size);
-        Page<ActivistVo> activistList = (Page<ActivistVo>)baseUserMapper.findActivist(name);
-        return new PageResult<ActivistVo>(activistList.getTotal(),activistList.getResult()) ;
+        Page<CommonVo> pageList = (Page<CommonVo>) baseUserMapper.findCommon(name, generalId, partyId, groupId, leagueBranchId,type);
+        return new PageResult<CommonVo>(pageList.getTotal(), pageList.getResult());
+
+
     }
 
     @Override
@@ -420,8 +428,219 @@ public class BaseUserServiceImpl implements BaseUserService {
 
     }
 
+    @Transactional
+    @Override
+    public void changeCul(Map<String, Object> dynamicValidateForm) {
+        //传过来选中的要换培养人的人的id，以及级联的党支部/总支/小组/培养人的id数组
+        List<String> ids = (List<String>) dynamicValidateForm.get("select");//要更换培养人的人的id
+        List<String> org1 = (List<String>) dynamicValidateForm.get("organization1");
+        List<String> org2 = (List<String>) dynamicValidateForm.get("organization2");//选中的新培养人2的级联组织id
+        Development development = new Development();
+        for (String id :ids){
+            //每个人的培养人进行改变（培养人的名字和id,学号）
+            if (org1.size()>0) {
+                //选中的新培养人1的级联组织id
+                String cul1Id = org1.get(org1.size() - 1);
+                BaseUser baseUser1 = baseUserMapper.selectByPrimaryKey(cul1Id);//获得培养人1的基本信息
+                development.setCulture1Id(cul1Id);
+                development.setCulture1Name(baseUser1.getName());
+                development.setCulture1Sid(baseUser1.getSid());
+            }
+            if (org2.size()>0) {
+                String cul2Id = org2.get(org2.size() - 1);
+                BaseUser baseUser2 = baseUserMapper.selectByPrimaryKey(cul2Id);
+                development.setCulture2Id(cul2Id);
+                development.setCulture2Name(baseUser2.getName());
+                development.setCulture2Sid(baseUser2.getSid());
+            }
+            //如果发展表
+            Example example=new Example(Development.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("userId",id);
+            developmentMapper.updateByExampleSelective(development,example);
+        }
+    }
 
 
+//---------------------------------发展对象---------------------------------------
+    @Transactional
+    @Override
+    public void excelAddDevelopment(CommonVo commonVo) {
+        System.out.println(commonVo.toString());
+        //根据名字查党总支id
+        Example example1 = new Example(General.class);
+        Example.Criteria criteria1 = example1.createCriteria();
+        criteria1.andEqualTo("generalName",commonVo.getGeneralName());
+        General general = generalMapper.selectOneByExample(example1);
+        if (general==null) {
+            throw new PartyException(20001,"该党支部不存在");
+        }else {
+            commonVo.setGeneralId(general.getId());
+        }
+        //党总支
+        Example example2 = new Example(Party.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo("partyName",commonVo.getPartyName());
+        Party party = partyMapper.selectOneByExample(example2);
+        if (party==null) {
+            throw new PartyException(20001,"该党总支不存在");
+        }else {
+            commonVo.setPartyId(party.getId());
+        }
+        //党小组
+        Example example3 = new Example(Group.class);
+        Example.Criteria criteria3 = example3.createCriteria();
+        criteria3.andEqualTo("groupName",commonVo.getGroupName());
+        Group group = groupMapper.selectOneByExample(example3);
+        if (party==null) {
+            throw new PartyException(20001,"该党小组不存在");
+        }else {
+            commonVo.setGroupId(group.getId());
+        }
+        //团支部
+        Example example4 = new Example(LeagueBranch.class);
+        Example.Criteria criteria4 = example4.createCriteria();
+        criteria4.andEqualTo("name",commonVo.getLeagueBranchName());
+        LeagueBranch leagueBranch = leagueBranchMapper.selectOneByExample(example4);
+        if (leagueBranch==null){
+            throw new PartyException(20001,"该团支部不存在");
+        }else {
+            commonVo.setLeagueBranchId(leagueBranch.getId());
+        }
+        //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(commonVo,baseUser);
+        baseUser.setId(idWorker.nextId()+"");
+        baseUser.setTypeId(1);//发展对象的类型都是1
+        baseUserMapper.insert(baseUser);
+        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
+        Development development = new Development();
+        development.setUserId(baseUser.getId());
+        development= developmentMapper.selectOne(development);
+        Development development2 = new Development();
+//        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
+        if (development!=null){
+            //这种方法不对的，因为果用户id在发展表里面已经存在了，那么就更新，而此时development2却什么都没设置了
+            development2.setId(development.getId());
+            developmentMapper.updateByPrimaryKeySelective(development2);
+        }else {//新增
+            if (StringUtils.isNotEmpty(commonVo.getCulture1Sid())){
+                //根据学号查出这个培养人的id
+                Example example= new Example(BaseUser.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("sid",commonVo.getCulture1Sid());
+                BaseUser baseUser1 = baseUserMapper.selectOneByExample(example);
+                development2.setCulture1Id(baseUser1.getId());
+                development2.setCulture1Sid(baseUser1.getSid());
+                development2.setCulture1Name(baseUser1.getName());
+            }
+            if (StringUtils.isNotEmpty(commonVo.getCulture2Sid())){
+                //根据学号查出这个培养人的id
+                Example example= new Example(BaseUser.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("sid",commonVo.getCulture2Sid());
+                BaseUser baseUser1 = baseUserMapper.selectOneByExample(example);
+                development2.setCulture2Id(baseUser1.getId());
+                development2.setCulture2Sid(baseUser1.getSid());
+                development2.setCulture2Name(baseUser1.getName());
+            }
+
+            development2.setActivistTime(commonVo.getActivistTime());
+            development2.setDevelopTime(commonVo.getDevelopTime());
+            development2.setId(idWorker.nextId()+"");
+            development2.setIsDevelop("1");
+            development2.setStatus(1);
+            development2.setUserId(baseUser.getId());
+            developmentMapper.insert(development2);
+        }
+    }
+
+    @Override
+    public PageResult<DevelopmentVo> findDevelopment(Map<String, Object> searchMap, int page, int size) {
+        String name = "";
+        return null;
+    }
+
+    //--------------------------------------正式党员导入--------------------------------------------------
+
+    @Override
+    public void excelAddMember(CommonVo commonVo) {
+        commonExcel(commonVo);
+        //涉及插入党员表（成为积极分子的时间，培养人1和培养人2）和基本用户表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(commonVo,baseUser);
+        baseUser.setId(idWorker.nextId()+"");
+        baseUser.setTypeId(3);//正式党员的类型都是3
+        baseUserMapper.insert(baseUser);
+        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
+        Development development = new Development();
+        development.setUserId(baseUser.getId());
+        development= developmentMapper.selectOne(development);
+        Development development2 = new Development();
+//        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
+        if (development!=null){
+            //这种方法不对的，因为果用户id在发展表里面已经存在了，那么就更新，而此时development2却什么都没设置了
+            development2.setId(development.getId());
+            developmentMapper.updateByPrimaryKeySelective(development2);
+        }else {//新增
+            //正式党员没有培养人了
+            development2.setActivistTime(commonVo.getActivistTime());
+            development2.setDevelopTime(commonVo.getDevelopTime());
+            development2.setPreMemberTime(commonVo.getPreMemberTime());
+            development2.setMemberTime(commonVo.getMemberTime());
+            development2.setId(idWorker.nextId()+"");
+            development2.setIsMember("1");
+            development2.setStatus(1);
+            development2.setUserId(baseUser.getId());
+            developmentMapper.insert(development2);
+        }
+    }
+
+    private void commonExcel(CommonVo commonVo){
+        System.out.println(commonVo.toString());
+        //根据名字查党总支id
+        Example example1 = new Example(General.class);
+        Example.Criteria criteria1 = example1.createCriteria();
+        criteria1.andEqualTo("generalName",commonVo.getGeneralName());
+        General general = generalMapper.selectOneByExample(example1);
+        if (general==null) {
+            throw new PartyException(20001,"该党支部不存在");
+        }else {
+            commonVo.setGeneralId(general.getId());
+        }
+        //党总支
+        Example example2 = new Example(Party.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo("partyName",commonVo.getPartyName());
+        criteria2.andEqualTo("generalId",general.getId());
+        Party party = partyMapper.selectOneByExample(example2);
+        if (party==null) {
+            throw new PartyException(20001,"该党总支不存在");
+        }else {
+            commonVo.setPartyId(party.getId());
+        }
+        //党小组
+        Example example3 = new Example(Group.class);
+        Example.Criteria criteria3 = example3.createCriteria();
+        criteria3.andEqualTo("groupName",commonVo.getGroupName());
+        criteria3.andEqualTo("partyId",party.getId());
+        Group group = groupMapper.selectOneByExample(example3);
+        if (party==null) {
+            throw new PartyException(20001,"该党小组不存在");
+        }else {
+            commonVo.setGroupId(group.getId());
+        }
+        //团支部
+        Example example4 = new Example(LeagueBranch.class);
+        Example.Criteria criteria4 = example4.createCriteria();
+        criteria4.andEqualTo("name",commonVo.getLeagueBranchName());
+        LeagueBranch leagueBranch = leagueBranchMapper.selectOneByExample(example4);
+        if (leagueBranch==null){
+            throw new PartyException(20001,"该团支部不存在");
+        }else {
+            commonVo.setLeagueBranchId(leagueBranch.getId());
+        }
+    }
     /**
      * 构建查询条件
      * @param searchMap

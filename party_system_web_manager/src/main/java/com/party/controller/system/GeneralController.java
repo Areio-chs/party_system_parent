@@ -23,6 +23,7 @@ public class GeneralController {
         return R.ok().data("items",list);
     }
 
+
     @GetMapping("/findPage")
     public PageResult<General> findPage(int page, int size){
         return generalService.findPage(page, size);

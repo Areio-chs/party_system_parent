@@ -43,53 +43,105 @@
 						<el-breadcrumb-item>发展对象管理</el-breadcrumb-item>
 					</el-breadcrumb>
 
-					<el-card>
-						<!-- 搜索与添加区域 -->
-						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
-							<el-form-item label="姓名">
-								<el-input
-										@keyup.enter.native="searchUser"
-										@clear="searchUser"
-										clearable
-										v-model="queryInfo.name"
-										placeholder="请输入用户名查询"
-								></el-input>
-							</el-form-item>
+		<el-card>
+			<!-- 搜索与添加区域 -->
+			<el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
+				<el-form-item label="姓名" >
+					<el-input
+							v-model="searchMap.name"
+							placeholder="请输入姓名查询"
+					></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="searchMap.generalId" clearable placeholder="党总支">
+						<el-option
+								v-for="item in general"
+								:key="item.id"
+								:label="item.generalName"
+								:value="item.id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="searchMap.partyId" clearable placeholder="党支部">
+						<el-option
+								v-for="item in party"
+								:key="item.id"
+								:label="item.partyName"
+								:value="item.id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="searchMap.groupId" clearable placeholder="党小组">
+						<el-option
+								v-for="item in group"
+								:key="item.id"
+								:label="item.groupName"
+								:value="item.id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="searchMap.leagueBranchId" clearable placeholder="团支部">
+						<el-option
+								v-for="item in youthLeagueBranch"
+								:key="item.id"
+								:label="item.name"
+								:value="item.id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-button  @click="reset('searchMap')" icon="el-icon-refresh">重置</el-button>
+					<el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
+				</el-form-item>
+			</el-form>
+			<el-form :inline="true" size="mini" style="margin-left: 28px">
+				<el-form-item>
+					<el-button type="success" icon="el-icon-plus" @click="addDialogOpen">新增</el-button>
+					<el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">关系转移</el-button>
+					<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog(id)">变更培养人</el-button>
+					<el-button type="danger"  icon="el-icon-upload2"  >导出</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-upload
+							ref="upload"
+							:auto-upload="true"
+							:on-success="fileUploadSuccess"
+							:on-error="fileUploadError"
+							:disabled="importBtnDisabled"
+							:loading="loading"
+							:limit="1"
+							action="http://localhost:9101/excel/leadInDevelopment.do"
+							name="file"
+							accept="application/vnd.ms-excel">
+						<el-button slot="trigger" type="success" icon="el-icon-plus">导入</el-button>
+					</el-upload>
 
-							<el-form-item>
-								<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
-								<el-button type="primary" icon="el-icon-search">查询</el-button>
-								<el-button
-										type="success"
-										icon="el-icon-plus"
-										@click="addDialogOpen">新增</el-button>
-								<el-button
-										type="success"
-										icon="el-icon-plus"
-								>导入</el-button>
-								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
-								<el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">关系转移</el-button>
-								<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog()">变更培养人</el-button>
-								<el-button icon="el-icon-download">发展对象预审表</el-button>
-							</el-form-item>
-						</el-form>
-
+				</el-form-item>
+				<el-form-item>
+					<el-button icon="el-icon-download">点击下载模版</el-button>
+					<el-button icon="el-icon-download">发展对象预审表</el-button>
+				</el-form-item>
+			</el-form>
+						<!--显示主体------------------------------------------------------>
 						<el-table
 								ref="multipleTable"
-								:data="DevelopList"
+								:data="developList"
 								tooltip-effect="dark"
 								style="width: 100%"
 								size="mini"
 								border
 								stripe
 								highlight-current-row
-								@selection-change="handleSelectionChange">
+								@selection-change="handleSelectionChange" fit>
 							<el-table-column
 									type="selection"
 									width="55"
 									align="center">
 							</el-table-column>
-							<el-table-column 
+							<el-table-column
 									type="index"
 									label="#"
 									align="center">
@@ -117,16 +169,23 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="native"
+										prop="nativePlace"
 										label="籍贯"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="nativePlace"
+										prop="residence"
 										label="户籍所在地"
 										width="110"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="nation"
+										label="民族"
+										width="80"
 										sortable
 										align="center">
 								</el-table-column>
@@ -139,66 +198,85 @@
 								</el-table-column>
 								<el-table-column
 										prop="grade"
-										label="级"
+										label="年级"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="class"
+										prop="classNum"
 										label="班级"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="SID"
+										prop="sid"
 										label="学号"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="dormitory"
+										prop="room"
 										label="宿舍"
 										width="80"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="duty"
+										label="职务"
+										width="100"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="title"
+										label="职称"
+										width="100"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="aducation"
+										label="学历"
+										width="100"
 										sortable
 										align="center">
 								</el-table-column>
 							</el-table-column>
 							<el-table-column label="党务信息" align="center">
 								<el-table-column
-										prop="party"
+										prop="generalName"
+										label="所属党总支"
+										width="120"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="partyName"
 										label="所属党支部"
 										width="120"
-										:filters="selectParty"
-										:filter-method="filterCell"
-										filter-placement="bottom-end"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="group"
+										prop="groupName"
 										label="所属党小组"
 										width="120"
-										:filters="selectGroup"
-										:filter-method="filterCell2"
-										filter-placement="bottom-end"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="youthLeagueBranch"
+										prop="leagueBranchName"
 										label="所属团支部"
 										width="120"
-										:filters="selectYouth"
-										:filter-method="filterCell3"
-										filter-placement="bottom-end"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="applyTime"
+										prop="petitionConfirm"
 										label="申请书落款时间"
 										width="150"
 										sortable
@@ -219,24 +297,25 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="culturel1Name"
+										prop="culture1Name"
 										label="培养联系人1"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="culturel2Name"
+										prop="culture2Name"
 										label="培养联系人2"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 							</el-table-column>
+
 							<el-table-column label="操作" width="200" fixed="right" align="center">
 								<template slot-scope="scope">
 									<!-- 编辑 -->
-									<el-tooltip effect="dark" content="查看更多信息" placement="top" :enterable="false">
+									<el-tooltip effect="dark" content="查看个人信息" placement="top" :enterable="false">
 										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
 									</el-tooltip>
 									<!-- 查看其相关文档 -->
@@ -251,16 +330,19 @@
 							</el-table-column>
 						</el-table>
 
-						<!-- 分页区域 -->
-						<el-pagination @size-change="handleSizeChange"
-									   @current-change="handleCurrentChange"
-									   :current-page="queryInfo.pagenum"
-									   :page-sizes="[1, 2, 5, 10]"
-									   :page-size="queryInfo.pagesize"
-									   layout="total, sizes, prev, pager, next, jumper"
-									   :total="total">
+						<!-- 分页区域 页码大小  当前页  -->
+						<el-pagination
+								class="pagiantion"
+								@size-change="handleSizeChange"
+								@current-change="handleCurrentChange"
+								:current-page.sync="currentPage"
+								:page-sizes="[1, 2, 4, 8, 10]"
+								:page-size="size"
+								layout="total, sizes, prev, pager, next, jumper"
+								:total="total">
 						</el-pagination>
 					</el-card>
+
 
 					<!-- 查看上传文档情况的对话框 -->
 					<el-dialog title="查看上传文档情况" :visible.sync="fileDialogVisible" width="50%">
@@ -660,16 +742,18 @@
 					cb(new Error('请输入合法的手机号'))
 				};
 				return {
-					// 获取党小组列表的参数对象
-					queryInfo: {
-						// 当前的页数
-						pagenum: 1,
-						// 当前每页显示多少条数据
-						pagesize: 2,
-						//按名字查询
-						name: ''
+					searchMap:{
+						name:'',
+						generalId:'',
+						partyId:'',
+						groupId:'',
+						leagueBranchId:''
 					},
-					DevelopList: [],
+					general:[],
+					party:[],
+					youthLeagueBranch: [],
+					group: [],
+					developList: [],
 					//检索党支部
 					selectParty: [],
 					//检索党小组
@@ -679,17 +763,16 @@
 					//全选
 					multipleSelection: [],
 					//当前页
-					currentPage4: 1,
+					currentPage: 1,
 					//总数
 					total: 10,
+					size: 10,
 					// 控制添加对话框的显示与隐藏
 					addDialogVisible: false,
 					// 添加的表单数据
 					addForm: {
 						sex: '男'
 					},
-					youthLeagueBranch: [],
-					group: [],
 					// 添加表单的验证规则对象
 					addFormRules: {
 						name: [
@@ -732,6 +815,8 @@
 					contactsDialogVisible: false,
 					//可选择培养联系人列表
 					contacts: [],
+					importBtnDisabled: false, // 按钮是否禁用,
+					loading: false,
 					dynamicValidateForm: {
 						contacts: [{
 							value: ''
@@ -741,285 +826,63 @@
 				}
 			},
 			created() {
-				this .getDevelopList()
+				this.getDevelopList()
+				this.getGeneralList()
+				this.getYouthLeagueBranchList()
+				this.getGroupList()
+				this.getPartyList()
 			},
 			methods: {
+				fileUploadSuccess(response){
+					//提示信息
+					this.loading = false
+					this.$message.success("导入成功");
+					this.getDevelopList()
+				},
+				fileUploadError() {
+					this.loading = false
+					this.$message.error("导入失败");
+				},
+				handleSizeChange(val) {
+					this.currentPage=1;
+					this.size=val;
+					this.getDevelopList();
+				},
+				handleCurrentChange(val) {
+					this.currentPage=val;
+					this.getDevelopList();
+				},
+				search(){
+					this.currentPage=1,
+					this.getDevelopList()
+
+				},
 				getDevelopList() {
 					//向后台获取数据列表
-					this.DevelopList = [
-						{
-							name: '赖乐宗',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第二党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第二团支部'
-						}, {
-							name: '廖盛浪',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第一党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第二团支部'
-						}, {
-							name: '赖乐宗',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第二党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第一团支部'
-						}, {
-							name: '赖乐宗',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第二党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第二团支部'
-						}, {
-							name: '赖乐宗',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第二党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第一团支部'
-						}, {
-							name: '廖盛浪',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第一党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第一团支部'
-						}, {
-							name: '廖盛浪',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第一党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第二团支部'
-						}, {
-							name: '廖盛浪',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第一党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第二团支部'
-						}, {
-							name: '廖盛浪',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第一党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第一团支部'
-						}, {
-							name: '廖盛浪',
-							sex: '男',
-							nation: '民族',
-							native: '广东广州',
-							nativePlace: '广东广州',
-							birth: '2020/09/19',
-							idCard: '440983333333333333',
-							phone: '123456789',
-							grade: '2018',
-							class: '网络181',
-							SID: '201810214718',
-							dormitory: '6-104',
-							email: '454305375@qq.com',
-							education: '本科',
-							duty: '班长',
-							address: '仲恺农业工程学院',
-							applyTime: '2018/09/20',
-							activistTime: '2019/09/20',
-							developTime: '2020/09/20',
-							culturel1Name: '小龙女',
-							culturel2Name: '杨过',
-							party: '信科院第一党支部',
-							group: '信科院第二党小组',
-							youthLeagueBranch: '信科院第一团支部'
-						}]
-					//检索党支部里数据是上面表格里面党支部的汇总数组
-					this.selectParty = [{
-						text: '信科院第一党支部',
-						value: '信科院第一党支部'
-					}, {
-						text: '信科院第二党支部',
-						value: '信科院第二党支部'
-					}]
-					this.selectGroup = [{
-						text: '信科院第一党小组',
-						value: '信科院第一党小组'
-					}, {
-						text: '信科院第二党小组',
-						value: '信科院第二党小组'
-					}]
-					this.selectYouth = [{
-						text: '信科院第一团支部',
-						value: '信科院第一团支部'
-					}, {
-						text: '信科院第二团支部',
-						value: '信科院第二团支部'
-					}]
+					axios.post(`/baseUser/findCommonPage.do?page=${this.currentPage}&size=${this.size}&type=1`,this.searchMap).then(response => {
+						this.developList = response.data.data.pageInfo.rows;
+						this.total = response.data.data.pageInfo.total;
+					});
+				},
+				getYouthLeagueBranchList(){
+					axios.get(`/leagueBranch/findAll.do`).then(response => {
+						this.youthLeagueBranch = response.data.data.items;
+					});
+				},
+				getGeneralList(){
+					axios.get(`/general/findAll.do`).then(response => {
+						this.general = response.data.data.items;
+					});
+				},
+				getGroupList(){
+					axios.get(`/group/findAll.do`).then(response => {
+						this.group = response.data.data.items;
+					});
+				},
+				getPartyList(){
+					axios.get(`/party/findAll.do`).then(response => {
+						this.party = response.data.data.items;
+					});
 				},
 				filterCell(value, row) {
 					return row.party === value;
@@ -1034,12 +897,14 @@
 				 * 重置
 				 */
 				reset(){
-					this.queryInfo= {
-						pagenum: 1,
-						pagesize: 6,
-						name: "",
-						sex: ""
+					this.searchMap={
+						name:'',
+						generalId:'',
+						partyId:'',
+						groupId:'',
+						leagueBranchId:''
 					}
+					this.getDevelopList()
 				},
 				/**
 				 * 搜索用户
@@ -1060,12 +925,7 @@
 				handleSelectionChange(val) {
 					this.multipleSelection = val;//val是一个数组
 				},
-				handleSizeChange(val) {
-					console.log(`每页 ${val} 条`);
-				},
-				handleCurrentChange(val) {
-					console.log(`当前页: ${val}`);
-				},
+
 				addDialogOpen() {
 					this.youthLeagueBranch = [{
 						value: '信科院第一团支部',

@@ -11,6 +11,7 @@ import com.party.vo.OptionVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.lang.System;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,15 +90,21 @@ public class OptionServiceImpl implements OptionService {
                     String value = children1.get(k).getValue();//查出这个小组的所有党员
                     Example example=new Example(BaseUser.class);
                     Example.Criteria criteria = example.createCriteria();
-                    criteria.andEqualTo("typeId",4);
+                    criteria.andEqualTo("typeId",3);//党员的类型是id
                     criteria.andEqualTo("groupId",value);
                     List<BaseUser> baseUsers = baseUserMapper.selectByExample(example);
-                    OptionVo option = new OptionVo();
+
                     for (BaseUser baseUser:baseUsers) {
+                        OptionVo option = new OptionVo();
+                        System.out.println(baseUser.toString());
                         option.setValue(baseUser.getId());
                         option.setLabel(baseUser.getName());
+                        userList.add(option);
+                        for (OptionVo op :userList){
+                            System.out.println(op.toString());
+                        }
                     }
-                    userList.add(option);
+
                     children1.get(k).setChildren(userList);
                 }
 

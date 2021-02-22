@@ -6,6 +6,8 @@ import com.party.entity.R;
 import com.party.pojo.system.BaseUser;
 import com.party.service.system.BaseUserService;
 import com.party.vo.ActivistVo;
+import com.party.vo.CommonVo;
+import com.party.vo.DevelopmentVo;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,15 +35,15 @@ public class BaseUserController {
         return baseUserService.findList(searchMap);
     }
 
-    @PostMapping("/findActivist")
-    public R findActivistPage(@RequestBody Map<String,Object> searchMap,int page, int size){
-        String searchName = "";
-        if(searchMap!=null){
-            searchName= (String) searchMap.get("name");
-        }
-        PageResult<ActivistVo> activist = baseUserService.findActivist(searchName,page,size);
+    @PostMapping("/findCommonPage")
+    public R findActivistPage(@RequestBody Map<String,Object> searchMap,int page, int size,int type){
+//        String searchName = "";
+//        if(searchMap!=null){
+//            searchName= (String) searchMap.get("name");
+//        }
+        PageResult<CommonVo> pageInfo = baseUserService.findCommonPage(searchMap,page,size,type);
 
-        return R.ok().data("activist",activist);
+        return R.ok().data("pageInfo",pageInfo);
     }
     @PostMapping("/findTest")
     public R findTest(@RequestBody String name){
@@ -97,5 +99,17 @@ public class BaseUserController {
     public R transfer(@RequestBody Map<String,Object> formLabelAlign){
         baseUserService.transfer(formLabelAlign);
         return R.ok();
+    }
+
+    @PostMapping("/changeCul")
+    public R changeCul(@RequestBody Map<String,Object> dynamicValidateForm){
+        baseUserService.changeCul(dynamicValidateForm);
+        return R.ok();
+    }
+    //---------------------------------发展对象----------------------------------------
+    @PostMapping("/findActivist")
+    public R findDevelopmentPage(@RequestBody Map<String,Object> searchMap,int page, int size){
+        PageResult<DevelopmentVo> development = baseUserService.findDevelopment(searchMap,page,size);
+        return R.ok().data("development",development);
     }
 }

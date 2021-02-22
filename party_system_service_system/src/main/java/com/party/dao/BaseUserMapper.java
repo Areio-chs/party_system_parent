@@ -3,6 +3,7 @@ package com.party.dao;
 import com.party.excel.ActivistData;
 import com.party.pojo.system.BaseUser;
 import com.party.vo.ActivistVo;
+import com.party.vo.CommonVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import tk.mybatis.mapper.common.Mapper;
@@ -10,6 +11,7 @@ import tk.mybatis.mapper.common.Mapper;
 import java.util.List;
 
 public interface BaseUserMapper extends Mapper<BaseUser> {
+    //分页查找积极分子
     @Select("SELECT  bu.id,sid,NAME,sex,birth,grade,class_num classNum,room,iamge,id_card idCard,phone," +
             "            email,address,identity,native_place nativePlace,residence,nation,duty,title,aducation,gra_institution graInstitution," +
             "            work_time workTime,join_time joinTime,petition_confirm petitionConfirm,first_talk_time firstTalkTime," +
@@ -17,8 +19,18 @@ public interface BaseUserMapper extends Mapper<BaseUser> {
             "            league_branch_id leagueBranchId ,general_id generalId,party_id partyId,group_id groupId," +
             "            league_branch_name leagueBranchName, general_name generalName,party_name partyName,group_name groupName,"+
             "            activist_time activistTime,culture1_id culture1Id,culture2_id culture2Id,culture1_name culture1Name,culture2_name culture2Name" +
-            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=0 and bu.name LIKE concat('%',#{name},'%')")
-    public List<ActivistVo> findActivist(@Param("name") String name);
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=0 and bu.name LIKE concat('%',#{name},'%') and bu.general_id like concat('%',#{generalId},'%') and bu.party_id like concat('%',#{partyId},'%') and bu.group_id like concat('%',#{groupId},'%') and bu.league_branch_id like concat('%',#{leagueBranchId},'%') " )
+    public List<CommonVo> findActivist(@Param("name") String name , @Param("generalId") String generalId, @Param("partyId") String partyId, @Param("groupId") String groupId, @Param("leagueBranchId") String leagueBranchId);
+    //分页查找发展对象
+    @Select("SELECT  bu.id,sid,NAME,sex,birth,grade,class_num classNum,room,iamge,id_card idCard,phone," +
+            "            email,address,identity,native_place nativePlace,residence,nation,duty,title,aducation,gra_institution graInstitution," +
+            "            work_time workTime,join_time joinTime,petition_confirm petitionConfirm,first_talk_time firstTalkTime," +
+            "            reward_punish_info rewardPunishInfo,account_id accountId,type_id typeId,integral,qq,wechat," +
+            "            league_branch_id leagueBranchId ,general_id generalId,party_id partyId,group_id groupId," +
+            "            league_branch_name leagueBranchName, general_name generalName,party_name partyName,group_name groupName,"+
+            "            activist_time activistTime,develop_time developTime,pre_member_time preMemberTime,member_time memberTime, culture1_id culture1Id,culture2_id culture2Id,culture1_name culture1Name,culture2_name culture2Name" +
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=#{type} and bu.name LIKE concat('%',#{name},'%') and bu.general_id like concat('%',#{generalId},'%') and bu.party_id like concat('%',#{partyId},'%') and bu.group_id like concat('%',#{groupId},'%') and bu.league_branch_id like concat('%',#{leagueBranchId},'%') " )
+    public List<CommonVo> findCommon(@Param("name") String name , @Param("generalId") String generalId, @Param("partyId") String partyId, @Param("groupId") String groupId, @Param("leagueBranchId") String leagueBranchId,@Param("type") int type);
 
     @Select("select * from tb_base_user WHERE NAME LIKE concat('%',#{name},'%')")
 //    @Select("SELECT * FROM tb_base_user WHERE NAME=#{name}")
