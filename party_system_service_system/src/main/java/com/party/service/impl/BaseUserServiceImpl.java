@@ -133,8 +133,79 @@ public class BaseUserServiceImpl implements BaseUserService {
 
     /**
      * 新增
-     * @param activistVo
+     * @param commonVo
      */
+    @Transactional
+    public void addCommon(CommonVo commonVo,int type) {
+        System.out.println(commonVo.toString());
+        //查党总支的名字
+        if (StringUtils.isNotEmpty(commonVo.getGeneralId())) {
+            General general = generalMapper.selectByPrimaryKey(commonVo.getGeneralId());
+            commonVo.setGeneralName(general.getGeneralName());
+        }
+        //查党支部名字
+        if (StringUtils.isNotEmpty(commonVo.getPartyId())) {
+            Party party = partyMapper.selectByPrimaryKey(commonVo.getPartyId());
+            commonVo.setPartyName(party.getPartyName());
+        }
+        if (StringUtils.isNotEmpty(commonVo.getGroupId())) {
+            Group group = groupMapper.selectByPrimaryKey(commonVo.getGroupId());
+            commonVo.setGroupName(group.getGroupName());
+        }
+        if (StringUtils.isNotEmpty(commonVo.getLeagueBranchId())){
+            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(commonVo.getLeagueBranchId());
+            commonVo.setLeagueBranchName(leagueBranch.getName());
+        }
+        //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(commonVo,baseUser);
+        baseUser.setId(idWorker.nextId()+"");
+        baseUser.setTypeId(type);//积极分子的类型都是0
+        baseUserMapper.insert(baseUser);
+        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
+        Development development = new Development();
+        development.setUserId(baseUser.getId());
+        development= developmentMapper.selectOne(development);
+        Development development2 = new Development();
+//        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
+        if (development!=null){
+            development2.setId(development.getId());
+            developmentMapper.updateByPrimaryKeySelective(development2);
+        }else {//新增
+            if (type!=3) {//党员没有发展对象
+                if (commonVo.getCulture1Id() != null && !"".equals(commonVo.getCulture1Id())) {
+                    String cul1 = handleCultureId(commonVo.getCulture1Id());
+                    development2.setCulture1Id(cul1);
+                    //培养人1的名称
+                    development2.setCulture1Name(baseUserMapper.selectByPrimaryKey(cul1).getName());
+                    development2.setCulture1Sid(baseUserMapper.selectByPrimaryKey(cul1).getSid());
+                }
+                if (commonVo.getCulture2Id() != null && !"".equals(commonVo.getCulture2Id())) {
+                    String cul2 = handleCultureId(commonVo.getCulture2Id());
+                    development2.setCulture2Id(cul2);
+                    development2.setCulture2Name(baseUserMapper.selectByPrimaryKey(cul2).getName());
+                    development2.setCulture2Sid(baseUserMapper.selectByPrimaryKey(cul2).getSid());
+                }
+            }
+            development2.setActivistTime(commonVo.getActivistTime());
+            if (type!=0){
+                development2.setDevelopTime(commonVo.getDevelopTime());
+                development2.setIsDevelop("1");
+            }
+            if (type!=0&&type!=1){
+                development2.setPreMemberTime(commonVo.getPreMemberTime());
+                development2.setIsPre("1");
+            }
+            if (type==3) {
+                development2.setMemberTime(commonVo.getMemberTime());
+                development2.setIsMember("1");
+            }
+            if (type==0) development2.setIsActivist("1");
+            development2.setId(idWorker.nextId()+"");
+            development2.setUserId(baseUser.getId());
+            developmentMapper.insert(development2);
+        }
+    }
     @Transactional
     public void add(ActivistVo activistVo) {
         System.out.println(activistVo.toString());

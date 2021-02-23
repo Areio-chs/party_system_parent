@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.party.dao.PartyMapper;
 import com.party.entity.PageResult;
+import com.party.pojo.system.General;
 import com.party.pojo.system.Party;
 import com.party.service.system.PartyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,14 @@ public class PartyServiceImpl implements PartyService {
      */
     public void delete(String id) {
         partyMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public List<Party> findByGeneralId(String generalId) {
+        Party party = new Party();
+        party.setGeneralId(generalId);
+        List<Party> partyList = partyMapper.select(party);
+        return partyList;
     }
 
     /**

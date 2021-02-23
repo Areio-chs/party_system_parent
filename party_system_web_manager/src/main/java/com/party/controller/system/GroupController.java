@@ -22,7 +22,11 @@ public class GroupController {
         List<Group> list = groupService.findAll();
         return R.ok().data("items",list);
     }
-
+    @GetMapping("/findByPartyId")
+    public R findByPartyId(String partyId){
+        List<Group> list = groupService.findByPartyId(partyId);
+        return R.ok().data("items",list);
+    }
     @GetMapping("/findPage")
     public PageResult<Group> findPage(int page, int size){
         return groupService.findPage(page, size);

@@ -95,6 +95,13 @@ public class GroupServiceImpl implements GroupService {
         groupMapper.deleteByPrimaryKey(id);
     }
 
+    @Override
+    public List<Group> findByPartyId(String partyId) {
+        Group group = new Group();
+        group.setPartyId(partyId);
+        return  groupMapper.select(group);
+    }
+
     /**
      * 构建查询条件
      * @param searchMap

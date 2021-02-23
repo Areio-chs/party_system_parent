@@ -45,16 +45,16 @@ public class BaseUserController {
 
         return R.ok().data("pageInfo",pageInfo);
     }
-    @PostMapping("/findTest")
-    public R findTest(@RequestBody String name){
-        List<BaseUser> test = baseUserService.findTest(name);
-        return R.ok().data("items",test);
-    }
+//    @PostMapping("/findTest")
+//    public R findTest(@RequestBody String name){
+//        List<BaseUser> test = baseUserService.findTest(name);
+//        return R.ok().data("items",test);
+//    }
 
-    @PostMapping("/findPage")
-    public PageResult<BaseUser> findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
-        return  baseUserService.findPage(searchMap,page,size);
-    }
+//    @PostMapping("/findPage")
+//    public PageResult<BaseUser> findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
+//        return  baseUserService.findPage(searchMap,page,size);
+//    }
 
     @GetMapping("/findById")
     public R findById(String id){
@@ -72,9 +72,14 @@ public class BaseUserController {
 
         return R.ok().data("items",activistVo).data("cul1",cul1List).data("cul2",cul2List);
     }
+//    @PostMapping("/add")
+//    public R add(@RequestBody ActivistVo activistVo){
+//        baseUserService.add(activistVo);
+//        return R.ok();
+//    }
     @PostMapping("/add")
-    public R add(@RequestBody ActivistVo activistVo){
-        baseUserService.add(activistVo);
+    public R add(@RequestBody CommonVo commonVo,int type){
+        baseUserService.addCommon(commonVo,type);
         return R.ok();
     }
     @GetMapping("/uniqueSid")

@@ -47,6 +47,8 @@ public interface BaseUserService {
 
     public PageResult<CommonVo> findCommonPage(Map<String,Object> searchMap, int page, int size, int type);
 
+    public void addCommon(CommonVo commonVo,int type);
+
     public List<BaseUser> findTest(String activistName);
 
 

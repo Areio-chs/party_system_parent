@@ -32,4 +32,5 @@ public interface PartyService {
 
     public void delete(String id);
 
+    List<Party> findByGeneralId(String generalId);
 }

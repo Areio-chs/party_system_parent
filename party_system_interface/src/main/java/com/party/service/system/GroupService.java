@@ -32,4 +32,5 @@ public interface GroupService {
 
     public void delete(String id);
 
+    List<Group> findByPartyId(String partyId);
 }

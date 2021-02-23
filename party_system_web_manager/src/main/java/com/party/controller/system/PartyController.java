@@ -22,7 +22,11 @@ public class PartyController {
         List<Party> list = partyService.findAll();
         return R.ok().data("items",list);
     }
-
+    @GetMapping("/findByGeneralId")
+    public R findAll(String generalId){
+        List<Party> list = partyService.findByGeneralId(generalId);
+        return R.ok().data("items",list);
+    }
     @GetMapping("/findPage")
     public PageResult<Party> findPage(int page, int size){
         return partyService.findPage(page, size);
