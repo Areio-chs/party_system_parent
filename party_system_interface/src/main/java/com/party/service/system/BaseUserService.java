@@ -29,10 +29,11 @@ public interface BaseUserService {
 
     public ActivistVo findById(String id);
 
+    public CommonVo findMemberById(String id,int type);
 
     public List<String> handleCul(String cultureId);
 
-    public void add(ActivistVo activistVo);
+//    public void add(ActivistVo activistVo);
 
     public void excelAdd(CommonVo commonVo);
 
@@ -64,4 +65,6 @@ public interface BaseUserService {
     PageResult<DevelopmentVo> findDevelopment(Map<String, Object> searchMap, int page, int size);
 
     void excelAddMember(CommonVo commonVo);
+
+    void updateCommon(CommonVo commonVo,int type);
 }

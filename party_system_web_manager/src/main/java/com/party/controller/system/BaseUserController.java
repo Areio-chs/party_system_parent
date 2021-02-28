@@ -72,6 +72,16 @@ public class BaseUserController {
 
         return R.ok().data("items",activistVo).data("cul1",cul1List).data("cul2",cul2List);
     }
+    //到时候可以把上面那个去掉？
+    @GetMapping("/findMemberById")
+    public R findMemberById(String id,int type){
+        System.out.println("11111111111111111111");
+        System.out.println(id+":"+type);
+
+        CommonVo memberVo = baseUserService.findMemberById(id,type);
+        System.out.println(memberVo.toString());
+        return R.ok().data("items",memberVo);
+    }
 //    @PostMapping("/add")
 //    public R add(@RequestBody ActivistVo activistVo){
 //        baseUserService.add(activistVo);
@@ -93,7 +103,12 @@ public class BaseUserController {
         baseUserService.update(activistVo);
         return R.ok();
     }
+    @PostMapping("/updateCommon")
+    public R update(@RequestBody CommonVo commonVo,int type) throws Exception{
 
+        baseUserService.updateCommon(commonVo,type);
+        return R.ok();
+    }
     @GetMapping("/delete")
     public R delete(String id){
         baseUserService.delete(id);

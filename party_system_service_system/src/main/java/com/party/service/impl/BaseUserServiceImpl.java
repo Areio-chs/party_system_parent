@@ -106,6 +106,10 @@ public class BaseUserServiceImpl implements BaseUserService {
         ActivistVo activistVo = baseUserMapper.findById(id);
         return activistVo;
     }
+    public CommonVo findMemberById(String id,int type){
+        CommonVo commonVo = baseUserMapper.findCommonById(id,type);
+        return commonVo;
+    }
 
     public List<String> handleCul(String cultureId){
         BaseUser baseUser=new BaseUser();
@@ -139,23 +143,7 @@ public class BaseUserServiceImpl implements BaseUserService {
     public void addCommon(CommonVo commonVo,int type) {
         System.out.println(commonVo.toString());
         //查党总支的名字
-        if (StringUtils.isNotEmpty(commonVo.getGeneralId())) {
-            General general = generalMapper.selectByPrimaryKey(commonVo.getGeneralId());
-            commonVo.setGeneralName(general.getGeneralName());
-        }
-        //查党支部名字
-        if (StringUtils.isNotEmpty(commonVo.getPartyId())) {
-            Party party = partyMapper.selectByPrimaryKey(commonVo.getPartyId());
-            commonVo.setPartyName(party.getPartyName());
-        }
-        if (StringUtils.isNotEmpty(commonVo.getGroupId())) {
-            Group group = groupMapper.selectByPrimaryKey(commonVo.getGroupId());
-            commonVo.setGroupName(group.getGroupName());
-        }
-        if (StringUtils.isNotEmpty(commonVo.getLeagueBranchId())){
-            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(commonVo.getLeagueBranchId());
-            commonVo.setLeagueBranchName(leagueBranch.getName());
-        }
+        commonIsNotEmpty(commonVo);
         //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
         BaseUser baseUser = new BaseUser();
         BeanUtils.copyProperties(commonVo,baseUser);
@@ -206,64 +194,64 @@ public class BaseUserServiceImpl implements BaseUserService {
             developmentMapper.insert(development2);
         }
     }
-    @Transactional
-    public void add(ActivistVo activistVo) {
-        System.out.println(activistVo.toString());
-        //查党总支的名字
-        if (StringUtils.isNotEmpty(activistVo.getGeneralId())) {
-            General general = generalMapper.selectByPrimaryKey(activistVo.getGeneralId());
-            activistVo.setGeneralName(general.getGeneralName());
-        }
-        //查党支部名字
-        if (StringUtils.isNotEmpty(activistVo.getPartyId())) {
-            Party party = partyMapper.selectByPrimaryKey(activistVo.getPartyId());
-            activistVo.setPartyName(party.getPartyName());
-        }
-        if (StringUtils.isNotEmpty(activistVo.getGroupId())) {
-            Group group = groupMapper.selectByPrimaryKey(activistVo.getGroupId());
-            activistVo.setGroupName(group.getGroupName());
-        }
-        if (StringUtils.isNotEmpty(activistVo.getLeagueBranchId())){
-            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(activistVo.getLeagueBranchId());
-            activistVo.setLeagueBranchName(leagueBranch.getName());
-        }
-        //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
-        BaseUser baseUser = new BaseUser();
-        BeanUtils.copyProperties(activistVo,baseUser);
-        baseUser.setId(idWorker.nextId()+"");
-        baseUser.setTypeId(0);//积极分子的类型都是0
-        baseUserMapper.insert(baseUser);
-        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
-        Development development = new Development();
-        development.setUserId(baseUser.getId());
-        development= developmentMapper.selectOne(development);
-        Development development2 = new Development();
-//        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
-        if (development!=null){
-            development2.setId(development.getId());
-            developmentMapper.updateByPrimaryKeySelective(development2);
-        }else {//新增
-
-            if (activistVo.getCulture1Id()!=null && !"".equals(activistVo.getCulture1Id())){
-                String cul1 = handleCultureId(activistVo.getCulture1Id());
-                development2.setCulture1Id(cul1);
-                //培养人1的名称
-                development2.setCulture1Name(baseUserMapper.selectByPrimaryKey(cul1).getName());
-                development2.setCulture1Sid(baseUserMapper.selectByPrimaryKey(cul1).getSid());
-            }
-            if (activistVo.getCulture2Id()!=null && !"".equals(activistVo.getCulture2Id())){
-                String cul2 = handleCultureId(activistVo.getCulture2Id());
-                development2.setCulture2Id(cul2);
-                development2.setCulture2Name(baseUserMapper.selectByPrimaryKey(cul2).getName());
-                development2.setCulture2Sid(baseUserMapper.selectByPrimaryKey(cul2).getSid());
-            }
-            development2.setActivistTime(activistVo.getActivistTime());
-            development2.setId(idWorker.nextId()+"");
-            development2.setIsActivist("1");
-            development2.setUserId(baseUser.getId());
-            developmentMapper.insert(development2);
-        }
-    }
+//    @Transactional
+//    public void add(ActivistVo activistVo) {
+//        System.out.println(activistVo.toString());
+//        //查党总支的名字
+//        if (StringUtils.isNotEmpty(activistVo.getGeneralId())) {
+//            General general = generalMapper.selectByPrimaryKey(activistVo.getGeneralId());
+//            activistVo.setGeneralName(general.getGeneralName());
+//        }
+//        //查党支部名字
+//        if (StringUtils.isNotEmpty(activistVo.getPartyId())) {
+//            Party party = partyMapper.selectByPrimaryKey(activistVo.getPartyId());
+//            activistVo.setPartyName(party.getPartyName());
+//        }
+//        if (StringUtils.isNotEmpty(activistVo.getGroupId())) {
+//            Group group = groupMapper.selectByPrimaryKey(activistVo.getGroupId());
+//            activistVo.setGroupName(group.getGroupName());
+//        }
+//        if (StringUtils.isNotEmpty(activistVo.getLeagueBranchId())){
+//            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(activistVo.getLeagueBranchId());
+//            activistVo.setLeagueBranchName(leagueBranch.getName());
+//        }
+//        //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
+//        BaseUser baseUser = new BaseUser();
+//        BeanUtils.copyProperties(activistVo,baseUser);
+//        baseUser.setId(idWorker.nextId()+"");
+//        baseUser.setTypeId(0);//积极分子的类型都是0
+//        baseUserMapper.insert(baseUser);
+//        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
+//        Development development = new Development();
+//        development.setUserId(baseUser.getId());
+//        development= developmentMapper.selectOne(development);
+//        Development development2 = new Development();
+////        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
+//        if (development!=null){
+//            development2.setId(development.getId());
+//            developmentMapper.updateByPrimaryKeySelective(development2);
+//        }else {//新增
+//
+//            if (activistVo.getCulture1Id()!=null && !"".equals(activistVo.getCulture1Id())){
+//                String cul1 = handleCultureId(activistVo.getCulture1Id());
+//                development2.setCulture1Id(cul1);
+//                //培养人1的名称
+//                development2.setCulture1Name(baseUserMapper.selectByPrimaryKey(cul1).getName());
+//                development2.setCulture1Sid(baseUserMapper.selectByPrimaryKey(cul1).getSid());
+//            }
+//            if (activistVo.getCulture2Id()!=null && !"".equals(activistVo.getCulture2Id())){
+//                String cul2 = handleCultureId(activistVo.getCulture2Id());
+//                development2.setCulture2Id(cul2);
+//                development2.setCulture2Name(baseUserMapper.selectByPrimaryKey(cul2).getName());
+//                development2.setCulture2Sid(baseUserMapper.selectByPrimaryKey(cul2).getSid());
+//            }
+//            development2.setActivistTime(activistVo.getActivistTime());
+//            development2.setId(idWorker.nextId()+"");
+//            development2.setIsActivist("1");
+//            development2.setUserId(baseUser.getId());
+//            developmentMapper.insert(development2);
+//        }
+//    }
     @Transactional
     public void excelAdd(CommonVo commonVo) {
         commonExcel(commonVo);
@@ -365,6 +353,7 @@ public class BaseUserServiceImpl implements BaseUserService {
         development.setUserId(activistVo.getId());
         Development development1 = developmentMapper.selectOne(development);
         development1.setActivistTime(activistVo.getActivistTime());
+        //其余改成用数组表示培养人试试
         if (activistVo.getCulture1Id()!="[]" && !"[]".equals(activistVo.getCulture1Id())){
             String cul1 = handleCultureId(activistVo.getCulture1Id());
             development1.setCulture1Id(cul1);
@@ -390,6 +379,25 @@ public class BaseUserServiceImpl implements BaseUserService {
         developmentMapper.updateByPrimaryKey(development1);
     }
 
+    @Transactional
+    @Override
+    public void updateCommon(CommonVo commonVo,int type) {
+        commonIsNotEmpty(commonVo);
+        System.out.println("修改成员长什么样？"+commonVo.toString());
+        //修改baseuser表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(commonVo,baseUser);
+        baseUserMapper.updateByPrimaryKeySelective(baseUser);
+        //修改development
+        Development development =new Development();
+        development.setUserId(commonVo.getId());
+        Development development1 = developmentMapper.selectOne(development);
+        String id = development1.getId();
+        BeanUtils.copyProperties(commonVo,development1);
+        development1.setId(id);
+        System.out.println("修改的发展表长什么样？"+development1);
+        developmentMapper.updateByPrimaryKey(development1);
+    }
     /**
      *  删除
      * @param id
@@ -667,6 +675,8 @@ public class BaseUserServiceImpl implements BaseUserService {
         }
     }
 
+
+
     private void commonExcel(CommonVo commonVo){
         System.out.println(commonVo.toString());
         //根据名字查党总支id
@@ -710,6 +720,26 @@ public class BaseUserServiceImpl implements BaseUserService {
             throw new PartyException(20001,"该团支部不存在");
         }else {
             commonVo.setLeagueBranchId(leagueBranch.getId());
+        }
+    }
+
+    public void commonIsNotEmpty(CommonVo commonVo){
+        if (StringUtils.isNotEmpty(commonVo.getGeneralId())) {
+            General general = generalMapper.selectByPrimaryKey(commonVo.getGeneralId());
+            commonVo.setGeneralName(general.getGeneralName());
+        }
+        //查党支部名字
+        if (StringUtils.isNotEmpty(commonVo.getPartyId())) {
+            Party party = partyMapper.selectByPrimaryKey(commonVo.getPartyId());
+            commonVo.setPartyName(party.getPartyName());
+        }
+        if (StringUtils.isNotEmpty(commonVo.getGroupId())) {
+            Group group = groupMapper.selectByPrimaryKey(commonVo.getGroupId());
+            commonVo.setGroupName(group.getGroupName());
+        }
+        if (StringUtils.isNotEmpty(commonVo.getLeagueBranchId())){
+            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(commonVo.getLeagueBranchId());
+            commonVo.setLeagueBranchName(leagueBranch.getName());
         }
     }
     /**
