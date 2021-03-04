@@ -96,8 +96,8 @@
 							<el-form-item>
 								<el-button type="success" icon="el-icon-plus" @click="addDialogOpen">新增</el-button>
 								<el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">关系转移</el-button>
-								<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog(id)">变更培养人</el-button>
-								<el-button type="danger"  icon="el-icon-upload2"  >导出</el-button>
+<!--								<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog(id)">变更培养人</el-button>-->
+								<el-button type="danger"  icon="el-icon-upload2" @click="downExcel">导出</el-button>
 							</el-form-item>
 							<el-form-item>
 								<el-upload
@@ -116,7 +116,7 @@
 
 							</el-form-item>
 							<el-form-item>
-								<el-button icon="el-icon-download">点击下载模版</el-button>
+								<el-button icon="el-icon-download" @click="downModel">点击下载模版</el-button>
 								<el-button icon="el-icon-download">党员预审表</el-button>
 							</el-form-item>
 						</el-form>
@@ -124,7 +124,7 @@
 						<!--显示主体------------------------------------------------------>
 						<el-table
 								ref="multipleTable"
-								:data="developList"
+								:data="memberList"
 								tooltip-effect="dark"
 								style="width: 100%"
 								size="mini"
@@ -927,7 +927,7 @@
 
 						<span slot="footer" class="dialog-footer">
 																<el-button @click="relationshipDialogVisible = false">取 消</el-button>
-																<el-button type="primary">确 定</el-button>
+													<el-button type="primary" @click="transfer">确 定</el-button>
 															</span>
 					</el-dialog>
 
@@ -975,6 +975,7 @@
 
 						<span slot="footer" class="dialog-footer">
 								<el-button @click="contactsDialogVisible = false">取 消</el-button>
+								<el-button type="primary" @click="change_cul">确 定</el-button>
 						</span>
 					</el-dialog>
 
@@ -1007,7 +1008,7 @@
 								}else {
 									return cb()
 								}
-								// alert(JSON.stringify(response.data));
+
 							});
 						}else {
 							cb(new Error('请输入合法的学号'))
@@ -1029,7 +1030,7 @@
 						group: [],
 						groupId:'',
 						developList: [],
-						MemberList: [],
+						memberList: [],
 						//检索党支部
 						selectParty: [],
 						//检索党小组
@@ -1086,8 +1087,6 @@
 						// 控制关系转移对话框的显示与隐藏
 						relationshipDialogVisible: false,
 						formLabelAlign: {
-							organization: '',
-							sum: ''
 						},
 						//关系转移的级联选择器
 						options: [],
@@ -1098,10 +1097,8 @@
 						importBtnDisabled: false, // 按钮是否禁用,
 						loading: false,
 						dynamicValidateForm: {
-							contacts: [{
-								value: ''
-							}],
-							sum: ''
+							organization1:[],
+							organization2:[]
 						}
 					}
 				},
@@ -1138,7 +1135,7 @@
 					getMemberList() {
 						//向后台获取数据列表
 						axios.post(`/baseUser/findCommonPage.do?page=${this.currentPage}&size=${this.size}&type=3`,this.searchMap).then(response => {
-							this.developList = response.data.data.pageInfo.rows;
+							this.memberList = response.data.data.pageInfo.rows;
 							this.total = response.data.data.pageInfo.total;
 						});
 					},
@@ -1165,6 +1162,12 @@
 							this.group = response.data.data.items;
 						});
 					},
+					downModel(){
+						window.location.href="model/member.xlsx";
+					},
+					downExcel(){
+						window.location.href="/excel/leadOutMember.do";
+					},
 					filterCell(value, row) {
 						return row.party === value;
 					},
@@ -1187,13 +1190,7 @@
 						}
 						this.getMemberList()
 					},
-					/**
-					 * 搜索用户
-					 */
-					searchUser() {
-						this.queryInfo.pageNum = 1;
-						this.getMemberList();
-					},
+
 					toggleSelection(rows) {
 						if (rows) {
 							rows.forEach(row => {
@@ -1204,7 +1201,13 @@
 						}
 					},
 					handleSelectionChange(val) {
-						this.multipleSelection = val;//val是一个数组
+						this.multipleSelection = val;
+						var array=[];
+						val.forEach((val,index)=>{
+							array.push(val.id);
+						})
+						this.formLabelAlign.select=array;//选中的人的id
+						this.dynamicValidateForm.select=array;
 					},
 
 					addDialogOpen() {//打开弹框
@@ -1244,35 +1247,25 @@
 					showUserDialog(id) {
 						//根据id
 						this.updateDialogVisible = true
-						axios.get(`/baseUser/findMemberById.do?id=${id}&type=3`).then(response => {
+						this.getAllOption()
+						axios.get(`/baseUser/findCommonById.do?id=${id}&type=2`).then(response => {
 							this.addForm = response.data.data.items;
 
 						});
 					},
 					// 根据Id删除对应的党员信息
 					async removeGroupById(id) {
-						// 弹框询问党员是否删除数据
-						const confirmResult = await this.$confirm(
-								'此操作将永久删除该党员, 是否继续?',
-								'提示',
-								{
-									confirmButtonText: '确定',
-									cancelButtonText: '取消',
-									type: 'warning'
-								}
-						).catch(err => err)
-
-						// 如果党员确认删除，则返回值为字符串 confirm
-						// 如果党员取消了删除，则返回值为字符串 cancel
-						// console.log(confirmResult)
-						if (confirmResult !== 'confirm') {
-							return this.$message.info('已取消删除')
-						}
-
-						//此处向后台发请求进行删除
-
-						this.$message.success('删除党员成功！')
-						this.getMemberList()
+						// 弹框询问党小组是否删除数据
+						this.$confirm('确定要删除此记录吗?', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						}).then( () => {
+							axios.get(`/baseUser/delete.do?id=${id}`).then(response => {
+								this.$message.success('删除党员成功！')
+								this.getMemberList()
+							})
+						})
 					},
 					showFileDialog() {
 						//此处应向后台获取数据
@@ -1341,107 +1334,27 @@
 						this.fileDialogVisible = false
 					},
 					showRelationshipDialog() {
-						if(this.multipleSelection.length == 0){
+						if(this.multipleSelection.length==0){//选择了多少项
 							this.$message.error('请选择你想转移的成员')
 							return
 						}
 						//先统计多选框里选中的人数。得出sum
-						this.formLabelAlign.sum = 10
+						this.formLabelAlign.sum = this.multipleSelection.length
 						//此处应向后台获取options数据
-						this.options = [
-							{
-								value: '信科院第一党总支',
-								label: '信科院第一党总支',
-								children: [{
-									value: '信科院第一党支部',
-									label: '信科院第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}]
-								}, {
-									value: '信科院第二党支部',
-									label: '信科院第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}]
-							}]
+						axios.get(`/option/getTransferOption.do`).then(response =>{
+							this.options = response.data.data.items
+						})
 						this.relationshipDialogVisible  = true
+					},
+					//处理关系转移的方法
+					transfer(){
+						// alert(JSON.stringify(this.formLabelAlign))
+						//要传选中的人的id过去，还要传选中的党小组id
+						axios.post(`/baseUser/transfer.do`,this.formLabelAlign).then(response => {
+							this.$message.success('关系转移成功！')
+							this.getMemberList()
+							this.relationshipDialogVisible = false
+						})
 					},
 					// 监听分配权限对话框的关闭事件
 					setRelationshipDialogClosed() {
@@ -1450,402 +1363,30 @@
 						}
 					},
 					//变更培养联系人
-					showContactsDialog() {
+					showContactsDialog(id) {
 						if(this.multipleSelection.length == 0){
 							this.$message.error('请选择你想变更联系人的成员')
 							return
 						}
 						//先统计多选框里选中的人数。得出sum
-						this.dynamicValidateForm.sum = 10
+						this.dynamicValidateForm.sum = this.multipleSelection.length
 						//获取培养联系人列表
-						this.contacts = [
-							{
-								value: '信科院第一党总支',
-								label: '信科院第一党总支',
-								children: [{
-									value: '信科院第一党支部',
-									label: '信科院第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '李彬豪',
-											label: '李彬豪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}, {
-									value: '信科院第二党支部',
-									label: '信科院第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第额党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										},{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}]
-							}]
+						this.getAllOption()
 						this.contactsDialogVisible  = true
 					},
 					// 监听变更培养联系人对话框的关闭事件
 					setContactsDialogClosed() {
 						this.dynamicValidateForm = {
-							contacts: [{
-								value: ''
-							}],
-							sum: ''
+							organization1:[],
+							organization2:[]
 						}
+					},
+					change_cul(){
+						axios.post(`/baseUser/changeCul.do`,this.dynamicValidateForm).then(response => {
+							this.$message.success('变更培养联系人成功！')
+							this.getMemberList()
+							this.contactsDialogVisible = false
+						})
 					},
 					submitForm(formName) {
 						this.$refs[formName].validate((valid) => {

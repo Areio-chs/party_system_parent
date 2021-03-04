@@ -34,6 +34,7 @@
 						<el-breadcrumb-item>成员管理</el-breadcrumb-item>
 						<el-breadcrumb-item>入党积极分子管理</el-breadcrumb-item>
 					</el-breadcrumb>
+					</el-breadcrumb>
 					<el-card>
 						<!-- 搜索与添加区域 -->
 						<el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
@@ -44,7 +45,7 @@
 								></el-input>
 							</el-form-item>
 							<el-form-item>
-								<el-select v-model="searchMap.generalId" clearable placeholder="党总支">
+								<el-select v-model="searchMap.generalId" clearable placeholder="党总支" @change="generalChanged">
 									<el-option
 											v-for="item in general"
 											:key="item.id"
@@ -54,7 +55,7 @@
 								</el-select>
 							</el-form-item>
 							<el-form-item>
-								<el-select v-model="searchMap.partyId" clearable placeholder="党支部">
+								<el-select v-model="searchMap.partyId" clearable placeholder="党支部" @change="partyChanged">
 									<el-option
 											v-for="item in party"
 											:key="item.id"
@@ -442,7 +443,7 @@
 										<el-select
 												clearable
 												v-model="addForm.generalId"
-												placeholder="请选择党总支">
+												placeholder="请选择党总支" @change="generalChanged">
 											<el-option
 													v-for="item in general"
 													:key="item.id"
@@ -460,7 +461,7 @@
 										<el-select
 												clearable
 												v-model="addForm.partyId"
-												placeholder="请选择党支部">
+												placeholder="请选择党支部" @change="partyChanged">
 											<el-option
 													v-for="item in party"
 													:key="item.id"
@@ -663,12 +664,12 @@
 										<el-select
 												clearable
 												v-model="addForm.generalId"
-												placeholder="请选择党总支">
+												placeholder="请选择党总支" @change="generalChanged">
 											<el-option
 													v-for="item in general"
 													:key="item.id"
 													:label="item.generalName"
-													:value="item.id">
+													:value="item.id" >
 											</el-option>
 										</el-select>
 									</el-form-item>
@@ -681,7 +682,7 @@
 										<el-select
 												clearable
 												v-model="addForm.partyId"
-												placeholder="请选择党支部">
+												placeholder="请选择党支部" @change="partyChanged">
 											<el-option
 													v-for="item in party"
 													:key="item.id"
@@ -1095,8 +1096,6 @@
 				this.getActivistList();
 				this.getGeneralList()
 				this.getYouthLeagueBranchList()
-				this.getGroupList()
-				this.getPartyList()
 			},
 			methods: {
 				handleRemove(file, fileList) {
@@ -1145,28 +1144,27 @@
 					// 	this.selectGeneral=response.data.data.items;
 					// });
 				},
-				//添加积极分子时团支部的下拉列表
 				getYouthLeagueBranchList(){
 					axios.get(`/leagueBranch/findAll.do`).then(response => {
 						this.youthLeagueBranch = response.data.data.items;
 					});
 				},
-				//添加积极分子时党总支的下拉列表
 				getGeneralList(){
 					axios.get(`/general/findAll.do`).then(response => {
 						this.general = response.data.data.items;
 					});
 				},
-				//添加积极分子时党小组的下拉列表
-				getGroupList(){
-					axios.get(`/group/findAll.do`).then(response => {
-						this.group = response.data.data.items;
+				generalChanged(value){//点击党总支触发chage，显示对应的支部
+					this.generalId=value;
+					//查找这个党总支下面的所有党支部
+					axios.get(`/party/findByGeneralId.do?generalId=${this.generalId}`).then(response => {
+						this.party = response.data.data.items;
 					});
 				},
-				//添加积极分子时党支部的下拉列表
-				getPartyList(){
-					axios.get(`/party/findAll.do`).then(response => {
-						this.party = response.data.data.items;
+				partyChanged(value){
+					this.partyId=value;
+					axios.get(`/group/findByPartyId.do?partyId=${this.partyId}`).then(response => {
+						this.group = response.data.data.items;
 					});
 				},
 				//获取培养联系人级联下拉列表
@@ -1231,7 +1229,7 @@
 					this.$refs.addFormRef.validate(async valid => {
 						if (!valid) return
 						// 可以发起添加成员的网络请求
-						axios.post(`/baseUser/${this.addForm.id==null?'add':'update'}.do`,this.addForm).then(response => {
+						axios.post(`/baseUser/${this.addForm.id==null?'add':'updateCommon'}.do?type=0`,this.addForm).then(response => {
 							if (this.addForm.id==null){
 							this.$message.success('添加成员成功！')
 								// 隐藏添加成员的对话框
@@ -1258,16 +1256,12 @@
 				},
 				// 修改信息的对话框
 				showUserDialog(id) {
+					//根据id
 					this.updateDialogVisible = true
-					// this.getGeneralList()
-					// this.getYouthLeagueBranchList()
-					// this.getGroupList()
-					// this.getPartyList()
 					this.getAllOption()
-					axios.get(`/baseUser/findById.do?id=${id}`).then(response => {
+					axios.get(`/baseUser/findCommonById.do?id=${id}&type=0`).then(response => {
 						this.addForm = response.data.data.items;
-						this.addForm.culture1Id=response.data.data.cul1;
-						this.addForm.culture2Id=response.data.data.cul2;
+
 					});
 
 				},
@@ -1402,7 +1396,6 @@
 
 				change_cul(){
 					axios.post(`/baseUser/changeCul.do`,this.dynamicValidateForm).then(response => {
-						alert(JSON.stringify(this.dynamicValidateForm))
 						this.$message.success('变更培养联系人成功！')
 						this.getActivistList()
 						this.contactsDialogVisible = false

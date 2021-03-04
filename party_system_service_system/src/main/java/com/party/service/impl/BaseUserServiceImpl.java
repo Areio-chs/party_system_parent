@@ -8,6 +8,9 @@ import com.party.controller.PartyException;
 import com.party.dao.*;
 import com.party.entity.PageResult;
 import com.party.excel.ActivistData;
+import com.party.excel.DevelopmentData;
+import com.party.excel.MemberData;
+import com.party.excel.PreMemberData;
 import com.party.pojo.system.*;
 import com.party.service.system.BaseUserService;
 import com.party.util.IdWorker;
@@ -86,27 +89,17 @@ public class BaseUserServiceImpl implements BaseUserService {
         return new PageResult<BaseUser>(baseUsers.getTotal(),baseUsers.getResult());
     }
 
-    /**
-     * 根据Id查询
-     * @param id
-     * @return
-     */
-    public ActivistVo findById(String id) {
-        //1.涉及多个表，建议用sql查询
-//        ActivistVo activistVo = new ActivistVo();
-//        BaseUser baseUser = new BaseUser();
-//        baseUser.setId(id);
-//        baseUser = baseUserMapper.selectByPrimaryKey(baseUser);
-//        BeanUtils.copyProperties(baseUser,activistVo);//查出来复制到vo
-//        Example example = new Example(Development.class);
-//        Example.Criteria criteria = example.createCriteria();
-//        criteria.andEqualTo("userId",id);
-//        Development development = developmentMapper.selectOneByExample(example);
-//        BeanUtils.copyProperties(development,activistVo);
-        ActivistVo activistVo = baseUserMapper.findById(id);
-        return activistVo;
-    }
-    public CommonVo findMemberById(String id,int type){
+//    /**
+//     * 根据Id查询
+//     * @param id
+//     * @return
+//     */
+//    public ActivistVo findById(String id) {
+//
+//        ActivistVo activistVo = baseUserMapper.findById(id);
+//        return activistVo;
+//    }
+    public CommonVo findCommonById(String id,int type){
         CommonVo commonVo = baseUserMapper.findCommonById(id,type);
         return commonVo;
     }
@@ -124,16 +117,7 @@ public class BaseUserServiceImpl implements BaseUserService {
         return cul;
 
     }
-    //拼接成["1","1","1"]
-    public String all(BaseUser baseUser,String cultureId){
-        List<String> cul=new ArrayList<>();
-        cul.add(baseUser.getGeneralId()) ;
-        cul.add(baseUser.getPartyId());
-        cul.add(baseUser.getGroupId());
-        cul.add(cultureId);
-        String json = JSON.toJSONString(cul);
-        return json;
-    }
+
 
     /**
      * 新增
@@ -176,19 +160,24 @@ public class BaseUserServiceImpl implements BaseUserService {
                 }
             }
             development2.setActivistTime(commonVo.getActivistTime());
-            if (type!=0){
+            if (type==0) {
+                development2.setIsActivist("1");
+            }
+            if (type==1){//发展对象分子
                 development2.setDevelopTime(commonVo.getDevelopTime());
                 development2.setIsDevelop("1");
             }
-            if (type!=0&&type!=1){
+            if (type==2){//预备党员
+                development2.setDevelopTime(commonVo.getDevelopTime());
                 development2.setPreMemberTime(commonVo.getPreMemberTime());
                 development2.setIsPre("1");
             }
             if (type==3) {
+                development2.setDevelopTime(commonVo.getDevelopTime());
+                development2.setPreMemberTime(commonVo.getPreMemberTime());
                 development2.setMemberTime(commonVo.getMemberTime());
                 development2.setIsMember("1");
             }
-            if (type==0) development2.setIsActivist("1");
             development2.setId(idWorker.nextId()+"");
             development2.setUserId(baseUser.getId());
             developmentMapper.insert(development2);
@@ -306,8 +295,8 @@ public class BaseUserServiceImpl implements BaseUserService {
         BaseUser baseUser = new BaseUser();
         baseUser.setSid(sid);
         BaseUser baseUser1 = baseUserMapper.selectOne(baseUser);
-        if (StringUtils.isEmpty(baseUser1.getId())){
-            return 0;
+        if (baseUser1==null) {
+                return 0;
         }
         return 1;
     }
@@ -319,65 +308,7 @@ public class BaseUserServiceImpl implements BaseUserService {
             JSONArray jsonArray = JSONArray.fromObject(cultureId);
             return  (String) jsonArray.get(jsonArray.size() - 1);
     }
-    /**
-     * 修改
-     * @param activistVo
-     */
-    @Transactional
-    public void update(ActivistVo activistVo) {
-        //查党总支的名字
-        if (StringUtils.isNotEmpty(activistVo.getGeneralId())) {
-            General general = generalMapper.selectByPrimaryKey(activistVo.getGeneralId());
-            activistVo.setGeneralName(general.getGeneralName());
-        }
-        //查党支部名字
-        if (StringUtils.isNotEmpty(activistVo.getPartyId())) {
-            Party party = partyMapper.selectByPrimaryKey(activistVo.getPartyId());
-            activistVo.setPartyName(party.getPartyName());
-        }
-        if (StringUtils.isNotEmpty(activistVo.getGroupId())) {
-            Group group = groupMapper.selectByPrimaryKey(activistVo.getGroupId());
-            activistVo.setGroupName(group.getGroupName());
-        }
-        if (StringUtils.isNotEmpty(activistVo.getLeagueBranchId())){
-            LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(activistVo.getLeagueBranchId());
-            activistVo.setLeagueBranchName(leagueBranch.getName());
-        }
-        System.out.println("修改成员长什么样？"+activistVo.toString());
-        //修改baseuser表
-        BaseUser baseUser = new BaseUser();
-        BeanUtils.copyProperties(activistVo,baseUser);
-        baseUserMapper.updateByPrimaryKeySelective(baseUser);
-        //修改development
-        Development development =new Development();
-        development.setUserId(activistVo.getId());
-        Development development1 = developmentMapper.selectOne(development);
-        development1.setActivistTime(activistVo.getActivistTime());
-        //其余改成用数组表示培养人试试
-        if (activistVo.getCulture1Id()!="[]" && !"[]".equals(activistVo.getCulture1Id())){
-            String cul1 = handleCultureId(activistVo.getCulture1Id());
-            development1.setCulture1Id(cul1);
-            BaseUser baseUser1 = baseUserMapper.selectByPrimaryKey(cul1);
-            development1.setCulture1Sid(baseUser1.getSid());
-            development1.setCulture1Name(baseUser1.getName());
-        }else {
-            development1.setCulture1Id(null);
-            development1.setCulture1Name(null);
-            development1.setCulture1Sid(null);
-        }
-        if (activistVo.getCulture2Id()!="[]" && !"[]".equals(activistVo.getCulture2Id())){
-            String cul2 = handleCultureId(activistVo.getCulture2Id());
-            BaseUser baseUser1 = baseUserMapper.selectByPrimaryKey(cul2);
-            development1.setCulture2Id(cul2);
-            development1.setCulture2Sid(baseUser1.getSid());
-            development1.setCulture2Name(baseUser1.getName());
-        }else {
-            development1.setCulture2Id(null);
-            development1.setCulture2Name(null);
-            development1.setCulture2Sid(null);
-        }
-        developmentMapper.updateByPrimaryKey(development1);
-    }
+
 
     @Transactional
     @Override
@@ -398,6 +329,9 @@ public class BaseUserServiceImpl implements BaseUserService {
         System.out.println("修改的发展表长什么样？"+development1);
         developmentMapper.updateByPrimaryKey(development1);
     }
+
+
+
     /**
      *  删除
      * @param id
@@ -419,25 +353,12 @@ public class BaseUserServiceImpl implements BaseUserService {
     public List<ActivistData> findActivistOut() {
         return baseUserMapper.findActivistOut();
     }
-
-//    @Override
-//    public PageResult<ActivistVo> findActivist(Map<String,Object> searchMap, int page, int size) {
-//        String name = "";
-//        String generalId = "";
-//        String partyId="";
-//        String groupId="";
-//        String leagueBranchId="";
-//        if(searchMap!=null){
-//            name= (String) searchMap.get("name");
-//            generalId=(String)searchMap.get("generalId");
-//            partyId=(String)searchMap.get("partyId");
-//            groupId=(String)searchMap.get("groupId");
-//            leagueBranchId=(String)searchMap.get("leagueBranchId");
-//        }
-//        PageHelper.startPage(page, size);
-//        Page<ActivistVo> activistList = (Page<ActivistVo>)baseUserMapper.findActivist(name,generalId,partyId,groupId,leagueBranchId);
-//        return new PageResult<ActivistVo>(activistList.getTotal(),activistList.getResult()) ;
-//    }
+    @Override
+    public List<DevelopmentData> findDevelopmentOut() { return baseUserMapper.findDevelopmentOut(); }
+    @Override
+    public List<PreMemberData> findPreMemberOut() { return baseUserMapper.findPreMemberOut(); }
+    @Override
+    public List<MemberData> findMemberOut() { return baseUserMapper.findMemberOut(); }
 
     public PageResult<CommonVo> findCommonPage(Map<String,Object> searchMap, int page, int size, int type) {
         System.out.println(type+"------------------------------------");
@@ -546,46 +467,7 @@ public class BaseUserServiceImpl implements BaseUserService {
     @Override
     public void excelAddDevelopment(CommonVo commonVo) {
         System.out.println(commonVo.toString());
-        //根据名字查党总支id
-        Example example1 = new Example(General.class);
-        Example.Criteria criteria1 = example1.createCriteria();
-        criteria1.andEqualTo("generalName",commonVo.getGeneralName());
-        General general = generalMapper.selectOneByExample(example1);
-        if (general==null) {
-            throw new PartyException(20001,"该党支部不存在");
-        }else {
-            commonVo.setGeneralId(general.getId());
-        }
-        //党总支
-        Example example2 = new Example(Party.class);
-        Example.Criteria criteria2 = example2.createCriteria();
-        criteria2.andEqualTo("partyName",commonVo.getPartyName());
-        Party party = partyMapper.selectOneByExample(example2);
-        if (party==null) {
-            throw new PartyException(20001,"该党总支不存在");
-        }else {
-            commonVo.setPartyId(party.getId());
-        }
-        //党小组
-        Example example3 = new Example(Group.class);
-        Example.Criteria criteria3 = example3.createCriteria();
-        criteria3.andEqualTo("groupName",commonVo.getGroupName());
-        Group group = groupMapper.selectOneByExample(example3);
-        if (party==null) {
-            throw new PartyException(20001,"该党小组不存在");
-        }else {
-            commonVo.setGroupId(group.getId());
-        }
-        //团支部
-        Example example4 = new Example(LeagueBranch.class);
-        Example.Criteria criteria4 = example4.createCriteria();
-        criteria4.andEqualTo("name",commonVo.getLeagueBranchName());
-        LeagueBranch leagueBranch = leagueBranchMapper.selectOneByExample(example4);
-        if (leagueBranch==null){
-            throw new PartyException(20001,"该团支部不存在");
-        }else {
-            commonVo.setLeagueBranchId(leagueBranch.getId());
-        }
+        commonExcel(commonVo);
         //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
         BaseUser baseUser = new BaseUser();
         BeanUtils.copyProperties(commonVo,baseUser);
@@ -639,6 +521,59 @@ public class BaseUserServiceImpl implements BaseUserService {
         String name = "";
         return null;
     }
+    //--------------------------------------预备党员-----------------------------------------------------
+    @Override
+    public void excelAddPreMember(CommonVo commonVo) {
+        commonExcel(commonVo);
+        //涉及插入发展表（成为积极分子的时间，培养人1和培养人2）和基本用户表
+        BaseUser baseUser = new BaseUser();
+        BeanUtils.copyProperties(commonVo,baseUser);
+        baseUser.setId(idWorker.nextId()+"");
+        baseUser.setTypeId(2);
+        baseUserMapper.insert(baseUser);
+        //如果用户id在发展表里面已经存在了，那么就更新，不在就插入
+        Development development = new Development();
+        development.setUserId(baseUser.getId());
+        development= developmentMapper.selectOne(development);
+        Development development2 = new Development();
+//        BeanUtils.copyProperties(activistVo,development2);因为复制的到的目前只有ActivistTime
+        if (development!=null){
+            //这种方法不对的，因为果用户id在发展表里面已经存在了，那么就更新，而此时development2却什么都没设置了
+            development2.setId(development.getId());
+            developmentMapper.updateByPrimaryKeySelective(development2);
+        }else {//新增
+            if (StringUtils.isNotEmpty(commonVo.getCulture1Sid())){
+                //根据学号查出这个培养人的id
+                Example example= new Example(BaseUser.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("sid",commonVo.getCulture1Sid());
+                BaseUser baseUser1 = baseUserMapper.selectOneByExample(example);
+                development2.setCulture1Id(baseUser1.getId());
+                development2.setCulture1Sid(baseUser1.getSid());
+                development2.setCulture1Name(baseUser1.getName());
+            }
+            if (StringUtils.isNotEmpty(commonVo.getCulture2Sid())){
+                //根据学号查出这个培养人的id
+                Example example= new Example(BaseUser.class);
+                Example.Criteria criteria = example.createCriteria();
+                criteria.andEqualTo("sid",commonVo.getCulture2Sid());
+                BaseUser baseUser1 = baseUserMapper.selectOneByExample(example);
+                development2.setCulture2Id(baseUser1.getId());
+                development2.setCulture2Sid(baseUser1.getSid());
+                development2.setCulture2Name(baseUser1.getName());
+            }
+
+            development2.setActivistTime(commonVo.getActivistTime());
+            development2.setDevelopTime(commonVo.getDevelopTime());
+            development2.setPreMemberTime(commonVo.getPreMemberTime());
+            development2.setId(idWorker.nextId()+"");
+            development2.setIsPre("1");
+            development2.setStatus(1);
+            development2.setUserId(baseUser.getId());
+            developmentMapper.insert(development2);
+        }
+    }
+
 
     //--------------------------------------正式党员导入--------------------------------------------------
 

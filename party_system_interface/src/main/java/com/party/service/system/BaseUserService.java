@@ -1,6 +1,9 @@
 package com.party.service.system;
 import com.party.entity.PageResult;
 import com.party.excel.ActivistData;
+import com.party.excel.DevelopmentData;
+import com.party.excel.MemberData;
+import com.party.excel.PreMemberData;
 import com.party.pojo.system.BaseUser;
 import com.party.vo.ActivistVo;
 import com.party.vo.CommonVo;
@@ -27,17 +30,15 @@ public interface BaseUserService {
     public PageResult<BaseUser> findPage(Map<String,Object> searchMap,int page, int size);
 
 
-    public ActivistVo findById(String id);
+//    public ActivistVo findById(String id);
 
-    public CommonVo findMemberById(String id,int type);
+    public CommonVo findCommonById(String id,int type);
 
     public List<String> handleCul(String cultureId);
 
 //    public void add(ActivistVo activistVo);
 
     public void excelAdd(CommonVo commonVo);
-
-    public void update(ActivistVo activistVo);
 
 
     public void delete(String id);
@@ -67,4 +68,12 @@ public interface BaseUserService {
     void excelAddMember(CommonVo commonVo);
 
     void updateCommon(CommonVo commonVo,int type);
+
+    void excelAddPreMember(CommonVo commonVo);
+
+    List<DevelopmentData> findDevelopmentOut();
+
+    List<PreMemberData> findPreMemberOut();
+
+    List<MemberData> findMemberOut();
 }

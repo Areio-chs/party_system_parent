@@ -1,6 +1,9 @@
 package com.party.dao;
 
 import com.party.excel.ActivistData;
+import com.party.excel.DevelopmentData;
+import com.party.excel.MemberData;
+import com.party.excel.PreMemberData;
 import com.party.pojo.system.BaseUser;
 import com.party.vo.ActivistVo;
 import com.party.vo.CommonVo;
@@ -62,6 +65,21 @@ public interface BaseUserMapper extends Mapper<BaseUser> {
             "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=0")
     public List<ActivistData> findActivistOut();
 
+    @Select("SELECT  NAME,sex,id_card idCard,native_place nativePlace,residence,nation,phone,grade,class_num classNum,sid,room," +
+            "           duty,title,aducation,general_name generalName,party_name partyName,group_name groupName,league_branch_name leagueBranchName,petition_confirm petitionConfirm," +
+            "            activist_time activistTime,develop_time developTime,culture1_name culture1Name,culture1_sid culture1Sid,culture2_name culture2Name,culture2_sid culture2Sid"+
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=1")
+    public List<DevelopmentData> findDevelopmentOut();
+    @Select("SELECT  NAME,sex,id_card idCard,native_place nativePlace,residence,nation,phone,grade,class_num classNum,sid,room," +
+            "           duty,title,aducation,general_name generalName,party_name partyName,group_name groupName,league_branch_name leagueBranchName,petition_confirm petitionConfirm," +
+            "            activist_time activistTime,develop_time developTime,pre_member_time preMemberTime,culture1_name culture1Name,culture1_sid culture1Sid,culture2_name culture2Name,culture2_sid culture2Sid"+
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=2")
+    List<PreMemberData> findPreMemberOut();
+    @Select("SELECT  NAME,sex,id_card idCard,native_place nativePlace,residence,nation,phone,grade,class_num classNum,sid,room," +
+            "           duty,title,aducation,general_name generalName,party_name partyName,group_name groupName,league_branch_name leagueBranchName,petition_confirm petitionConfirm," +
+            "            activist_time activistTime,develop_time developTime,pre_member_time preMemberTime,member_time memberTime"+
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=3")
+    List<MemberData> findMemberOut();
 //    @Select("SELECT  bu.id,sid,NAME,sex,birth,grade,class_num classNum,room,iamge,id_card idCard,phone," +
 //            "                       email,address,identity,native_place nativePlace,residence,nation,duty,title,aducation,gra_institution graInstitution," +
 //            "                       work_time workTime,join_time joinTime,petition_confirm petitionConfirm,first_talk_time firstTalkTime," +

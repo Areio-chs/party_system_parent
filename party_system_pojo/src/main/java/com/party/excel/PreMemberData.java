@@ -13,7 +13,7 @@ import java.io.Serializable;
 @ContentRowHeight(20)//数据行的行高
 @ColumnWidth(20)//列宽
 @ExcelIgnoreUnannotated//表示没有加@ExcelProperty的注解不会参与读写
-public class DevelopmentData implements Serializable {
+public class PreMemberData implements Serializable {
     @ExcelProperty(value = "姓名",index = 0)
     private String name;//姓名
 
@@ -80,15 +80,22 @@ public class DevelopmentData implements Serializable {
     @ExcelProperty(value = "确定为发展对象日期",index = 20)
     private java.util.Date developTime;//成为发展对象时间
 
-    @ExcelProperty(value = "培养联系人1",index = 21)
+    @DateTimeFormat("yyyy-MM-dd")
+    @ExcelProperty(value = "确定为预备党员日期",index = 21)
+    private java.util.Date preMemberTime;
+
+//    @ExcelProperty(value = "票数",index = 21)这个预备党员把
+//    private String vote;
+
+    @ExcelProperty(value = "培养联系人1",index = 22)
     private String culture1Name;
 
-    @ExcelProperty(value = "培养联系人1学号",index = 22)
+    @ExcelProperty(value = "培养联系人1学号",index = 23)
     private String culture1Sid;
 
-    @ExcelProperty(value = "培养联系人2",index = 23)
+    @ExcelProperty(value = "培养联系人2",index = 24)
     private String culture2Name;
 
-    @ExcelProperty(value = "培养联系人2学号",index = 24)
+    @ExcelProperty(value = "培养联系人2学号",index = 25)
     private String culture2Sid;
 }

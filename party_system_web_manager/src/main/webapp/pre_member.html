@@ -42,36 +42,86 @@
 
 					<el-card>
 						<!-- 搜索与添加区域 -->
-						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
-							<el-form-item label="姓名">
+						<el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
+							<el-form-item label="姓名" >
 								<el-input
-										@keyup.enter.native="searchUser"
-										@clear="searchUser"
-										clearable
-										v-model="queryInfo.name"
-										placeholder="请输入用户名查询"
+										v-model="searchMap.name"
+										placeholder="请输入姓名查询"
 								></el-input>
 							</el-form-item>
-
 							<el-form-item>
-								<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
-								<el-button type="primary" icon="el-icon-search">查询</el-button>
-								<el-button
-										type="success"
-										icon="el-icon-plus"
-										@click="addDialogOpen">新增</el-button>
-								</el-button>
-								<el-button
-										type="success"
-										icon="el-icon-plus"
-								>导入</el-button>
-								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
-								<el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">关系转移</el-button>
-								<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog()">变更培养人</el-button>
-								<el-button icon="el-icon-download">预备党员预审表</el-button>
+								<el-select v-model="searchMap.generalId" clearable placeholder="党总支" @change="generalChanged">
+									<el-option
+											v-for="item in general"
+											:key="item.id"
+											:label="item.generalName"
+											:value="item.id">
+									</el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item>
+								<el-select v-model="searchMap.partyId" clearable placeholder="党支部" @change="partyChanged">
+									<el-option
+											v-for="item in party"
+											:key="item.id"
+											:label="item.partyName"
+											:value="item.id">
+									</el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item>
+								<el-select v-model="searchMap.groupId" clearable placeholder="党小组">
+									<el-option
+											v-for="item in group"
+											:key="item.id"
+											:label="item.groupName"
+											:value="item.id">
+									</el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item>
+								<el-select v-model="searchMap.leagueBranchId" clearable placeholder="团支部">
+									<el-option
+											v-for="item in youthLeagueBranch"
+											:key="item.id"
+											:label="item.name"
+											:value="item.id">
+									</el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item>
+								<el-button  @click="reset('searchMap')" icon="el-icon-refresh">重置</el-button>
+								<el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
 							</el-form-item>
 						</el-form>
-
+						<el-form :inline="true" size="mini" style="margin-left: 28px">
+							<el-form-item>
+								<el-button type="success" icon="el-icon-plus" @click="addDialogOpen">新增</el-button>
+								<el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">关系转移</el-button>
+								<el-button type="warning" icon="el-icon-edit" @click="showContactsDialog(id)">变更培养人</el-button>
+								<el-button type="danger"  icon="el-icon-upload2"  @click="downExcel" >导出</el-button>
+							</el-form-item>
+							<el-form-item>
+								<el-upload
+										ref="upload"
+										:auto-upload="true"
+										:on-success="fileUploadSuccess"
+										:on-error="fileUploadError"
+										:disabled="importBtnDisabled"
+										:loading="loading"
+										:limit="1"
+										action="http://localhost:9101/excel/leadInPreMember.do"
+										name="file"
+										accept="application/vnd.ms-excel">
+									<el-button slot="trigger" type="success" icon="el-icon-plus">导入</el-button>
+								</el-upload>
+							</el-form-item>
+							<el-form-item>
+								<el-button icon="el-icon-download" @click="downModel">点击下载模版</el-button>
+								<el-button icon="el-icon-download">发展对象预审表</el-button>
+							</el-form-item>
+						</el-form>
+						<!--显示主体------------------------------------------------------>
 						<el-table
 								ref="multipleTable"
 								:data="preMemberList"
@@ -81,13 +131,13 @@
 								border
 								stripe
 								highlight-current-row
-								@selection-change="handleSelectionChange">
+								@selection-change="handleSelectionChange" fit>
 							<el-table-column
 									type="selection"
 									width="55"
 									align="center">
 							</el-table-column>
-							<el-table-column 
+							<el-table-column
 									type="index"
 									label="#"
 									align="center">
@@ -96,14 +146,14 @@
 								<el-table-column
 										prop="name"
 										label="姓名"
-										width="70"
+										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
 										prop="sex"
 										label="性别"
-										width="70"
+										width="80"
 										sortable
 										align="center">
 								</el-table-column>
@@ -115,16 +165,23 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="native"
+										prop="nativePlace"
 										label="籍贯"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="nativePlace"
+										prop="residence"
 										label="户籍所在地"
 										width="110"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="nation"
+										label="民族"
+										width="80"
 										sortable
 										align="center">
 								</el-table-column>
@@ -137,66 +194,85 @@
 								</el-table-column>
 								<el-table-column
 										prop="grade"
-										label="级"
+										label="年级"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="class"
+										prop="classNum"
 										label="班级"
 										width="80"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="SID"
+										prop="sid"
 										label="学号"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="dormitory"
+										prop="room"
 										label="宿舍"
 										width="80"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="duty"
+										label="职务"
+										width="100"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="title"
+										label="职称"
+										width="100"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="aducation"
+										label="学历"
+										width="100"
 										sortable
 										align="center">
 								</el-table-column>
 							</el-table-column>
 							<el-table-column label="党务信息" align="center">
 								<el-table-column
-										prop="party"
+										prop="generalName"
+										label="所属党总支"
+										width="120"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="partyName"
 										label="所属党支部"
 										width="120"
-										:filters="selectParty"
-										:filter-method="filterCell"
-										filter-placement="bottom-end"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="group"
+										prop="groupName"
 										label="所属党小组"
 										width="120"
-										:filters="selectGroup"
-										:filter-method="filterCell2"
-										filter-placement="bottom-end"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="youthLeagueBranch"
+										prop="leagueBranchName"
 										label="所属团支部"
 										width="120"
-										:filters="selectYouth"
-										:filter-method="filterCell3"
-										filter-placement="bottom-end"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="applyTime"
+										prop="petitionConfirm"
 										label="申请书落款时间"
 										width="150"
 										sortable
@@ -217,24 +293,32 @@
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="culturel1Name"
+										prop="preMemberTime"
+										label="确定预备党员时间"
+										width="150"
+										sortable
+										align="center">
+								</el-table-column>
+								<el-table-column
+										prop="culture1Name"
 										label="培养联系人1"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 								<el-table-column
-										prop="culturel2Name"
+										prop="culture2Name"
 										label="培养联系人2"
 										width="120"
 										sortable
 										align="center">
 								</el-table-column>
 							</el-table-column>
+
 							<el-table-column label="操作" width="200" fixed="right" align="center">
 								<template slot-scope="scope">
 									<!-- 编辑 -->
-									<el-tooltip effect="dark" content="查看更多信息" placement="top" :enterable="false">
+									<el-tooltip effect="dark" content="查看个人信息" placement="top" :enterable="false">
 										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
 									</el-tooltip>
 									<!-- 查看其相关文档 -->
@@ -249,18 +333,21 @@
 							</el-table-column>
 						</el-table>
 
-						<!-- 分页区域 -->
-						<el-pagination @size-change="handleSizeChange"
-									   @current-change="handleCurrentChange"
-									   :current-page="queryInfo.pagenum"
-									   :page-sizes="[1, 2, 5, 10]"
-									   :page-size="queryInfo.pagesize"
-									   layout="total, sizes, prev, pager, next, jumper"
-									   :total="total">
+						<!-- 分页区域 页码大小  当前页  -->
+						<el-pagination
+								class="pagiantion"
+								@size-change="handleSizeChange"
+								@current-change="handleCurrentChange"
+								:current-page.sync="currentPage"
+								:page-sizes="[1, 2, 4, 8, 10]"
+								:page-size="size"
+								layout="total, sizes, prev, pager, next, jumper"
+								:total="total">
 						</el-pagination>
 					</el-card>
 
-					<!-- 查看上传文档情况的对话框 -->
+
+		<!-- 查看上传文档情况的对话框 -->
 					<el-dialog title="查看上传文档情况" :visible.sync="fileDialogVisible" width="50%">
 						<el-timeline>
 							<el-timeline-item
@@ -299,7 +386,7 @@
 					</el-dialog>
 
 					<!-- 添加的对话框 -->
-					<el-dialog title="单个导入" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+					<el-dialog  title="新增" :close-on-click-modal="false" :visible.sync="addDialogVisible" width="55%" @close="addDialogClosed">
 						<!-- 内容主体区域 -->
 						<el-form :rules="addFormRules" :model="addForm" ref="addFormRef" label-width="80px">
 							<el-row>
@@ -321,14 +408,14 @@
 								</el-col>
 							</el-row>
 							<el-row>
-								<el-col :span="10">
+								<el-col :span="12">
 									<el-form-item label="籍贯">
 										<el-input v-model="addForm.nativePlace"></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :span="12">
 									<el-form-item label="户籍所在地" label-width="100px">
-										<el-input v-model="addForm.nativePlace"></el-input>
+										<el-input v-model="addForm.residence"></el-input>
 									</el-form-item>
 								</el-col>
 							</el-row>
@@ -341,123 +428,171 @@
 							</el-row>
 							<el-row>
 								<el-col :span="8">
-									<el-form-item label="联系电话" prop="phoneNum">
-										<el-input v-model="addForm.phoneNum"></el-input>
+									<el-form-item label="联系电话" prop="phone">
+										<el-input v-model="addForm.phone"></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :span="8">
-									<el-form-item label="级">
+									<el-form-item label="年级">
 										<el-input v-model="addForm.grade"></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :span="8">
 									<el-form-item label="班级">
-										<el-input v-model="addForm.class"></el-input>
+										<el-input v-model="addForm.classNum"></el-input>
 									</el-form-item>
 								</el-col>
 							</el-row>
 							<el-row>
 								<el-col :span="8">
-									<el-form-item label="学号" prop="SID">
-										<el-input v-model="addForm.SID"></el-input>
+									<el-form-item label="学号" prop="sid" >
+										<el-input v-model="addForm.sid" ></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :span="8">
-									<el-form-item label="宿舍" prop="dormitory">
-										<el-input v-model="addForm.dormitory"></el-input>
+									<el-form-item label="宿舍" >
+										<el-input v-model="addForm.room"></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :span="8">
 									<el-form-item label="团支部">
 										<el-select
 												clearable
-												v-model="addForm.youthLeagueBranch"
+												v-model="addForm.leagueBranchId"
 												placeholder="请选择团支部">
 											<el-option
 													v-for="item in youthLeagueBranch"
-													:key="item.value"
-													:label="item.label"
-													:value="item.value">
+													:key="item.id"
+													:label="item.name"
+													:value="item.id">
 											</el-option>
 										</el-select>
 									</el-form-item>
 								</el-col>
+
 							</el-row>
 							<el-row>
 								<el-col :span="8">
-									<el-form-item label="学历">
-										<el-input v-model="addForm.education"></el-input>
+									<el-form-item label="党总支">
+										<!--v-model封装给addForm的哪个属性-->
+										<el-select
+												clearable
+												v-model="addForm.generalId"
+												placeholder="请选择党总支"
+												@change="generalChanged"
+										>
+											<el-option
+													v-for="item in general"
+													:key="item.id"
+													:label="item.generalName"
+													:value="item.id">
+											</el-option>
+										</el-select>
 									</el-form-item>
-
 								</el-col>
 								<el-col :span="8">
-									<el-form-item label="职务/职称">
-										<el-input v-model="addForm.duty"></el-input>
+									<el-form-item label="党支部">
+										<!--v-model封装给addForm的哪个属性-->
+										<el-select
+												clearable
+												v-model="addForm.partyId"
+												placeholder="请选择党支部" @change="partyChanged">
+											<el-option
+													v-for="item in party"
+													:key="item.id"
+													:label="item.partyName"
+													:value="item.id">
+											</el-option>
+										</el-select>
 									</el-form-item>
 								</el-col>
 								<el-col :span="8">
 									<el-form-item label="党小组">
 										<el-select
 												clearable
-												v-model="addForm.group"
+												v-model="addForm.groupId"
 												placeholder="请选择党小组">
 											<el-option
 													v-for="item in group"
-													:key="item.value"
-													:label="item.label"
-													:value="item.value">
+													:key="item.id"
+													:label="item.groupName"
+													:value="item.id">
 											</el-option>
 										</el-select>
 									</el-form-item>
 								</el-col>
+
+
 							</el-row>
 							<el-row>
-								<el-col :span="10">
+								<el-col :span="24">
 									<el-form-item
 											prop="culturel1Name"
 											label="培养联系人1"
 											label-width="120px">
 										<el-cascader
+												style="width:100%;"
 												placeholder="请选择培养联系人"
+												v-model="addForm.culture1Id"
 												:options="contacts"
-												v-model="addForm.culture1Name"
-												:show-all-levels="false"
-												filterable
 												clearable>
+
 										</el-cascader>
-									</el-form-item>
-								</el-col>
-								<el-col :span="14">
-									<el-form-item label="申请书落款日期" label-width="120px">
-										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.applyTime" style="width: 100%;"></el-date-picker>
+
 									</el-form-item>
 								</el-col>
 							</el-row>
+
 							<el-row>
-								<el-col :span="10">
+								<el-col :span="24">
 									<el-form-item
 											prop="culturel2Name"
 											label="培养联系人2"
 											label-width="120px">
 										<el-cascader
+												style="width:100%;"
 												placeholder="请选择培养联系人"
+												v-model="addForm.culture2Id"
 												:options="contacts"
-												v-model="addForm.culture2Name"
-												:show-all-levels="false"
-												filterable
-												clearable>
-										</el-cascader>
+												clearable></el-cascader>
 									</el-form-item>
 								</el-col>
-								<el-col :span="14">
+							</el-row>
+
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="职务">
+										<el-input v-model="addForm.duty"></el-input>
+									</el-form-item>
+								</el-col>
+
+								<el-col :span="8">
+									<el-form-item label="职称">
+										<el-input v-model="addForm.title"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="学历">
+										<el-input v-model="addForm.aducation"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="申请书落款日期" label-width="125px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.petitionConfirm" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
 									<el-form-item label="确定积极分子日期" label-width="130px">
 										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.activistTime" style="width: 100%;"></el-date-picker>
 									</el-form-item>
 								</el-col>
 							</el-row>
 							<el-row>
+
 								<el-col :span="12">
-									<el-form-item label="确定发展对象日期" label-width="130px">
+									<el-form-item label="确定发展对象日期" label-width="125px">
 										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.developTime" style="width: 100%;"></el-date-picker>
 									</el-form-item>
 								</el-col>
@@ -467,19 +602,245 @@
 									</el-form-item>
 								</el-col>
 							</el-row>
-
-							<el-form-item label="家庭地址(详细)">
+							<el-form-item label="家庭地址(详细)"label-width="110px">
 								<el-input v-model="addForm.address"></el-input>
 							</el-form-item>
 						</el-form>
 						<!-- 底部区域 -->
 						<span slot="footer" class="dialog-footer">
-								<el-button @click="addDialogVisible = false">取 消</el-button>
-								<el-button type="primary" @click="add">确 定</el-button>
-						</span>
+													<el-button @click="addDialogVisible = false">取 消</el-button>
+													<el-button type="primary" @click="add">确 定</el-button>
+												</span>
 					</el-dialog>
 
-					<!-- 查看信息的对话框 -->
+					<el-dialog  title="修改" :close-on-click-modal="false" :visible.sync="updateDialogVisible" width="55%" @close="addDialogClosed">
+						<!-- 内容主体区域 -->
+						<el-form :rules="updateFormRules" :model="addForm" ref="addFormRef" label-width="80px">
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="姓名">
+										<el-input v-model="addForm.name"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="性别" label-width="60px">
+										<el-radio v-model="addForm.sex" label="男">男</el-radio>
+										<el-radio v-model="addForm.sex" label="女">女</el-radio>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="民族">
+										<el-input v-model="addForm.nation"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="籍贯">
+										<el-input v-model="addForm.nativePlace"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="户籍所在地" label-width="100px">
+										<el-input v-model="addForm.residence"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="身份证">
+										<el-input v-model="addForm.idCard"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="联系电话" prop="phone">
+										<el-input v-model="addForm.phone"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="年级">
+										<el-input v-model="addForm.grade"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="班级">
+										<el-input v-model="addForm.classNum"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="学号" prop="sid" >
+										<el-input v-model="addForm.sid" disabled></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="宿舍" >
+										<el-input v-model="addForm.room"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="团支部">
+										<el-select
+												clearable
+												v-model="addForm.leagueBranchId"
+												placeholder="请选择团支部">
+											<el-option
+													v-for="item in youthLeagueBranch"
+													:key="item.id"
+													:label="item.name"
+													:value="item.id">
+											</el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="党总支">
+										<!--v-model封装给addForm的哪个属性-->
+										<el-select
+												clearable
+												v-model="addForm.generalId"
+												placeholder="请选择党总支"
+												@change="generalChanged"
+										>
+											<el-option
+													v-for="item in general"
+													:key="item.id"
+													:label="item.generalName"
+													:value="item.id">
+											</el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="党支部">
+										<!--v-model封装给addForm的哪个属性-->
+										<el-select
+												clearable
+												v-model="addForm.partyId"
+												placeholder="请选择党支部" @change="partyChanged">
+											<el-option
+													v-for="item in party"
+													:key="item.id"
+													:label="item.partyName"
+													:value="item.id">
+											</el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="党小组">
+										<el-select
+												clearable
+												v-model="addForm.groupId"
+												placeholder="请选择党小组">
+											<el-option
+													v-for="item in group"
+													:key="item.id"
+													:label="item.groupName"
+													:value="item.id">
+											</el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+
+
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item
+											prop="culturel1Name"
+											label="培养联系人1"
+											label-width="120px">
+										<el-cascader
+												style="width:100%;"
+												placeholder="请选择培养联系人"
+												v-model="addForm.culture1Id"
+												:options="contacts"
+												clearable>
+
+										</el-cascader>
+
+									</el-form-item>
+								</el-col>
+							</el-row>
+
+							<el-row>
+								<el-col :span="24">
+									<el-form-item
+											prop="culturel2Name"
+											label="培养联系人2"
+											label-width="120px">
+										<el-cascader
+												style="width:100%;"
+												placeholder="请选择培养联系人"
+												v-model="addForm.culture2Id"
+												:options="contacts"
+												clearable></el-cascader>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="8">
+									<el-form-item label="职务">
+										<el-input v-model="addForm.duty"></el-input>
+									</el-form-item>
+								</el-col>
+
+								<el-col :span="8">
+									<el-form-item label="职称">
+										<el-input v-model="addForm.title"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="8">
+									<el-form-item label="学历">
+										<el-input v-model="addForm.aducation"></el-input>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="申请书落款日期" label-width="125px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.petitionConfirm" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="确定积极分子日期" label-width="130px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.activistTime" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+
+								<el-col :span="12">
+									<el-form-item label="确定发展对象日期" label-width="125px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.developTime" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="确定预备党员日期" label-width="130px">
+										<el-date-picker type="date" placeholder="选择日期" v-model="addForm.preMemberTime" style="width: 100%;"></el-date-picker>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-form-item label="家庭地址(详细)"label-width="110px">
+								<el-input v-model="addForm.address"></el-input>
+							</el-form-item>
+						</el-form>
+						<!-- 底部区域 -->
+						<span slot="footer" class="dialog-footer">
+																<el-button @click="updateDialogVisible = false">取 消</el-button>
+																<el-button type="primary" @click="add">确 定</el-button>
+															</span>
+					</el-dialog>
+
+		<!-- 查看信息的对话框 -->
+		<!--
 					<el-dialog title="预备党员表" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
 						<table align="center" style="text-align: center" border="2px" width="500px" height="700px" cellspacing="0" cellpadding="2">
 							<tr>
@@ -540,7 +901,7 @@
         					<el-button type="primary">确 定</el-button>
       					</span>
 					</el-dialog>
-
+-->
 					<!-- 关系转移的对话框 -->
 					<el-dialog title="关系转移" :visible.sync="relationshipDialogVisible" width="40%" @close="setRelationshipDialogClosed">
 						<el-card>
@@ -565,7 +926,7 @@
 
 						<span slot="footer" class="dialog-footer">
 													<el-button @click="relationshipDialogVisible = false">取 消</el-button>
-													<el-button type="primary">确 定</el-button>
+													<el-button type="primary" @click="transfer">确 定</el-button>
 												</span>
 					</el-dialog>
 
@@ -590,7 +951,7 @@
 									<el-cascader
 											placeholder="请选择培养联系人"
 											:options="contacts"
-											v-model="dynamicValidateForm.culturel1Name"
+											v-model="dynamicValidateForm.organization1"
 											:show-all-levels="false"
 											filterable
 											clearable>
@@ -602,7 +963,7 @@
 									<el-cascader
 											placeholder="请选择培养联系人"
 											:options="contacts"
-											v-model="dynamicValidateForm.culture21Name"
+											v-model="dynamicValidateForm.organization2"
 											:show-all-levels="false"
 											filterable
 											clearable>
@@ -613,6 +974,7 @@
 
 						<span slot="footer" class="dialog-footer">
 								<el-button @click="contactsDialogVisible = false">取 消</el-button>
+							<el-button type="primary" @click="change_cul">确 定</el-button>
 						</span>
 					</el-dialog>
 
@@ -634,16 +996,35 @@
 
 						cb(new Error('请输入合法的手机号'))
 					}
+					var checkSid=(rule, value, cb)=>{
+						// 验证手机号的正则表达式
+						const regSid = /\b\d{12}\b/
+
+						if (regSid.test(value)) {
+							axios.get(`/baseUser/uniqueSid.do?sid=${this.addForm.sid}`).then(response => {
+								if (response.data.data.items==1){
+									cb(new Error('当前学号已被用'))
+								}else {
+									return cb()
+								}
+
+							});
+						}else {
+							cb(new Error('请输入合法的学号'))
+						}
+					}
 					return {
-						// 获取数据列表的参数对象
-						queryInfo: {
-							// 当前的页数
-							pagenum: 1,
-							// 当前每页显示多少条数据
-							pagesize: 2,
-							//按名字查询
-							name: ''
+						searchMap:{
+							name:'',
+							generalId:'',
+							partyId:'',
+							groupId:'',
+							leagueBranchId:''
 						},
+						general:[],
+						party:[],
+						youthLeagueBranch: [],
+						group: [],
 						preMemberList: [],
 						//检索党支部
 						selectParty: [],
@@ -654,23 +1035,33 @@
 						//全选
 						multipleSelection: [],
 						//当前页
-						currentPage4: 1,
+						currentPage: 1,
 						//总数
 						total: 10,
+						size: 10,
 						// 控制添加对话框的显示与隐藏
 						addDialogVisible: false,
+						updateDialogVisible: false,
 						// 添加的表单数据
 						addForm: {
-							sex: '男'
 						},
-						youthLeagueBranch: [],
-						group: [],
 						// 添加表单的验证规则对象
 						addFormRules: {
-							phoneNum: [
+							phone: [
 								{ required: true, message: '请输入手机号', trigger: 'blur' },
 								{ validator: checkMobile, trigger: 'blur' }
+							],
+							sid:[
+								{ required: true, message: '请输入学号', trigger: 'blur' },
+								{ validator: checkSid, trigger: 'blur' }
 							]
+
+						},
+						updateFormRules: {
+							phone: [
+								{ required: true, message: '请输入手机号', trigger: 'blur' },
+								{ validator: checkMobile, trigger: 'blur' }
+							],
 						},
 						// 控制查看信息对话框的显示与隐藏
 						showDialogVisible: false,
@@ -684,6 +1075,7 @@
 							filePath: '',
 							username: ''
 						},
+
 						// 控制查看文档对话框里面的对话框的显示与隐藏
 						innerVisible: false,
 						url: '',
@@ -691,8 +1083,6 @@
 						// 控制关系转移对话框的显示与隐藏
 						relationshipDialogVisible: false,
 						formLabelAlign: {
-							organization: '',
-							sum: ''
 						},
 						//关系转移的级联选择器
 						options: [],
@@ -700,304 +1090,79 @@
 						contactsDialogVisible: false,
 						//可选择培养联系人列表
 						contacts: [],
+						importBtnDisabled: false, // 按钮是否禁用,
+						loading: false,
 						dynamicValidateForm: {
-							contacts: [{
-								value: ''
-							}],
-							sum: ''
+							organization1:[],
+							organization2:[]
 						}
 					}
 				},
 				created() {
-					this.getpreMemberList()
+					this.getPreMemberList()
+					this.getGeneralList()
+					this.getYouthLeagueBranchList()
 				},
 				methods: {
-					getpreMemberList() {
+					fileUploadSuccess(response){
+						//提示信息
+						this.loading = false
+						this.$message.success("导入成功");
+						this.getPreMemberList()
+					},
+					fileUploadError() {
+						this.loading = false
+						this.$message.error("导入失败");
+					},
+					handleSizeChange(val) {
+						this.currentPage=1;
+						this.size=val;
+						this.getPreMemberList();
+					},
+					handleCurrentChange(val) {
+						this.currentPage=val;
+						this.getPreMemberList();
+					},
+					search(){
+						this.currentPage=1,
+								this.getPreMemberList()
+
+					},
+					getPreMemberList() {
 						//向后台获取数据列表
-						this.preMemberList = [
-							{
-								name: '赖乐宗',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第二党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
-							}, {
-								name: '廖盛浪',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第一党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
-							}, {
-								name: '赖乐宗',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第二党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
-							}, {
-								name: '赖乐宗',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第二党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
-							}, {
-								name: '赖乐宗',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第二党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
-							}, {
-								name: '廖盛浪',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第一党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
-							}, {
-								name: '廖盛浪',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第一党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
-							}, {
-								name: '廖盛浪',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第一党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
-							}, {
-								name: '廖盛浪',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第一党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
-							}, {
-								name: '廖盛浪',
-								sex: '男',
-								nation: '民族',
-								native: '广东广州',
-								nativePlace: '广东广州',
-								birth: '2020/09/19',
-								idCard: '440983333333333333',
-								phone: '123456789',
-								grade: '2018',
-								class: '网络181',
-								SID: '201810214718',
-								dormitory: '6-104',
-								email: '454305375@qq.com',
-								education: '本科',
-								duty: '班长',
-								address: '仲恺农业工程学院',
-								applyTime: '2018/09/20',
-								activistTime: '2019/09/20',
-								developTime: '2020/09/20',
-								preMemberTime: '2020/10/20',
-								culturel1Name: '小龙女',
-								culturel2Name: '杨过',
-								party: '信科院第一党支部',
-								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
-							}]
-						//检索党支部里数据是上面表格里面党支部的汇总数组
-						this.selectParty = [{
-							text: '信科院第一党支部',
-							value: '信科院第一党支部'
-						}, {
-							text: '信科院第二党支部',
-							value: '信科院第二党支部'
-						}]
-						this.selectGroup = [{
-							text: '信科院第一党小组',
-							value: '信科院第一党小组'
-						}, {
-							text: '信科院第二党小组',
-							value: '信科院第二党小组'
-						}]
-						this.selectYouth = [{
-							text: '信科院第一团支部',
-							value: '信科院第一团支部'
-						}, {
-							text: '信科院第二团支部',
-							value: '信科院第二团支部'
-						}]
+						axios.post(`/baseUser/findCommonPage.do?page=${this.currentPage}&size=${this.size}&type=2`,this.searchMap).then(response => {
+							this.preMemberList = response.data.data.pageInfo.rows;
+							this.total = response.data.data.pageInfo.total;
+						});
+					},
+					getYouthLeagueBranchList(){
+						axios.get(`/leagueBranch/findAll.do`).then(response => {
+							this.youthLeagueBranch = response.data.data.items;
+						});
+					},
+					getGeneralList(){
+						axios.get(`/general/findAll.do`).then(response => {
+							this.general = response.data.data.items;
+						});
+					},
+					generalChanged(value){//点击党总支触发chage，显示对应的支部
+						this.generalId=value;
+						//查找这个党总支下面的所有党支部
+						axios.get(`/party/findByGeneralId.do?generalId=${this.generalId}`).then(response => {
+							this.party = response.data.data.items;
+						});
+					},
+					partyChanged(value){
+						this.partyId=value;
+						axios.get(`/group/findByPartyId.do?partyId=${this.partyId}`).then(response => {
+							this.group = response.data.data.items;
+						});
+					},
+					downModel(){
+						window.location.href="model/preMember.xlsx";
+					},
+					downExcel(){
+						window.location.href="/excel/leadOutPreMember.do";
 					},
 					filterCell(value, row) {
 						return row.party === value;
@@ -1008,23 +1173,25 @@
 					filterCell3(value, row) {
 						return row.youthLeagueBranch === value;
 					},
+					//获取培养联系人级联下拉列表
+					getAllOption(){
+						axios.get(`/option/getOption.do`).then(response => {
+							this.contacts = response.data.data.items;
+						});
+
+					},
 					/**
 					 * 重置
 					 */
 					reset(){
-						this.queryInfo= {
-							pagenum: 1,
-							pagesize: 6,
-							name: "",
-							sex: ""
+						this.searchMap={
+							name:'',
+							generalId:'',
+							partyId:'',
+							groupId:'',
+							leagueBranchId:''
 						}
-					},
-					/**
-					 * 搜索用户
-					 */
-					searchUser() {
-						this.queryInfo.pageNum = 1;
-						this.getpreMemberList();
+						this.getPreMemberList()
 					},
 					toggleSelection(rows) {
 						if (rows) {
@@ -1036,426 +1203,17 @@
 						}
 					},
 					handleSelectionChange(val) {
-						this.multipleSelection = val;//val是一个数组
-					},
-					handleSizeChange(val) {
-						console.log(`每页 ${val} 条`);
-					},
-					handleCurrentChange(val) {
-						console.log(`当前页: ${val}`);
+						this.multipleSelection = val;
+						var array=[];
+						val.forEach((val,index)=>{
+							array.push(val.id);
+						})
+						this.formLabelAlign.select=array;//选中的人的id
+						this.dynamicValidateForm.select=array;
 					},
 					addDialogOpen() {
-						this.youthLeagueBranch = [{
-							value: '信科院第一团支部',
-							label: '信科院第一团支部'
-						}, {
-							value: '信科院第二团支部',
-							label: '信科院第二团支部'
-						}, {
-							value: '信科院第三团支部',
-							label: '信科院第三团支部'
-						}, {
-							value: '信科院第四团支部',
-							label: '信科院第四团支部'
-						}, {
-							value: '信科院第五团支部5',
-							label: '信科院第五团支部'
-						}]
-						this.group = [{
-							value: '信科院第一党小组',
-							label: '信科院第一党小组'
-						}, {
-							value: '信科院第二党小组',
-							label: '信科院第二党小组'
-						}, {
-							value: '信科院第三党小组',
-							label: '信科院第三党小组'
-						}, {
-							value: '信科院第四党小组',
-							label: '信科院第四党小组'
-						}, {
-							value: '信科院第五党小组5',
-							label: '信科院第五党小组'
-						}]
-						//获取培养联系人列表
-						this.contacts = [
-							{
-								value: '信科院第一党总支',
-								label: '信科院第一党总支',
-								children: [{
-									value: '信科院第一党支部',
-									label: '信科院第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '李彬豪',
-											label: '李彬豪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}, {
-									value: '信科院第二党支部',
-									label: '信科院第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第额党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										},{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}]
-							}]
+						this.addForm={}
+						this.getAllOption()//获取培养联系人级联下拉列表
 						this.addDialogVisible = true
 					},
 					// 点击按钮单个导入成员
@@ -1463,12 +1221,19 @@
 						this.$refs.addFormRef.validate(async valid => {
 							if (!valid) return
 							// 可以发起添加成员的网络请求
+							axios.post(`/baseUser/${this.addForm.id==null?'add':'updateCommon'}.do?type=2`,this.addForm).then(response => {
+								if (this.addForm.id==null){
+									this.$message.success('添加成员成功！')
+									// 隐藏添加成员的对话框
+									this.addDialogVisible = false
+								}else {
+									this.$message.success('修改成员成功！')
+									this.updateDialogVisible = false
+								}
+								// 重新获取成员列表数据
+								this.getPreMemberList()
+							});
 
-							this.$message.success('添加成员成功！')
-							// 隐藏添加成员的对话框
-							this.addDialogVisible = false
-							// 重新获取成员列表数据
-							this.getpreMemberList()
 						})
 					},
 					// 监听添加成员对话框的关闭事件
@@ -1482,32 +1247,27 @@
 					// 展示信息的对话框
 					showUserDialog(id) {
 						//根据id
-						this.showDialogVisible = true
+						this.updateDialogVisible = true
+						this.getAllOption()
+						axios.get(`/baseUser/findCommonById.do?id=${id}&type=2`).then(response => {
+							this.addForm = response.data.data.items;
+
+						});
 					},
 					// 根据Id删除对应的预备党员信息
 					async removeGroupById(id) {
-						// 弹框询问预备党员是否删除数据
-						const confirmResult = await this.$confirm(
-								'此操作将永久删除该预备党员, 是否继续?',
-								'提示',
-								{
-									confirmButtonText: '确定',
-									cancelButtonText: '取消',
-									type: 'warning'
-								}
-						).catch(err => err)
+						// 弹框询问党小组是否删除数据
+						this.$confirm('确定要删除此记录吗?', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						}).then( () => {
+							axios.get(`/baseUser/delete.do?id=${id}`).then(response => {
+								this.$message.success('删除预备党员成功！')
+								this.getPreMemberList()
+							})
+						})
 
-						// 如果预备党员确认删除，则返回值为字符串 confirm
-						// 如果预备党员取消了删除，则返回值为字符串 cancel
-						// console.log(confirmResult)
-						if (confirmResult !== 'confirm') {
-							return this.$message.info('已取消删除')
-						}
-
-						//此处向后台发请求进行删除
-
-						this.$message.success('删除预备党员成功！')
-						this.getpreMemberList()
 					},
 					showFileDialog() {
 						//此处应向后台获取数据
@@ -1576,107 +1336,27 @@
 						this.fileDialogVisible = false
 					},
 					showRelationshipDialog() {
-						if(this.multipleSelection.length == 0){
+						if(this.multipleSelection.length==0){//选择了多少项
 							this.$message.error('请选择你想转移的成员')
 							return
 						}
 						//先统计多选框里选中的人数。得出sum
-						this.formLabelAlign.sum = 10
+						this.formLabelAlign.sum = this.multipleSelection.length
 						//此处应向后台获取options数据
-						this.options = [
-							{
-								value: '信科院第一党总支',
-								label: '信科院第一党总支',
-								children: [{
-									value: '信科院第一党支部',
-									label: '信科院第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}]
-								}, {
-									value: '信科院第二党支部',
-									label: '信科院第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}]
-							}]
+						axios.get(`/option/getTransferOption.do`).then(response =>{
+							this.options = response.data.data.items
+						})
 						this.relationshipDialogVisible  = true
+					},
+					//处理关系转移的方法
+					transfer(){
+						// alert(JSON.stringify(this.formLabelAlign))
+						//要传选中的人的id过去，还要传选中的党小组id
+						axios.post(`/baseUser/transfer.do`,this.formLabelAlign).then(response => {
+							this.$message.success('关系转移成功！')
+							this.getPreMemberList()
+							this.relationshipDialogVisible = false
+						})
 					},
 					// 监听分配权限对话框的关闭事件
 					setRelationshipDialogClosed() {
@@ -1685,402 +1365,30 @@
 						}
 					},
 					//变更培养联系人
-					showContactsDialog() {
+					showContactsDialog(id) {
 						if(this.multipleSelection.length == 0){
 							this.$message.error('请选择你想变更联系人的成员')
 							return
 						}
 						//先统计多选框里选中的人数。得出sum
-						this.dynamicValidateForm.sum = 10
+						this.dynamicValidateForm.sum = this.multipleSelection.length
 						//获取培养联系人列表
-						this.contacts = [
-							{
-								value: '信科院第一党总支',
-								label: '信科院第一党总支',
-								children: [{
-									value: '信科院第一党支部',
-									label: '信科院第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '李彬豪',
-											label: '李彬豪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}, {
-									value: '信科院第二党支部',
-									label: '信科院第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第额党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第二党小组',
-										label: '第二党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第三党小组',
-										label: '第三党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}]
-									}, {
-										value: '第四党小组',
-										label: '第四党小组',
-										children: [{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}, {
-										value: '第五党小组',
-										label: '第五党小组',
-										children: [{
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										}, {
-											value: '廖盛浪',
-											label: '廖盛浪'
-										},{
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}, {
-											value: '赖乐宗',
-											label: '赖乐宗'
-										}]
-									}]
-								}]
-							}]
+						this.getAllOption()
 						this.contactsDialogVisible  = true
 					},
 					// 监听变更培养联系人对话框的关闭事件
 					setContactsDialogClosed() {
 						this.dynamicValidateForm = {
-							contacts: [{
-								value: ''
-							}],
-							sum: ''
+							organization1:[],
+							organization2:[]
 						}
+					},
+					change_cul(){
+						axios.post(`/baseUser/changeCul.do`,this.dynamicValidateForm).then(response => {
+							this.$message.success('变更培养联系人成功！')
+							this.getPreMemberList()
+							this.contactsDialogVisible = false
+						})
 					},
 					submitForm(formName) {
 						this.$refs[formName].validate((valid) => {

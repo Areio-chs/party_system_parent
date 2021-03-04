@@ -45,48 +45,17 @@ public class BaseUserController {
 
         return R.ok().data("pageInfo",pageInfo);
     }
-//    @PostMapping("/findTest")
-//    public R findTest(@RequestBody String name){
-//        List<BaseUser> test = baseUserService.findTest(name);
-//        return R.ok().data("items",test);
-//    }
 
-//    @PostMapping("/findPage")
-//    public PageResult<BaseUser> findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
-//        return  baseUserService.findPage(searchMap,page,size);
-//    }
-
-    @GetMapping("/findById")
-    public R findById(String id){
-//        ActivistVo activistVo = baseUserService.findById(id);
-//        return R.ok().data("items",activistVo);
-        ActivistVo activistVo = baseUserService.findById(id);
-        List<String> cul1List = new ArrayList<>();
-        List<String> cul2List = new ArrayList<>();
-        if (!StringUtils.isEmpty(activistVo.getCulture1Id())){
-            cul1List = baseUserService.handleCul(activistVo.getCulture1Id());
-        }
-        if (!StringUtils.isEmpty(activistVo.getCulture2Id())){
-            cul2List = baseUserService.handleCul(activistVo.getCulture2Id());
-        }
-
-        return R.ok().data("items",activistVo).data("cul1",cul1List).data("cul2",cul2List);
-    }
-    //到时候可以把上面那个去掉？
-    @GetMapping("/findMemberById")
-    public R findMemberById(String id,int type){
+    @GetMapping("/findCommonById")
+    public R findCommonById(String id,int type){
         System.out.println("11111111111111111111");
         System.out.println(id+":"+type);
 
-        CommonVo memberVo = baseUserService.findMemberById(id,type);
+        CommonVo memberVo = baseUserService.findCommonById(id,type);
         System.out.println(memberVo.toString());
         return R.ok().data("items",memberVo);
     }
-//    @PostMapping("/add")
-//    public R add(@RequestBody ActivistVo activistVo){
-//        baseUserService.add(activistVo);
-//        return R.ok();
-//    }
+
     @PostMapping("/add")
     public R add(@RequestBody CommonVo commonVo,int type){
         baseUserService.addCommon(commonVo,type);
@@ -97,15 +66,9 @@ public class BaseUserController {
         int result = baseUserService.uniqueSid(sid);//0说明里面现在没这个学号
         return R.ok().data("items",result);
     }
-    @PostMapping("/update")
-    public R update(@RequestBody ActivistVo activistVo) throws Exception{
-
-        baseUserService.update(activistVo);
-        return R.ok();
-    }
+    //积极/发展/预备/正式
     @PostMapping("/updateCommon")
     public R update(@RequestBody CommonVo commonVo,int type) throws Exception{
-
         baseUserService.updateCommon(commonVo,type);
         return R.ok();
     }
@@ -127,9 +90,5 @@ public class BaseUserController {
         return R.ok();
     }
     //---------------------------------发展对象----------------------------------------
-    @PostMapping("/findActivist")
-    public R findDevelopmentPage(@RequestBody Map<String,Object> searchMap,int page, int size){
-        PageResult<DevelopmentVo> development = baseUserService.findDevelopment(searchMap,page,size);
-        return R.ok().data("development",development);
-    }
+
 }
