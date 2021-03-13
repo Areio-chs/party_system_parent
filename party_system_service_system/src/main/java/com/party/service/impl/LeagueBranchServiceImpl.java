@@ -2,9 +2,13 @@ package com.party.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.party.dao.GroupMapper;
 import com.party.dao.LeagueBranchMapper;
+import com.party.dao.PartyMapper;
 import com.party.entity.PageResult;
+import com.party.pojo.system.Group;
 import com.party.pojo.system.LeagueBranch;
+import com.party.pojo.system.Party;
 import com.party.service.system.LeagueBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
@@ -17,6 +21,10 @@ public class LeagueBranchServiceImpl implements LeagueBranchService {
 
     @Autowired
     private LeagueBranchMapper leagueBranchMapper;
+    @Autowired
+    private PartyMapper partyMapper;
+    @Autowired
+    private GroupMapper groupMapper;
 
     /**
      * 返回全部记录
@@ -58,7 +66,18 @@ public class LeagueBranchServiceImpl implements LeagueBranchService {
     public PageResult<LeagueBranch> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
-        Page<LeagueBranch> leagueBranchs = (Page<LeagueBranch>) leagueBranchMapper.selectByExample(example);
+        List<LeagueBranch> leagueBranchList = leagueBranchMapper.selectByExample(example);
+        for (LeagueBranch leagueBranch : leagueBranchList) {
+            if (!(leagueBranch.getGroupId()==null)){
+                Group group = groupMapper.selectByPrimaryKey(leagueBranch.getGroupId());
+                leagueBranch.setGroupName(group.getGroupName());
+            }
+            if (!(leagueBranch.getPartyId()==null)){
+                Party party = partyMapper.selectByPrimaryKey(leagueBranch.getPartyId());
+                leagueBranch.setPartyName(party.getPartyName());
+            }
+        }
+        Page<LeagueBranch> leagueBranchs = (Page<LeagueBranch>) leagueBranchList;
         return new PageResult<LeagueBranch>(leagueBranchs.getTotal(),leagueBranchs.getResult());
     }
 
@@ -68,7 +87,16 @@ public class LeagueBranchServiceImpl implements LeagueBranchService {
      * @return
      */
     public LeagueBranch findById(String id) {
-        return leagueBranchMapper.selectByPrimaryKey(id);
+        LeagueBranch leagueBranch = leagueBranchMapper.selectByPrimaryKey(id);
+        if (!(leagueBranch.getGroupId()==null)){
+            Group group = groupMapper.selectByPrimaryKey(leagueBranch.getGroupId());
+            leagueBranch.setGroupName(group.getGroupName());
+        }
+        if (!(leagueBranch.getPartyId()==null)){
+            Party party = partyMapper.selectByPrimaryKey(leagueBranch.getPartyId());
+            leagueBranch.setPartyName(party.getPartyName());
+        }
+        return leagueBranch;
     }
 
     /**
@@ -93,6 +121,18 @@ public class LeagueBranchServiceImpl implements LeagueBranchService {
      */
     public void delete(String id) {
         leagueBranchMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public void transfer(Map<String, Object> formLabelAlign) {
+
+    }
+
+    @Override
+    public List<LeagueBranch> findByGroupId(String groupId) {
+        LeagueBranch leagueBranch = new LeagueBranch();
+        leagueBranch.setGroupId(groupId);
+        return  leagueBranchMapper.select(leagueBranch);
     }
 
     /**

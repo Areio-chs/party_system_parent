@@ -1,6 +1,7 @@
 package com.party.pojo.system;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 /**
  * leagueBranch实体类
@@ -25,13 +26,37 @@ public class LeagueBranch implements Serializable{
 
 	private String groupId;//group_id
 
+	//处理不在数据库的字段
+	@Transient
+	private String groupName;//党支部名
+
 	private String accountId;//account_id
 
 	private String partyId;//party_id
 
+	//处理不在数据库的字段
+	@Transient
+	private String partyName;//党支部名
+
+
 	private String memberId;//党员id,在base_user中
 
-	
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getPartyName() {
+		return partyName;
+	}
+
+	public void setPartyName(String partyName) {
+		this.partyName = partyName;
+	}
+
 	public String getId() {
 		return id;
 	}

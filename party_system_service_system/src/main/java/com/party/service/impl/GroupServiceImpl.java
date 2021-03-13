@@ -3,18 +3,24 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.party.dao.GroupMapper;
+import com.party.dao.PartyMapper;
 import com.party.entity.PageResult;
-import com.party.pojo.system.Group;
+import com.party.pojo.system.*;
 import com.party.service.system.GroupService;
+import com.party.vo.ActivistVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.lang.System;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class GroupServiceImpl implements GroupService {
 
+    @Autowired
+    private PartyMapper partyMapper;
     @Autowired
     private GroupMapper groupMapper;
 
@@ -58,7 +64,14 @@ public class GroupServiceImpl implements GroupService {
     public PageResult<Group> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
-        Page<Group> groups = (Page<Group>) groupMapper.selectByExample(example);
+        List<Group> groupList = groupMapper.selectByExample(example);
+        for (Group group : groupList) {
+            if (!(group.getPartyId()==null)){
+                Party party = partyMapper.selectByPrimaryKey(group.getPartyId());
+                group.setPartyName(party.getPartyName());
+            }
+        }
+        Page<Group> groups = (Page<Group>) groupList;
         return new PageResult<Group>(groups.getTotal(),groups.getResult());
     }
 
@@ -68,7 +81,12 @@ public class GroupServiceImpl implements GroupService {
      * @return
      */
     public Group findById(String id) {
-        return groupMapper.selectByPrimaryKey(id);
+        Group group = groupMapper.selectByPrimaryKey(id);
+        if (!(group.getPartyId()==null)){
+            Party party = partyMapper.selectByPrimaryKey(group.getPartyId());
+            group.setPartyName(party.getPartyName());
+        }
+        return group;
     }
 
     /**
@@ -76,6 +94,7 @@ public class GroupServiceImpl implements GroupService {
      * @param group
      */
     public void add(Group group) {
+
         groupMapper.insert(group);
     }
 
@@ -84,6 +103,7 @@ public class GroupServiceImpl implements GroupService {
      * @param group
      */
     public void update(Group group) {
+
         groupMapper.updateByPrimaryKeySelective(group);
     }
 
@@ -92,8 +112,24 @@ public class GroupServiceImpl implements GroupService {
      * @param id
      */
     public void delete(String id) {
+
         groupMapper.deleteByPrimaryKey(id);
     }
+
+    //关系转移
+    @Transactional
+    @Override
+    public void transfer(Map<String, Object> formLabelAlign) {
+        String partyId =(String)formLabelAlign.get("toParty");
+        Party newParty = partyMapper.selectByPrimaryKey(partyId);
+        List<String> ids = (List<String>) formLabelAlign.get("select");//选中的所有人的id
+        Group group = new Group();
+        for (String id:ids) {
+            Group group1 = groupMapper.selectByPrimaryKey(id);
+            Party oldParty = partyMapper.selectByPrimaryKey(group1.getPartyId());
+        }
+    }
+
 
     @Override
     public List<Group> findByPartyId(String partyId) {

@@ -4,7 +4,9 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.entity.Result;
+import com.party.pojo.system.Group;
 import com.party.pojo.system.LeagueBranch;
+import com.party.pojo.system.Party;
 import com.party.service.system.LeagueBranchService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,11 @@ public class LeagueBranchController {
     @GetMapping("/findAll")
     public R findAll(){
         List<LeagueBranch> list = leagueBranchService.findAll();
+        return R.ok().data("items",list);
+    }
+    @GetMapping("/findByPartyId")
+    public R findByPartyId(String groupId){
+        List<LeagueBranch> list = leagueBranchService.findByGroupId(groupId);
         return R.ok().data("items",list);
     }
 
@@ -39,28 +46,39 @@ public class LeagueBranchController {
     }
 
     @GetMapping("/findById")
-    public LeagueBranch findById(String id){
-        return leagueBranchService.findById(id);
+    public R findById(String id){
+        LeagueBranch leagueBranch = leagueBranchService.findById(id);
+        return R.ok().data("items",leagueBranch);
     }
 
 
     @PostMapping("/add")
-    public Result add(@RequestBody LeagueBranch leagueBranch){
+    public R add(@RequestBody LeagueBranch leagueBranch){
         leagueBranchService.add(leagueBranch);
-        return new Result();
+        return R.ok();
     }
 
     @PostMapping("/update")
-    public Result update(@RequestBody LeagueBranch leagueBranch){
+    public R update(@RequestBody LeagueBranch leagueBranch){
         leagueBranchService.update(leagueBranch);
-        return new Result();
+        return R.ok();
     }
 
     @GetMapping("/delete")
-    public Result delete(String id){
+    public R delete(String id){
         leagueBranchService.delete(id);
-        return new Result();
+        return R.ok();
     }
 
+    @PostMapping("/findLeagueBranch")
+    public R findPartyPage(@RequestBody Map<String,Object> searchMap, int page, int size){
+        PageResult<LeagueBranch> leagueBranch = leagueBranchService.findPage(searchMap,page,size);
+        return R.ok().data("leagueBranch",leagueBranch);
+    }
 
+    @PostMapping("/transfer")
+    public R transfer(@RequestBody Map<String,Object> formLabelAlign){
+        leagueBranchService.transfer(formLabelAlign);
+        return R.ok();
+    }
 }

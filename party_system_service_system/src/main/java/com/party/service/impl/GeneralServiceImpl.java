@@ -95,6 +95,10 @@ public class GeneralServiceImpl implements GeneralService {
         generalMapper.deleteByPrimaryKey(id);
     }
 
+    @Override
+    public void transfer(Map<String, Object> formLabelAlign) {
+
+    }
 
 
     /**

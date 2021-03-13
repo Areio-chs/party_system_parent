@@ -2,8 +2,11 @@ package com.party.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.party.dao.GeneralMapper;
+import com.party.dao.GroupMapper;
 import com.party.dao.PartyMapper;
 import com.party.entity.PageResult;
+import com.party.pojo.system.Group;
 import com.party.pojo.system.General;
 import com.party.pojo.system.Party;
 import com.party.service.system.PartyService;
@@ -16,6 +19,8 @@ import java.util.Map;
 @Service
 public class PartyServiceImpl implements PartyService {
 
+    @Autowired
+    private GeneralMapper generalMapper;
     @Autowired
     private PartyMapper partyMapper;
 
@@ -59,7 +64,14 @@ public class PartyServiceImpl implements PartyService {
     public PageResult<Party> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
-        Page<Party> partys = (Page<Party>) partyMapper.selectByExample(example);
+        List<Party> partyList = partyMapper.selectByExample(example);
+        for (Party party : partyList) {
+            if (!(party.getGeneralId()==null)){
+                General general = generalMapper.selectByPrimaryKey(party.getGeneralId());
+                party.setGeneralName(general.getGeneralName());
+            }
+        }
+        Page<Party> partys = (Page<Party>) partyList;
         return new PageResult<Party>(partys.getTotal(),partys.getResult());
     }
 
@@ -69,7 +81,12 @@ public class PartyServiceImpl implements PartyService {
      * @return
      */
     public Party findById(String id) {
-        return partyMapper.selectByPrimaryKey(id);
+        Party party = partyMapper.selectByPrimaryKey(id);
+        if (!(party.getGeneralId()==null)){
+            General general = generalMapper.selectByPrimaryKey(party.getGeneralId());
+            party.setGeneralName(general.getGeneralName());
+        }
+        return party;
     }
 
     /**
@@ -77,6 +94,7 @@ public class PartyServiceImpl implements PartyService {
      * @param party
      */
     public void add(Party party) {
+
         partyMapper.insert(party);
     }
 
@@ -85,6 +103,7 @@ public class PartyServiceImpl implements PartyService {
      * @param party
      */
     public void update(Party party) {
+
         partyMapper.updateByPrimaryKeySelective(party);
     }
 
@@ -93,6 +112,7 @@ public class PartyServiceImpl implements PartyService {
      * @param id
      */
     public void delete(String id) {
+
         partyMapper.deleteByPrimaryKey(id);
     }
 

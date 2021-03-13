@@ -1,6 +1,7 @@
 package com.party.pojo.system;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 /**
  * party实体类
@@ -28,8 +29,19 @@ public class Party implements Serializable{
 
 	private String generalId;//党总支id
 
+	//处理不在数据库的字段
+	@Transient
+	private String generalName;//党支部名
+
 	private String accountId;//账户id
 
+	public String getGeneralName() {
+		return generalName;
+	}
+
+	public void setGeneralName(String generalName) {
+		this.generalName = generalName;
+	}
 	
 	public String getId() {
 		return id;
