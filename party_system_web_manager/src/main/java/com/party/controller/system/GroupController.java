@@ -5,6 +5,7 @@ import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.Group;
+import com.party.pojo.system.Party;
 import com.party.service.system.GroupService;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,27 +44,46 @@ public class GroupController {
     }
 
     @GetMapping("/findById")
-    public Group findById(String id){
-        return groupService.findById(id);
+    public R findById(String id){
+        Group group = groupService.findById(id);
+        return R.ok().data("items",group);
     }
 
 
     @PostMapping("/add")
-    public Result add(@RequestBody Group group){
+    public R add(@RequestBody Group group){
         groupService.add(group);
-        return new Result();
+        return R.ok();
     }
 
     @PostMapping("/update")
-    public Result update(@RequestBody Group group){
+    public R update(@RequestBody Group group){
         groupService.update(group);
-        return new Result();
+        return R.ok();
     }
 
     @GetMapping("/delete")
-    public Result delete(String id){
+    public R delete(String id){
         groupService.delete(id);
-        return new Result();
+        return R.ok();
+    }
+
+    @PostMapping("/findGroup")
+    public R findGroupPage(@RequestBody Map<String,Object> searchMap, int page, int size){
+        System.out.println("lai444");
+        searchMap.put("name","小组");
+        System.out.println(searchMap.toString());
+        System.out.println(page);
+        System.out.println(size);
+        PageResult<Group> group = groupService.findPage(searchMap,page,size);
+        System.out.println(group.getRows()+""+group.getTotal());
+        return R.ok().data("group",group);
+    }
+
+    @PostMapping("/transfer")
+    public R transfer(@RequestBody Map<String,Object> formLabelAlign){
+        groupService.transfer(formLabelAlign);
+        return R.ok();
     }
 
 }

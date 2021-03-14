@@ -33,4 +33,5 @@ public interface GeneralService {
     public void delete(String id);
 
 
+    void transfer(Map<String, Object> formLabelAlign);
 }

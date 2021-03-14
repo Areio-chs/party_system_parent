@@ -5,6 +5,7 @@ import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.General;
+import com.party.pojo.system.Party;
 import com.party.service.system.GeneralService;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,27 +41,40 @@ public class GeneralController {
     }
 
     @GetMapping("/findById")
-    public General findById(String id){
-        return generalService.findById(id);
+    public R findById(String id){
+        General general = generalService.findById(id);
+        return  R.ok().data("items",general);
     }
 
 
     @PostMapping("/add")
-    public Result add(@RequestBody General general){
+    public R add(@RequestBody General general){
         generalService.add(general);
-        return new Result();
+        return R.ok();
     }
 
     @PostMapping("/update")
-    public Result update(@RequestBody General general){
+    public R update(@RequestBody General general){
         generalService.update(general);
-        return new Result();
+        return R.ok();
     }
 
     @GetMapping("/delete")
-    public Result delete(String id){
+    public R delete(String id){
         generalService.delete(id);
-        return new Result();
+        return R.ok();
+    }
+
+    @PostMapping("/findGeneral")
+    public R findGeneralPage(@RequestBody Map<String,Object> searchMap, int page, int size){
+        PageResult<General> general = generalService.findPage(searchMap,page,size);
+        return R.ok().data("general",general);
+    }
+
+    @PostMapping("/transfer")
+    public R transfer(@RequestBody Map<String,Object> formLabelAlign){
+        generalService.transfer(formLabelAlign);
+        return R.ok();
     }
 
 }

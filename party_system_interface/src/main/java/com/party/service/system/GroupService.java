@@ -32,5 +32,7 @@ public interface GroupService {
 
     public void delete(String id);
 
+    void transfer(Map<String, Object> formLabelAlign);
+
     List<Group> findByPartyId(String partyId);
 }

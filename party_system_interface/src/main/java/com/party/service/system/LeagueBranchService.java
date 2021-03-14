@@ -1,5 +1,6 @@
 package com.party.service.system;
 import com.party.entity.PageResult;
+import com.party.pojo.system.Group;
 import com.party.pojo.system.LeagueBranch;
 
 import java.util.*;
@@ -32,4 +33,7 @@ public interface LeagueBranchService {
 
     public void delete(String id);
 
+    void transfer(Map<String, Object> formLabelAlign);
+
+    List<LeagueBranch> findByGroupId(String groupId);
 }

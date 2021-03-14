@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.entity.Result;
+import com.party.pojo.system.Group;
 import com.party.pojo.system.Party;
 import com.party.service.system.PartyService;
 import org.springframework.web.bind.annotation.*;
@@ -43,27 +44,33 @@ public class PartyController {
     }
 
     @GetMapping("/findById")
-    public Party findById(String id){
-        return partyService.findById(id);
+    public R findById(String id){
+        Party party = partyService.findById(id);
+        return R.ok().data("items",party);
     }
 
 
     @PostMapping("/add")
-    public Result add(@RequestBody Party party){
+    public R add(@RequestBody Party party){
         partyService.add(party);
-        return new Result();
+        return R.ok();
     }
 
     @PostMapping("/update")
-    public Result update(@RequestBody Party party){
+    public R update(@RequestBody Party party){
         partyService.update(party);
-        return new Result();
+        return R.ok();
     }
 
     @GetMapping("/delete")
-    public Result delete(String id){
+    public R delete(String id){
         partyService.delete(id);
-        return new Result();
+        return R.ok();
     }
 
+    @PostMapping("/findParty")
+    public R findPartyPage(@RequestBody Map<String,Object> searchMap, int page, int size){
+        PageResult<Party> party = partyService.findPage(searchMap,page,size);
+        return R.ok().data("party",party);
+    }
 }
