@@ -20,11 +20,6 @@ public class BaseUserController {
     @Reference
     private BaseUserService baseUserService;
 
-//    @GetMapping("/findAll")
-//    public List<BaseUser> findAll(){
-//        return baseUserService.findAll();
-//    }
-
     @GetMapping("/findPage")
     public PageResult<BaseUser> findPage(int page, int size){
         return baseUserService.findPage(page, size);
