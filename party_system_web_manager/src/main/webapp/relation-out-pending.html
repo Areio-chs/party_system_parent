@@ -53,7 +53,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="searchMap.generalId" clearable placeholder="党组织" @change="generalChanged">
+        <el-select v-model="searchMap.generalId" clearable placeholder="党总支" @change="generalChanged">
           <el-option
                   v-for="item in general"
                   :key="item.id"
@@ -142,14 +142,14 @@
         </el-table-column>
       <el-table-column
               prop="fromTime"
-              label="加入当前党组织时间"
+              label="加入当前党总支时间"
               width="180"
               sortable
               align="center">
       </el-table-column>
         <el-table-column
                 prop="toName"
-                label="要转出的党组织"
+                label="要转出的党总支"
                 width="150"
                 sortable
                 align="center">
@@ -1288,7 +1288,7 @@
             },
             showRelationshipDialog() {
                 if(this.multipleSelection.length==0){//选择了多少项
-                    this.$message.error('请选择你想转移的成员')
+                    this.$message.error('请选择你想审核通过的成员')
                     return
                 }
                 //先统计多选框里选中的人数。得出sum
