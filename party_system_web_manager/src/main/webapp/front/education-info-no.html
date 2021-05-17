@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/activity-info.css">
+
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+    <style>
+        .upload-demo {
+            width: 98%;
+        }
+        .el-upload {
+            width: 100%;
+        }
+        .butt {
+            width: 100%;
+            background-color: #1AA094;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="app">
+    <a href="javascript:history.go(-1)" class="return">
+        <
+    </a>
+    <div class="header">
+        培养教育详情
+    </div>
+    <div class="actHeader">
+        <div class="actLogo">
+            <img src="../images/wait.png">
+        </div>
+        <div class="actInfo">
+                    <span>
+                        {{ study.studyName }}
+                    </span>
+        </div>
+    </div>
+    <ul class="base">
+        <li>
+            <span>主题</span>
+            <span>{{ study.studyNote }}</span>
+        </li>
+        <li>
+            <span>学习地点</span>
+            <span>{{ study.studyPlace }}</span>
+        </li>
+        <li>
+            <span>学习积分</span>
+            <span>{{ study.integral }}</span>
+        </li>
+        <li>
+            <span>发布时间</span>
+            <span>{{ study.publishTime }}</span>
+        </li>
+    </ul>
+    <div>
+        <el-upload
+                class="upload-demo"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :on-change="handleChange"
+                :file-list="fileList">
+            <el-button class="butt" >上传学习总结</el-button>
+        </el-upload>
+    </div>
+
+</div>
+
+<!-- 引入组件库 -->
+<script src="../assets/js/vue.js"></script><!-- vue -->
+<script src="../assets/js/elementui.js"></script>
+<script src="../assets/js/axios.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        // router,
+        data() {
+            return {
+                study: {},
+                fileList: []
+            };
+        },
+        created() {
+            this.getData()
+        },
+        methods: {
+            getData() {
+                this.study = {
+                    id: 1,
+                    studyName: '青年大学习第十一季第九期',
+                    studyPlace: '网上学习',
+                    integral: '10',
+                    publishTime: '2020-05-27 16:00:00',
+                    studyNote: '庆祝中国共产党成立100周年',
+                    publisher: '廖盛浪'
+                }
+            },
+            handleChange(file, fileList) {
+                this.fileList = fileList.slice(-3);
+            }
+        }
+    })
+</script>
+</body>
+</html>

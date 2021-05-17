@@ -25,17 +25,17 @@
 </head>
 <body>
         <div id="app" class="app">
-            <a href="#" class="return">
+            <a href="javascript:history.go(-1)" class="return">
                 <
             </a>
             <div class="header">
-                积极分子
+                发展对象
             </div>
             <div class="info">
                 <img src="../images/logo.jpg">
                 <div>
                     <span>廖盛浪</span>
-                    <span>入党申请人</span>
+                    <span>发展对象</span>
                 </div>
             </div>
             <h3>申请推优</h3>
@@ -108,13 +108,14 @@
                     submit() {
                         //提交Form
                         console.log(this.Form)
+                        alert("申请成功！请等待审核结果。");
+                        window.history.back(-1);    //返回上一页
                     },
                     handleChange(file, fileList) {
                         this.fileList = fileList.slice(-3);
                     },
                     uploadSuccess(response, file, fileList) {
                         this.$message.success('上传成功');
-
                     }
                 }
             })

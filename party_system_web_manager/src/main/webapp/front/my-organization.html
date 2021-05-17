@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>院系党务系统</title>
+    <link rel="stylesheet" href="../css/front/normalize.css">
+    <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../css/front/information.css">
+</head>
+<body>
+<div id="app" class="app">
+    <a href="javascript:history.go(-1)" class="return">
+        <
+    </a>
+    <div class="header">
+        我的组织
+    </div>
+
+
+    <ul class="base">
+        <li>
+            <span>组织全称</span>
+            <span style="margin-left: 90px">中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业183班支部委员会</span>
+        </li>
+        <li>
+            <span>团组织简称</span>
+            <span style="margin-left: 150px">仲恺农业工程学院信息科学与技术学院计算机科学与技术专业183班团支部</span>
+        </li>
+        <li>
+            <span>企业微信名称</span>
+            <span>计算机本科2018三班团支部</span>
+        </li>
+        <li>
+            <span>组织类别</span>
+            <span>团支部</span>
+        </li>
+        <li>
+            <span>单位所属行业类别</span>
+            <span>普通高等院校</span>
+        </li>
+        <li>
+            <span>团组织联系电话</span>
+            <span>13415247261</span>
+        </li>
+        <li>
+            <span>团组织电子邮箱</span>
+            <span>451928919@qq.com</span>
+        </li>
+        <li>
+            <span>14-28周岁青年数</span>
+            <span></span>
+        </li>
+        <li>
+            <span>年度经推优入党团员数</span>
+            <span></span>
+        </li>
+        <li>
+            <span>上级组织名称</span>
+            <span style="margin-left: 50px">中国共产主义青年团仲恺农业工程学院信息科学与技术学院委员会</span>
+        </li>
+    </ul>
+
+</div>
+
+
+<!-- 引入组件库 -->
+<script src="../assets/js/vue.js"></script>
+<script src="../assets/js/axios.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        // router,
+        data() {
+            return {
+                user: {}
+            };
+        },
+        created() {
+            this.getUser()
+        },
+        computed: {
+        },
+        methods: {
+
+        }
+    })
+</script>
+</body>
+</html>

@@ -26,7 +26,7 @@
 </head>
 <body>
         <div id="app" class="app">
-            <a href="#" class="return">
+            <a href="javascript:history.go(-1)" class="return">
                 <
             </a>
             <div class="header">
@@ -44,6 +44,10 @@
             </div>
             <ul class="base">
                 <li>
+                    <span>主题</span>
+                    <span>{{ study.studyNote }}</span>
+                </li>
+                <li>
                     <span>学习地点</span>
                     <span>{{ study.studyPlace }}</span>
                 </li>
@@ -53,15 +57,11 @@
                 </li>
                 <li>
                     <span>发布时间</span>
+                    <span>{{ study.publishTime }}</span>
+                </li>
+                <li>
+                    <span>学习时间</span>
                     <span>{{ study.studyTime}}</span>
-                </li>
-                <li>
-                    <span>截止时间</span>
-                    <span>{{ study.endTime }}</span>
-                </li>
-                <li>
-                    <span>学习备注</span>
-                    <span>{{ study.studyNote }}</span>
                 </li>
             </ul>
             <div>
@@ -70,7 +70,7 @@
                         action="https://jsonplaceholder.typicode.com/posts/"
                         :on-change="handleChange"
                         :file-list="fileList">
-                    <el-button class="butt">上传总结</el-button>
+                    <el-button class="butt" >上传总结</el-button>
                 </el-upload>
             </div>
 
@@ -88,13 +88,7 @@
                     data() {
                         return {
                             study: {},
-                            fileList: [{
-                                name: 'food.jpeg',
-                                url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-                            }, {
-                                name: 'food2.jpeg',
-                                url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-                            }]
+                            fileList: []
                         };
                     },
                     created() {
@@ -104,12 +98,12 @@
                         getData() {
                             this.study = {
                                 id: 1,
-                                studyName: '党课',
-                                studyPlace: '教学楼B301',
-                                integral: '100',
-                                studyTime: '2020-09-23 24:00:00',
-                                endTime: '2020-09-23 24:00:00',
-                                studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+                                studyName: '青年大学习第十一季第九期',
+                                studyPlace: '网上学习',
+                                integral: '10',
+                                studyTime: '2020-05-17 21:34:30',
+                                publishTime: '2020-05-12 16:00:00',
+                                studyNote: '“抗美援朝 保家卫国”',
                                 publisher: '廖盛浪'
                             }
                         },

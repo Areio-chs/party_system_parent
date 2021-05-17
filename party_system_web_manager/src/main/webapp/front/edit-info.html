@@ -15,7 +15,7 @@
 </head>
 <body>
         <div id="app" class="app">
-            <a href="#" class="return">
+            <a href="javascript:history.go(-1)" class="return">
                 <
             </a>
             <div class="header">
@@ -39,7 +39,7 @@
                         <label>性别</label>
                         <div class="sex">
                             <input type="radio" name="sex" v-model="editForm.sex" value="男">男
-                            <input type="radio" name="sex" v-model="editForm.sex" value="女">女
+                            <input type="radio" name="sex" v-model="editForm.sex" value="女" disabled>女
                         </div>
                     </li>
                     <li>
@@ -102,14 +102,14 @@
                         //根据id响应数据
                         this.editForm = {
                             id: 1,
-                            name: '赖乐宗',
+                            name: '廖盛浪',
                             sex: '男',
                             nation: '民族',
                             native: '广东广州',
                             nativePlace: '广东广州',
-                            idCard: '440983333333333333',
-                            phone: '123456789',
-                            grade: '2018',
+                            idCard: '440981200010241546',
+                            phone: '13142323877',
+                            grade: '2018级',
                             class: '网络181',
                             SID: '201810214718',
                             dormitory: '6-104',
@@ -119,6 +119,8 @@
                     submit() {
                         //提交editForm
                         console.log(this.editForm)
+                        alert("修改申请提交成功！等待审核通过后即生效")
+                        window.location.href="index.html";
                     }
                 }
             })
