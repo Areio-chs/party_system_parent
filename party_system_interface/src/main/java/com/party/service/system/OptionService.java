@@ -8,4 +8,6 @@ public interface OptionService {
     List<OptionVo> getOption();
 
     List<OptionVo> getTransferOption();
+
+    List<OptionVo> getPeopleOption();
 }

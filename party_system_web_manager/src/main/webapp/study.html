@@ -34,18 +34,18 @@
 
 					<el-card>
 						<!-- 搜索与添加区域 -->
-						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
-							<el-form-item label="名称">
+						<el-form :inline="true" ref="form" :model="searchMap" size="mini" label-width="70px">
+							<el-form-item label="学习主题">
 								<el-input
 										@keyup.enter.native="search"
 										@clear="search"
 										clearable
-										v-model="queryInfo.name"
-										placeholder="请输入名称查询"
+										v-model="searchMap.studyName"
+										placeholder="请输入主题进行查询"
 								></el-input>
 							</el-form-item>
 							<el-form-item>
-								<el-button type="primary" icon="el-icon-search">查询</el-button>
+								<el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
 								<el-button type="success" icon="el-icon-search" @click="addDialogOpen">新增</el-button>
 							</el-form-item>
 						</el-form>
@@ -67,7 +67,7 @@
 							</el-table-column>
 							<el-table-column
 									prop="studyName"
-									label="学习内容">
+									label="学习主题">
 							</el-table-column>
 							<el-table-column
 									prop="studyPlace"
@@ -82,18 +82,18 @@
 							</el-table-column>
 							<el-table-column
 									prop="studyTime"
-									label="截止时间"
+									label="时间"
 									sortable>
 							</el-table-column>
 							<el-table-column
 									prop="studyNote"
 									label="备注">
 							</el-table-column>
-							<el-table-column
-									prop="publisher"
-									label="发布人"
-									width="100">
-							</el-table-column>
+<!--							<el-table-column-->
+<!--									prop="publisher"-->
+<!--									label="发布人"-->
+<!--									width="100">-->
+<!--							</el-table-column>-->
 							<el-table-column label="操作" width="150">
 								<template slot-scope="scope">
 									<!-- 修改 -->
@@ -108,23 +108,25 @@
 							</el-table-column>
 						</el-table>
 
-						<!-- 分页区域 -->
-						<el-pagination @size-change="handleSizeChange"
-									   @current-change="handleCurrentChange"
-									   :current-page="queryInfo.pagenum"
-									   :page-sizes="[1, 2, 5, 10]"
-									   :page-size="queryInfo.pagesize"
-									   layout="total, sizes, prev, pager, next, jumper"
-									   :total="total">
+						<!-- 分页区域 页码大小  当前页  -->
+						<el-pagination
+								class="pagiantion"
+								@size-change="handleSizeChange"
+								@current-change="handleCurrentChange"
+								:current-page.sync="currentPage"
+								:page-sizes="[1, 2, 4, 8, 10]"
+								:page-size="size"
+								layout="total, sizes, prev, pager, next, jumper"
+								:total="total">
 						</el-pagination>
 
 						<!-- 修改的对话框 -->
-						<el-dialog title="修改活动信息" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed">
+						<el-dialog title="修改" :visible.sync="editDialogVisible" width="50%" @close="editDialogClosed">
 							<el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px">
-								<el-form-item label="学习内容">
+								<el-form-item label="学习主题">
 									<el-input v-model="editForm.studyName"></el-input>
 								</el-form-item>
-								<el-form-item label="学习内容">
+								<el-form-item label="学习地点">
 									<el-input v-model="editForm.studyPlace"></el-input>
 								</el-form-item>
 								<el-form-item label="学习积分">
@@ -132,13 +134,7 @@
 									</el-input-number>
 								</el-form-item>
 								<el-form-item label="学习时间">
-									<el-date-picker
-											v-model="editForm.studyTime"
-											type="datetimerange"
-											range-separator="至"
-											start-placeholder="开始日期"
-											end-placeholder="结束日期">
-									</el-date-picker>
+									<el-date-picker type="date" placeholder="选择日期" v-model="editForm.studyTime" ></el-date-picker>
 								</el-form-item>
 								<el-form-item label="备注">
 									<el-input
@@ -147,15 +143,6 @@
 											placeholder="请输入内容"
 											v-model="editForm.studyNote">
 									</el-input>
-								</el-form-item>
-								<el-form-item label="学习视频">
-									<el-upload
-											class="upload-demo"
-											action="https://jsonplaceholder.typicode.com/posts/"
-											:on-change="handleChange"
-											:file-list="fileList">
-										<el-button size="small" type="primary">点击上传</el-button>
-									</el-upload>
 								</el-form-item>
 							</el-form>
 							<span slot="footer" class="dialog-footer">
@@ -168,14 +155,14 @@
 						<el-dialog title="添加" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
 							<!-- 内容主体区域 -->
 							<el-alert
-									title="注：点击确认后系统自动通知参加人员"
+									title="注：点击确认后系统将通知参加人员"
 									type="warning"
 									show-icon
 									center
 									style="margin-bottom: 10px">
 							</el-alert>
 							<el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
-								<el-form-item label="学习内容" prop="studyName" label-width="80px">
+								<el-form-item label="学习主题" prop="studyName" label-width="80px">
 									<el-input v-model="addForm.studyName"></el-input>
 								</el-form-item>
 								<el-form-item label="学习地点" prop="studyPlace" label-width="80px">
@@ -186,21 +173,18 @@
 									</el-input-number>
 								</el-form-item>
 								<el-form-item label="学习时间" prop="studyTime" label-width="80px">
-									<el-date-picker
-											v-model="addForm.studyTime"
-											type="datetimerange"
-											range-separator="至"
-											start-placeholder="开始日期"
-											end-placeholder="结束日期">
-									</el-date-picker>
+									<el-date-picker type="date" placeholder="选择日期" v-model="addForm.studyTime" ></el-date-picker>
 								</el-form-item>
-								<el-form-item label="参加人员" prop="people" label-width="80px">
-									<el-badge :value="count" class="item">
-										<el-cascader :options="people"
+								<el-form-item label="参加人员" prop="organization" label-width="80px" >
+									<el-badge :value="count" class="item" style="width: 100%;">
+										<el-cascader :options="contacts"
 													 :props="props"
-													 v-model="addForm.people"
+													 v-model="addForm.organization"
+													 style="width: 100%;"
 													 clearable
-													 @change="getValue(addForm.people)">
+													 @change="getValue(addForm.organization)"
+
+										>
 										</el-cascader>
 									</el-badge>
 								</el-form-item>
@@ -212,15 +196,15 @@
 											v-model="addForm.studyNote">
 									</el-input>
 								</el-form-item>
-								<el-form-item label="学习视频" label-width="80px">
-									<el-upload
-											class="upload-demo"
-											action="https://jsonplaceholder.typicode.com/posts/"
-											:on-change="handleChange"
-											:file-list="fileList">
-										<el-button size="small" type="primary">点击上传</el-button>
-									</el-upload>
-								</el-form-item>
+<!--								<el-form-item label="学习视频" label-width="80px">-->
+<!--									<el-upload-->
+<!--											class="upload-demo"-->
+<!--											action="https://jsonplaceholder.typicode.com/posts/"-->
+<!--											:on-change="handleChange"-->
+<!--											:file-list="fileList">-->
+<!--										<el-button size="small" type="primary">点击上传</el-button>-->
+<!--									</el-upload>-->
+<!--								</el-form-item>-->
 							</el-form>
 							<!-- 底部区域 -->
 							<span slot="footer" class="dialog-footer">
@@ -240,15 +224,10 @@
 				// router,
 				data() {
 					return {
-						// 获取列表的参数对象
-						queryInfo: {
-							// 当前的页数
-							pagenum: 1,
-							// 当前每页显示多少条数据
-							pagesize: 2,
-							//按名字查询
-							name: '',
-							status: ''
+						//可选择参与人人列表
+						contacts: [],
+						searchMap:{
+							studyName:''
 						},
 						//搜索框中的选择器
 						options: [{
@@ -262,7 +241,8 @@
 						// 等同于 { 2: '#99A9BF', 4: { value: '#F7BA2A', excluded: true }, 5: '#FF9900' }
 						colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
 						//当前页
-						currentPage4: 1,
+						currentPage: 1,
+						size:10,
 						//总数
 						total: 10,
 						// 控制查看修改对话框的显示与隐藏
@@ -276,11 +256,6 @@
 						addDialogVisible: false,
 						// 添加活动的表单数据
 						addForm: {
-							studyName: '',
-							integral: '',
-							studyTime: '',
-							studyNote: '',
-							people: ''
 						},
 						// 添加表单的验证规则对象
 						addFormRules: {
@@ -295,10 +270,11 @@
 							],
 							studyTime: [
 								{ required: true, message: '请确认学习内容', trigger: 'blur' }
-							],
-							people: [
-								{ required: true, message: '请确认参加人员', trigger: 'blur' }
 							]
+							// ,
+							// people: [
+							// 	{ required: true, message: '请确认参加人员', trigger: 'blur' }
+							// ]
 						},
 						//级联选择器的多选
 						props: { multiple: true },
@@ -313,81 +289,94 @@
 					this.getTableList()
 				},
 				methods: {
+					//获取参与人级联下拉列表
+					getAllOption(){
+						axios.get(`/option/getPeopleOption.do`).then(response => {
+							this.contacts = response.data.data.items;
+						});
+
+					},
 					getTableList() {
+						axios.post(`/study/findPage.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
+							this.tableList = response.data.data.pageInfo.rows;
+							this.total = response.data.data.pageInfo.total;
+						});
 						//向后台获取数据列表
-						this.tableList = [{
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}, {
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}, {
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}, {
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}, {
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}, {
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}, {
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}]
+						// this.tableList = [{
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }, {
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }, {
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }, {
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }, {
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }, {
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }, {
+						// 	studyName: '主题党日活动',
+						// 	studyPlace: '教学楼B301',
+						// 	integral: '100',
+						// 	studyTime: '2020-09-23 24:00:00',
+						// 	studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
+						// 	publisher: '廖盛浪'
+						// }]
 					},
 					/**
 					 * 重置
 					 */
 					reset(){
-						this.queryInfo= {
-							pagenum: 1,
-							pagesize: 6,
-							name: ""
+						this.searchMap={
+							studyName:''
 						}
+						this.getTableList()
 					},
-					/**
-					 * 搜索用户
-					 */
-					search() {
-						this.queryInfo.pageNum = 1;
+
+
+					handleSizeChange(val){
+						this.currentPage=1
+						this.size=val;
 						this.getTableList();
 					},
-					handleSizeChange(val) {
-						console.log(`每页 ${val} 条`);
+					handleCurrentChange(val){
+						this.currentPage=val;
+						this.getTableList();
 					},
-					handleCurrentChange(val) {
-						console.log(`当前页: ${val}`);
+					search(){
+						this.currentPage=1,
+						this.getTableList();
+
 					},
 					// 监听审核对话框的关闭事件
 					editDialogClosed() {
@@ -395,114 +384,14 @@
 					},
 					// 展示修改的对话框
 					editDialog(id) {
-						//根据活动id
-						this.editForm = {
-							id: '1',
-							studyName: '主题党日活动',
-							studyPlace: '教学楼B301',
-							integral: '100',
-							studyTime: '2020-09-23 24:00:00',
-							studyNote: '"忆党史、学党章、重温入党誓词"主题党员活动',
-							publisher: '廖盛浪'
-						}
+						axios.get(`/study/findById.do?id=${id}`).then(response => {
+							this.editForm = response.data.data.items;
 
+						});
 						this.editDialogVisible = true
 					},
 					addDialogOpen() {
-						//此处应向后台获取人数信息
-						this.people = [
-							{
-								value: '信科院第一党总支',
-								label: '信科院第一党总支',
-								children: [{
-									value: '信科院第一党支部',
-									label: '信科院第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}]
-								}, {
-									value: '信科院第二党支部',
-									label: '信科院第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}]
-							}]
+						this.getAllOption();
 						this.addDialogVisible = true
 					},
 					//选中值发生变化时触发
@@ -512,7 +401,7 @@
 							this.count = 0
 						}else {
 							//根据选中的值统计这个党小组有多少人
-							this.count = 100
+							this.count=this.count+1
 						}
 					},
 					// 点击按钮，添加新活动
@@ -520,12 +409,19 @@
 						this.$refs.addFormRef.validate(async valid => {
 							if (!valid) return
 							// 可以发起添加活动的网络请求
-
-							this.$message.success('添加活动成功！')
-							// 隐藏添加活动的对话框
-							this.addDialogVisible = false
-							// 重新获取活动列表数据
-							this.getTableList()
+							// alert(JSON.stringify(this.addForm))
+							axios.post(`/study/${this.addForm.id==null?'add':'updateCommon'}.do`,this.addForm).then(response => {
+								if (this.addForm.id==null){
+									this.$message.success('添加活动成功！')
+									// 隐藏添加活动的对话框
+									this.addDialogVisible = false
+								}else {
+									this.$message.success('修改活动成功！')
+									this.updateDialogVisible = false
+								}
+								// 重新获取活动列表数据
+								this.getTableList()
+							});
 						})
 					},
 					// 监听添加活动对话框的关闭事件

@@ -2,6 +2,7 @@ package com.party.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.party.entity.PageResult;
+import com.party.entity.R;
 import com.party.entity.Result;
 import com.party.pojo.system.Act;
 import com.party.service.system.ActService;
@@ -32,20 +33,22 @@ public class ActController {
     }
 
     @PostMapping("/findPage")
-    public PageResult<Act> findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
-        return  actService.findPage(searchMap,page,size);
+    public R findPage(@RequestBody Map<String,Object> searchMap,int page, int size){
+        PageResult<Act> pageInfo=actService.findPage(searchMap,page,size);
+        return R.ok().data("pageInfo",pageInfo);
     }
 
     @GetMapping("/findById")
-    public Act findById(String id){
-        return actService.findById(id);
+    public R findById(String id){
+        Act act = actService.findById(id);
+        return R.ok().data("items",act);
     }
 
 
     @PostMapping("/add")
-    public Result add(@RequestBody Act act){
+    public R add(@RequestBody Act act){
         actService.add(act);
-        return new Result();
+        return R.ok();
     }
 
     @PostMapping("/update")
@@ -55,9 +58,9 @@ public class ActController {
     }
 
     @GetMapping("/delete")
-    public Result delete(String id){
+    public R delete(String id){
         actService.delete(id);
-        return new Result();
+        return R.ok();
     }
 
 }

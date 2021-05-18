@@ -34,16 +34,17 @@
 
 		<el-card>
 						<!-- 搜索与添加区域 -->
-						<el-form :inline="true" ref="form" :model="query" size="mini" label-width="70px">
+						<el-form :inline="true" ref="form" :model="searchMap" size="mini" label-width="70px">
 							<el-form-item>
 								<el-input
 										clearable
-										v-model="query.name"
+										@clear="search"
+										v-model="searchMap.name"
 										placeholder="请输入姓名查询"
 								></el-input>
 							</el-form-item>
 							<el-form-item>
-								<el-button type="primary" icon="el-icon-search">查询</el-button>
+								<el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
 								<el-button type="danger" icon="el-icon-upload2">导出</el-button>
 							</el-form-item>
 						</el-form>
@@ -68,7 +69,7 @@
 									sortable>
 							</el-table-column>
 							<el-table-column
-									prop="outlook"
+									prop="typeName"
 									label="政治面貌"
 									width="100"
 									sortable>
@@ -77,17 +78,23 @@
 									prop="status"
 									label="是否签到"
 									sortable>
+								<template slot-scope="scope">
+									<span v-if="scope.row.status=='0'" style="color: red;">未签到</span>
+									<span v-if="scope.row.status=='1'" style="color: limegreen;">已签到</span>
+								</template>
 							</el-table-column>>
 						</el-table>
 
-						<!-- 分页区域 -->
-						<el-pagination @size-change="handleSizeChange"
-									   @current-change="handleCurrentChange"
-									   :current-page="query.pagenum"
-									   :page-sizes="[1, 2, 5, 10]"
-									   :page-size="query.pagesize"
-									   layout="total, sizes, prev, pager, next, jumper"
-									   :total="total">
+						<!-- 分页区域 页码大小  当前页  -->
+						<el-pagination
+								class="pagiantion"
+								@size-change="handleSizeChange"
+								@current-change="handleCurrentChange"
+								:current-page.sync="currentPage"
+								:page-sizes="[1, 2, 4, 8, 10]"
+								:page-size="size"
+								layout="total, sizes, prev, pager, next, jumper"
+								:total="total">
 						</el-pagination>
 					</el-card>
 
@@ -100,86 +107,102 @@
 				// router,
 				data() {
 					return {
+
+						myStatus:'',
+						id:'',
 						childrenData: [],
-						query: {
-							// 当前的页数
-							pagenum: 1,
-							// 当前每页显示多少条数据
-							pagesize: 2,
-							//按名字查询
-							name: '',
+						//当前页
+						currentPage: 1,
+						//总数
+						total: 10,
+						size: 10,
+						searchMap:{
+							name:'',
 						},
 						total: 10
 					};
 				},
 				created() {
+					// alert(GetQueryString("id"))
+					this.getUrl()
 					this.getTableList()
 				},
 				methods: {
+					getUrl(){
+						var r = window.location.search.substring(4)
+						this.id=r
+						// alert(this.id)
+					},
 					getTableList() {
 						//向后台获取数据列表
-						this.childrenData = [
-							{
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '已签'
-							}, {
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '已签'
-							}, {
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '已签'
-							}, {
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '已签'
-							},{
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '未签'
-							},{
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '未签'
-							},{
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '未签'
-							},{
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '已签'
-							},{
-								name: '王小虎',
-								outlook: '正式党员',
-								status: '未签'
-							}]
+						axios.post(`/actDetail/findMyPage.do?page=${this.currentPage}&size=${this.size}&type=${this.id}`,this.searchMap).then(response => {
+							this.childrenData = response.data.data.pageInfo.rows;
+							this.total = response.data.data.pageInfo.total;
+						});
+						// this.childrenData = [
+						// 	{
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '已签'
+						// 	}, {
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '已签'
+						// 	}, {
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '已签'
+						// 	}, {
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '已签'
+						// 	},{
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '未签'
+						// 	},{
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '未签'
+						// 	},{
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '未签'
+						// 	},{
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '已签'
+						// 	},{
+						// 		name: '王小虎',
+						// 		outlook: '正式党员',
+						// 		status: '未签'
+						// 	}]
 					},
 					/**
 					 * 重置
 					 */
 					reset(){
-						this.queryInfo= {
-							pagenum: 1,
-							pagesize: 6,
-							name: ""
+						this.searchMap={
+							name:'',
 						}
+						this.getTableList()
 					},
 					/**
 					 * 搜索用户
 					 */
 					search() {
-						this.queryInfo.pageNum = 1;
+						this.currentPage=1,
 						this.getTableList();
 					},
-					handleSizeChange(val) {
-						console.log(`每页 ${val} 条`);
+					handleSizeChange(val){
+						this.currentPage=1
+						this.size=val;
+						this.getTableList();
 					},
-					handleCurrentChange(val) {
-						console.log(`当前页: ${val}`);
-					},
+					handleCurrentChange(val){
+						this.currentPage=val;
+						this.getTableList();
+					}
 				}
 			})
 		</script>

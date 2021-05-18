@@ -1,7 +1,10 @@
 package com.party.pojo.system;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.List;
+
 /**
  * study实体类
  * @author Administrator
@@ -13,9 +16,6 @@ public class Study implements Serializable{
 	@Id
 	private String id;//id
 
-
-	
-
 	private String studyName;//学习内容
 
 	private java.util.Date studyTime;//学习时间
@@ -26,9 +26,63 @@ public class Study implements Serializable{
 
 	private String studyMore;//空白字段
 
+	private String studyPlace;
+
 	private String userId;//外键用户id
 
-	
+	private Integer isFinish;
+
+	@Transient
+	private List<String> organization;
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public Integer getIsFinish() {
+		return isFinish;
+	}
+
+	public void setIsFinish(Integer isFinish) {
+		this.isFinish = isFinish;
+	}
+
+	public List<String> getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(List<String> organization) {
+		this.organization = organization;
+	}
+
+	public String getStudyPlace() {
+		return studyPlace;
+	}
+
+	public void setStudyPlace(String studyPlace) {
+		this.studyPlace = studyPlace;
+	}
+
+	@Override
+	public String toString() {
+		return "Study{" +
+				"id='" + id + '\'' +
+				", studyName='" + studyName + '\'' +
+				", studyTime=" + studyTime +
+				", integral='" + integral + '\'' +
+				", studyNote='" + studyNote + '\'' +
+				", studyMore='" + studyMore + '\'' +
+				", studyPlace='" + studyPlace + '\'' +
+				", userId='" + userId + '\'' +
+				", isFinish=" + isFinish +
+				", organization=" + organization +
+				'}';
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -71,13 +125,4 @@ public class Study implements Serializable{
 		this.studyMore = studyMore;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-
-	
 }
