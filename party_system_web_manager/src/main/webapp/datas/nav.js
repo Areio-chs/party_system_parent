@@ -81,19 +81,19 @@ var navs = [{
 	"children": [{
 		"title": "关系转入待审核",
 		"icon": "fa-github",
-		"href": "changeFrom.html"
+		"href": "relation-in-pending.html"
 	}, {
 		"title": "关系转入已审核",
 		"icon": "fa-qq",
-		"href": "changedFrom.html"
+		"href": "relation-in-pass.html"
 	}, {
 		"title": "关系转出待审核",
 		"icon": "&#xe609;",
-		"href": "changeTo.html"
+		"href": "relation-out-pending.html"
 	}, {
 		"title": "关系转出已审核",
 		"icon": "fa-weibo",
-		"href": "changedTo.html"
+		"href": "relation-out-pass.html"
 	}]
 }, {
 	"title": "集体活动",
