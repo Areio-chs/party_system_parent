@@ -2,22 +2,34 @@ package com.party.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.party.dao.ActDetailMapper;
 import com.party.dao.ActMapper;
+import com.party.dao.BaseUserMapper;
 import com.party.entity.PageResult;
 import com.party.pojo.system.Act;
+import com.party.pojo.system.ActDetail;
+import com.party.pojo.system.BaseUser;
 import com.party.service.system.ActService;
+import com.party.service.system.StudyService;
+import com.party.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service(interfaceClass = ActService.class )
 public class ActServiceImpl implements ActService {
 
     @Autowired
     private ActMapper actMapper;
-
+    @Autowired
+    private BaseUserMapper baseUserMapper;
+    @Autowired
+    private ActDetailMapper actDetailMapper;
+    @Autowired
+    private IdWorker idWorker;
     /**
      * 返回全部记录
      * @return
@@ -75,8 +87,46 @@ public class ActServiceImpl implements ActService {
      * 新增
      * @param act
      */
+    @Transactional
     public void add(Act act) {
+        System.out.println(act.toString());
+        List<String> peopleList = act.getOrganization();
+        act.setId(idWorker.nextId()+"");
+        act.setStatus("0");
+        act.setJoinNum(4);
         actMapper.insert(act);
+        for(int i=0;i<peopleList.size();i++){
+            ActDetail actDetail = new ActDetail();
+            actDetail.setId(idWorker.nextId()+"");
+            String s = peopleList.get(i);
+            String[] split = s.split(",");
+            actDetail.setUserId(split[3].substring(1,20));
+
+            //查出这个人的类型
+            BaseUser baseUser=new BaseUser();
+            baseUser.setId(split[3].substring(1,20));
+            BaseUser baseUser1 = baseUserMapper.selectOne(baseUser);
+            Integer typeId = baseUser1.getTypeId();
+            String typeName="";
+            if (typeId==0){
+                typeName="积极分子";
+            }
+            if (typeId==1){
+                typeName="发展对象";
+            }
+            if (typeId==2){
+                typeName="预备党员";
+            }
+            if (typeId==3){
+                typeName="党员";
+            }
+            actDetail.setTypeName(typeName);
+            actDetail.setName(baseUser1.getName());
+            actDetail.setActId(act.getId());
+            actDetail.setStatus("0");
+
+            actDetailMapper.insert(actDetail);
+        }
     }
 
     /**
@@ -91,7 +141,15 @@ public class ActServiceImpl implements ActService {
      *  删除
      * @param id
      */
+    @Transactional
     public void delete(String id) {
+        ActDetail actDetail = new ActDetail();
+        actDetail.setActId(id);
+        List<ActDetail> actDetailList = actDetailMapper.select(actDetail);
+        for (ActDetail actDetail1:actDetailList) {
+            actDetailMapper.deleteByPrimaryKey(actDetail1);
+        }
+
         actMapper.deleteByPrimaryKey(id);
     }
 
@@ -143,6 +201,7 @@ public class ActServiceImpl implements ActService {
             }
 
         }
+        example.setOrderByClause("time desc");
         return example;
     }
 

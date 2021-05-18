@@ -16,14 +16,20 @@ public class OptionController {
 
     @Reference
     private OptionService optionService;
-//课程分类列表（树形）
+    //培养联系人列表
     @GetMapping("/getOption")
     public R getOption() {
         //list集合泛型是一级分类
         List<OptionVo> optionList = optionService.getOption();
         return R.ok().data("items",optionList);
     }
-
+    //党小组下所有人员列表
+    @GetMapping("/getPeopleOption")
+    public R getPeopleOption() {
+        List<OptionVo> optionList = optionService.getPeopleOption();
+        return R.ok().data("items",optionList);
+    }
+    //党小组列表
     @GetMapping("/getTransferOption")
     public R getTransferOption() {
         //list集合泛型是一级分类
