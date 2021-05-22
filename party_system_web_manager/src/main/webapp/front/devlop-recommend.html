@@ -41,7 +41,7 @@
             <h3>申请推优</h3>
             <div class="content">
                 <el-alert
-                        title="注:请填写当前学年你的成绩"
+                        title="注:请填写上学年你的成绩"
                         type="error"
                         center
                         :closable="false">
@@ -107,9 +107,9 @@
                 methods: {
                     submit() {
                         //提交Form
-                        console.log(this.Form)
-                        alert("申请成功！请等待审核结果。");
-                        window.history.back(-1);    //返回上一页
+                        //console.log(this.Form)
+                        this.$message.success("申请成功！请等待审核结果。");
+                        setTimeout("window.history.back(-1)",2000);    //返回上一页
                     },
                     handleChange(file, fileList) {
                         this.fileList = fileList.slice(-3);

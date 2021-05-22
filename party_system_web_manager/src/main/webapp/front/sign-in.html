@@ -68,8 +68,8 @@
                         };
                     },
                     created() {
-                        this.getList1()
-                        this.getList2()
+                        this.getList1();
+                        this.getList2();
                     },
                     methods: {
                         getList1() {
@@ -96,12 +96,36 @@
                                 date: '2021-12-01'
                             }]
                         },
+                        getListNew(){
+                            this.list1 = [];
+                            this.list2 = [
+                            {
+                                id: 1,
+                                name: '组织生活会',
+                                date: '2021-06-01'
+                            },
+                                {
+                                id: 1,
+                                name: '党日大会',
+                                date: '2021-05-01'
+                            },{
+                                id: 2,
+                                name: '三会一课',
+                                date: '2021-04-20'
+                            },{
+                                id: 3,
+                                name: '民主评议会',
+                                date: '2021-12-01'
+                            }]
+                        },
                         signIn(id) {
                             //根据id签到
                            // this.$message.success('签到成功！')
-                            this.$message.warning("签到提交成功！等待管理员审核通过。")
-                            this.getList1()
-                            this.getList2()
+                            this.$message.warning("签到提交成功！")
+                            //this.getList1()
+                            //this.getList2()
+                            this.getListNew();
+                            // setTimeout("this.getListNew()",1000)
                         }
                     }
                 })

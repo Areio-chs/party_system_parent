@@ -89,6 +89,10 @@
             <h3 v-show="!tuanyuan && !applicant">党务信息</h3>
             <ul class="base" v-show="!tuanyuan && !applicant">
                 <li>
+                    <span>所在党总支</span>
+                    <span>{{ user.allparty }}</span>
+                </li>
+                <li>
                     <span>所在党支部</span>
                     <span>{{ user.party }}</span>
                 </li>
@@ -131,6 +135,7 @@
         <!-- 引入组件库 -->
         <script src="../assets/js/vue.js"></script>
         <script src="../assets/js/axios.js"></script>
+        <script src="../assets/js/elementui.js"></script>
 
         <script>
             new Vue({
@@ -176,7 +181,7 @@
                             idCard: '440981200010241546',
                             phone: '13142323877',
                             grade: '2018',
-                            class: '网络181',
+                            class: '计算机183',
                             SID: '201810214718',
                             dormitory: '6-104',
                             address: '仲恺农业工程学院',
@@ -186,7 +191,8 @@
                             preMemberTime: '',
                             memberTime: '',
                             culturelName: '陈惠珊、蔡梓哲',
-                            party: '信科院第一党支部',
+                            allparty:'信科院第一党支部',
+                            party: '第一支部',
                             group: '信科院第二党小组',
                             youthLeagueBranch: '信科院第二团支部',
                             status: '积极分子'

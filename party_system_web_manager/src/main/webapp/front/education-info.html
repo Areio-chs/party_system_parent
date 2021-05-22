@@ -73,6 +73,10 @@
                     <el-button class="butt" >上传总结</el-button>
                 </el-upload>
             </div>
+            <template>
+                <!--<el-button  type="text" @click="submit">提交</el-button>-->
+                <el-button :plain="true" style="color: #ffffff;width: 98%;background-color: #1AA094;" @click="submit">提交</el-button>
+            </template>
 
         </div>
 
@@ -109,7 +113,26 @@
                         },
                         handleChange(file, fileList) {
                             this.fileList = fileList.slice(-3);
-                        }
+                        },
+                        submit() {
+                            this.$confirm('确定提交吗?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                this.$message({
+                                    type: 'success',
+                                    message: '提交成功！'
+                                });
+                            }).catch(() => {
+                                this.$message({
+                                    type: 'info',
+                                    message: '已取消'
+                                });
+                            });
+                            setTimeout("window.history.back(-1)",2200);    //返回上一页
+                            //window.location.href="index.html";
+                        },
                     }
                 })
             </script>

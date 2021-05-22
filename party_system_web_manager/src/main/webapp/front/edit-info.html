@@ -7,11 +7,13 @@
     <title>院系党务系统</title>
     <link rel="stylesheet" href="../css/front/normalize.css">
     <link rel="stylesheet" href="../css/front/common.css">
+    <link rel="stylesheet" href="../assets/css/elementui.css">
     <link rel="stylesheet" href="../css/front/edit-info.css">
 
     <!-- 引入组件库 -->
     <script src="../assets/js/vue.js"></script>
     <script src="../assets/js/axios.js"></script>
+    <script src="../assets/js/elementui.js"></script>
 </head>
 <body>
         <div id="app" class="app">
@@ -80,7 +82,10 @@
                     </li>
                 </ul>
             </form>
-            <button class="submit" @click="submit">确定</button>
+            <template>
+                <el-button style="color: #ffffff;width: 98%;background-color: #1AA094;" type="text" @click="submit">修改</el-button>
+            </template>
+            <!--<button class="submit" @click="submit">确定</button>-->
         </div>
 
         <script>
@@ -110,18 +115,38 @@
                             idCard: '440981200010241546',
                             phone: '13142323877',
                             grade: '2018级',
-                            class: '网络181',
+                            class: '计算机183',
                             SID: '201810214718',
                             dormitory: '6-104',
                             address: '广东省广州市海珠区滨江街道纺织路东沙街24号'
                         }
                     },
                     submit() {
+                        this.$confirm('确定要修改个人信息吗?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$message({
+                                type: 'success',
+                                message: '修改申请提交成功！等待审核通过后即生效!'
+                            });
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '已取消'
+                            });
+                        });
+                        //window.location.href="index.html";\
+                        setTimeout("window.location.href='index.html'",4000);    //返回上一页
+                    },
+/*                    submit() {
                         //提交editForm
-                        console.log(this.editForm)
-                        alert("修改申请提交成功！等待审核通过后即生效")
+                        console.log(this.editForm);
+                        this.$message.warning("修改申请提交成功！等待审核通过后即生效");
+                        alert("?")
                         window.location.href="index.html";
-                    }
+                    }*/
                 }
             })
         </script>

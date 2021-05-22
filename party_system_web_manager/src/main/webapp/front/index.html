@@ -7,7 +7,14 @@
     <title>院系党务系统</title>
     <link rel="stylesheet" href="../css/front/normalize.css">
     <link rel="stylesheet" href="../css/front/index.css">
+    <link rel="stylesheet" href="../assets/css/elementui.css">
+    <!-- 引入组件库 -->
+    <script src="../assets/js/vue.js"></script><!-- vue -->
+    <script src="../assets/js/elementui.js"></script>
+    <script src="../assets/js/axios.js"></script>
+
 </head>
+
 <body>
         <div id="app" class="app">
             <div class="header">
@@ -36,10 +43,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="javascript:alert('本月团费已缴纳，无需再缴。')" title="党费缴纳">
+
+                    <!--<template>-->
+                    <a @click="open" title="团费缴纳">
                         <span class="local-nav-icon3"></span>
-                        <span>党费缴纳</span>
+                        <span>团费缴纳</span>
                     </a>
+                    <!--</template>-->
                 </li>
                 <li>
                     <a href="my-develop.html" title="我的资料">
@@ -94,5 +104,17 @@
         </div>
 
 </body>
-
+<script>
+    new Vue({
+        el:'#app',
+        methods:{
+            open() {
+                this.$message({
+                    type: 'success',
+                    message: '本月已缴纳团费!无需再缴。'
+                });
+            }
+        }
+    })
+</script>
 </html>
