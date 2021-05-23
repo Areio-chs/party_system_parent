@@ -6,6 +6,7 @@ import com.party.dao.DevelopmentMapper;
 import com.party.entity.PageResult;
 import com.party.pojo.system.Development;
 import com.party.service.system.DevelopmentService;
+import com.party.vo.CommonVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
@@ -94,6 +95,7 @@ public class DevelopmentServiceImpl implements DevelopmentService {
     public void delete(String id) {
         developmentMapper.deleteByPrimaryKey(id);
     }
+
 
     /**
      * 构建查询条件

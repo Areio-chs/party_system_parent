@@ -102,4 +102,6 @@ public class CommonVo implements Serializable {
     private String culture2Sid;
 
     private String culture2Name;
+
+    private Integer status;//党员发展状态值0申请积极分子1申请发展对象2申请预备党员3申请正式党员
 }

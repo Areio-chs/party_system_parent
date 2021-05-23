@@ -30,6 +30,7 @@ public interface BaseUserService {
     public PageResult<BaseUser> findPage(Map<String,Object> searchMap,int page, int size);
 
 
+
 //    public ActivistVo findById(String id);
 
     public CommonVo findCommonById(String id,int type);
@@ -48,6 +49,8 @@ public interface BaseUserService {
 //    public PageResult<ActivistVo>  findActivist(Map<String,Object> searchMap, int page, int size);
 
     public PageResult<CommonVo> findCommonPage(Map<String,Object> searchMap, int page, int size, int type);
+
+    public PageResult<CommonVo> findPotentialPage(Map<String,Object> searchMap, int page, int size, int type, int status);
 
     public void addCommon(CommonVo commonVo,int type);
 

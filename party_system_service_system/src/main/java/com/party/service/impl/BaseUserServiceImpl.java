@@ -382,6 +382,17 @@ public class BaseUserServiceImpl implements BaseUserService {
     }
 
     @Override
+    public PageResult<CommonVo> findPotentialPage(Map<String, Object> searchMap, int page, int size, int type, int status) {
+        String name = "";
+        if(searchMap!=null){
+            name= (String) searchMap.get("name");
+        }
+        PageHelper.startPage(page, size);
+        Page<CommonVo> pageList = (Page<CommonVo>) baseUserMapper.findPotential(name, type, status);
+        return new PageResult<CommonVo>(pageList.getTotal(), pageList.getResult());
+    }
+
+    @Override
     public List<BaseUser> findTest(String activistName) {
         return baseUserMapper.findTest(activistName);
     }

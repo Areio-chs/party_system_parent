@@ -6,9 +6,11 @@ import com.party.dao.GeneralMapper;
 import com.party.entity.PageResult;
 import com.party.pojo.system.General;
 import com.party.service.system.GeneralService;
+import com.party.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,9 @@ public class GeneralServiceImpl implements GeneralService {
 
     @Autowired
     private GeneralMapper generalMapper;
+
+    @Autowired
+    private IdWorker idWorker;
 
     /**
      * 返回全部记录
@@ -76,6 +81,8 @@ public class GeneralServiceImpl implements GeneralService {
      * @param general
      */
     public void add(General general) {
+        general.setId(idWorker.nextId()+"");
+        general.setGeneralTime(new Date());
         generalMapper.insert(general);
     }
 
