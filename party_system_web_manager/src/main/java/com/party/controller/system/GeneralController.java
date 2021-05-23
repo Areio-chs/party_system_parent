@@ -5,7 +5,6 @@ import com.party.entity.PageResult;
 import com.party.entity.R;
 import com.party.pojo.system.General;
 import com.party.service.system.GeneralService;
-import com.party.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

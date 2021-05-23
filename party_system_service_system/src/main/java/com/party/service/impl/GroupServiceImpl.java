@@ -7,12 +7,14 @@ import com.party.dao.PartyMapper;
 import com.party.entity.PageResult;
 import com.party.pojo.system.*;
 import com.party.service.system.GroupService;
+import com.party.util.IdWorker;
 import com.party.vo.ActivistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.System;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,8 @@ public class GroupServiceImpl implements GroupService {
     private PartyMapper partyMapper;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private IdWorker idWorker;
 
     /**
      * 返回全部记录
@@ -94,7 +98,8 @@ public class GroupServiceImpl implements GroupService {
      * @param group
      */
     public void add(Group group) {
-
+        group.setId(idWorker.nextId()+"");
+        group.setGroupTime(new Date());
         groupMapper.insert(group);
     }
 

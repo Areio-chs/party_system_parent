@@ -10,9 +10,11 @@ import com.party.pojo.system.Group;
 import com.party.pojo.system.LeagueBranch;
 import com.party.pojo.system.Party;
 import com.party.service.system.LeagueBranchService;
+import com.party.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,8 @@ public class LeagueBranchServiceImpl implements LeagueBranchService {
     private PartyMapper partyMapper;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private IdWorker idWorker;
 
     /**
      * 返回全部记录
@@ -104,6 +108,8 @@ public class LeagueBranchServiceImpl implements LeagueBranchService {
      * @param leagueBranch
      */
     public void add(LeagueBranch leagueBranch) {
+        leagueBranch.setId(idWorker.nextId()+"");
+        leagueBranch.setCreateTime(new Date());
         leagueBranchMapper.insert(leagueBranch);
     }
 
