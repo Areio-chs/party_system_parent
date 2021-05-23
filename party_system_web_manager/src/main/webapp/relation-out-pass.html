@@ -105,28 +105,28 @@
         <el-table-column
                 prop="name"
                 label="姓名"
-                width="120"
+                width="100"
                 sortable
                 align="center">
         </el-table-column>
         <el-table-column
                 prop="sex"
                 label="性别"
-                width="100"
+                width="70"
                 sortable
                 align="center">
         </el-table-column>
       <el-table-column
               prop="fromTime"
               label="加入党总支时间"
-              width="150"
+              width="130"
               sortable
               align="center">
       </el-table-column>
         <el-table-column
-                prop="idCard"
-                label="身份证"
-                width="200"
+                prop="reason"
+                label="转出原因"
+                width="120"
                 sortable
                 align="center">
         </el-table-column>
@@ -138,16 +138,16 @@
                 align="center">
         </el-table-column>
         <el-table-column
-                prop="toName"
+                prop="fromName"
                 label="当前党总支"
-                width="120"
+                width="290"
                 sortable
                 align="center">
         </el-table-column>
       <el-table-column
               prop="toTime"
               label="转出时间"
-              width="150"
+              width="120"
               sortable
               align="center">
       </el-table-column>
@@ -851,6 +851,138 @@
                 }
             }
             return {
+                developList : [
+                    {
+                        name:'沈秀琪',
+                        sex:'女',
+                        reason:'工作',
+                        nativePlace:'广东潮州',
+                        fromName:'攻略互娱（深圳）互联网科技有限公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'15992545501',
+                        grade:'2017',
+                        classNum:'信管172',
+                        room:'B1-108',
+                    },
+                    {
+                        name:'单晓华',
+                        sex:'男',
+                        reason:'工作',
+                        nativePlace:'广东东莞',
+                        fromName:'珠海誉满互联网科技有限公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'13763359810',
+                        grade:'2017',
+                        classNum:'大数据171',
+                        room:'D-542',
+                    },
+                    {
+                        name:'徐小青',
+                        sex:'女',
+                        reason:'工作',
+                        nativePlace:'广东揭阳',
+                        fromName:'云景（深圳）互联网有限公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'15217718792',
+                        grade:'2017',
+                        classNum:'物联网173',
+                        room:'D-1242',
+                    },
+                    {
+                        name:'何海清',
+                        sex:'男',
+                        reason:'工作',
+                        nativePlace:'广东汕头',
+                        fromName:'广州市海珠区隐式服务公司海珠饮食旅游中心工会',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'13763359812',
+                        grade:'2017',
+                        classNum:'通信工程173',
+                        room:'C-128',
+                    },
+                    {
+                        name:'李琦',
+                        sex:'女',
+                        reason:'工作',
+                        nativePlace:'广东珠海',
+                        fromName:'广州知识产权保护中心',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'13726624178',
+                        grade:'2017',
+                        classNum:'物联网173',
+                        room:'D-1051',
+                    },
+                    {
+                        name:'陈思宇',
+                        sex:'男',
+                        reason:'工作',
+                        nativePlace:'广东汕头',
+                        fromName:'广州互益互联网服务有限公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'17806707612',
+                        grade:'2017',
+                        classNum:'信管171',
+                        room:'F1-201',
+                    },
+                    {
+                        name:'邢江龙',
+                        sex:'男',
+                        reason:'工作',
+                        nativePlace:'广东茂名',
+                        fromName:'广州荣城建筑工程有限公司广州分公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'1501899840',
+                        grade:'2017',
+                        classNum:'网络工程172',
+                        room:'A1-252',
+                    },
+                    {
+                        name:'徐凯彬',
+                        sex:'男',
+                        reason:'工作',
+                        nativePlace:'广东阳江',
+                        fromName:'星星精密科技有限公司广州分公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'18922100439',
+                        grade:'2017',
+                        classNum:'人工智能171',
+                        room:'C1-203',
+                    },
+                    {
+                        name:'熊虞珊',
+                        sex:'女',
+                        reason:'工作',
+                        nativePlace:'广东潮州',
+                        fromName:'云端互联网（深圳）有限公司',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'13542895964',
+                        grade:'2017',
+                        classNum:'信管171',
+                        room:'B1-310',
+                    },
+                    {
+                        name:'陈晓器',
+                        sex:'男',
+                        reason:'工作',
+                        nativePlace:'广东湛江',
+                        fromName:'广州市海珠区科技工业商务和信息化局',
+                        toTime:'2021-05-24',
+                        fromTime:'2017-09-20',
+                        phone:'17806707104',
+                        grade:'2017',
+                        classNum:'网络工程172',
+                        room:'A1-203',
+                    },
+                ],
                 searchMap:{
                     name:'',
                     generalId:'',
@@ -862,7 +994,6 @@
                 party:[],
                 youthLeagueBranch: [],
                 group: [],
-                developList: [],
                 //检索党支部
                 selectParty: [],
                 //检索党小组
@@ -874,7 +1005,7 @@
                 //当前页
                 currentPage: 1,
                 //总数
-                total: 10,
+                total: 108,
                 size: 10,
                 // 控制添加对话框的显示与隐藏
                 addDialogVisible: false,
