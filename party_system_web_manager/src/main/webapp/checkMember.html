@@ -862,7 +862,7 @@
 			userStateChanged(row) {
 				//向后台审核
 				axios.post(`/development/updateStatus.do?id=${id}&status=${status}&type=3`).then(response => {
-					this.$message.success(id+","+status);
+					this.$message.success('审核通过！');
 				});
 			},
 			// 展示信息的对话框
