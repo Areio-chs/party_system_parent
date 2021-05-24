@@ -1,6 +1,7 @@
 package com.party.service.system;
 import com.party.entity.PageResult;
 import com.party.pojo.system.Development;
+import com.party.vo.CommonVo;
 
 import java.util.*;
 
@@ -31,5 +32,4 @@ public interface DevelopmentService {
 
 
     public void delete(String id);
-
 }

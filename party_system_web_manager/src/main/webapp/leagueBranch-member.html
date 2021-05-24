@@ -42,11 +42,11 @@
 			<el-card>
 
 				<!-- 搜索与添加区域 -->
-				<el-form :inline="true" ref="form" :model="query" size="mini" label-width="70px">
+				<el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
 					<el-form-item>
 						<el-input
 								clearable
-								v-model="query.name"
+								v-model="searchMap.name"
 								placeholder="请输入姓名查询"
 						></el-input>
 					</el-form-item>

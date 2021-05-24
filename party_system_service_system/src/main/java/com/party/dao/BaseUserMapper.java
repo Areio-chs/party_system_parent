@@ -35,6 +35,19 @@ public interface BaseUserMapper extends Mapper<BaseUser> {
             "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=#{type} and bu.name LIKE concat('%',#{name},'%') and bu.general_id like concat('%',#{generalId},'%') and bu.party_id like concat('%',#{partyId},'%') and bu.group_id like concat('%',#{groupId},'%') and bu.league_branch_id like concat('%',#{leagueBranchId},'%') " )
     public List<CommonVo> findCommon(@Param("name") String name , @Param("generalId") String generalId, @Param("partyId") String partyId, @Param("groupId") String groupId, @Param("leagueBranchId") String leagueBranchId,@Param("type") int type);
 
+
+    //分页查找发展对象
+    @Select("SELECT      bu.id,sid,NAME,sex,birth,grade,class_num classNum,room,iamge,id_card idCard,phone," +
+            "            email,address,identity,native_place nativePlace,residence,nation,duty,title,aducation,gra_institution graInstitution," +
+            "            work_time workTime,join_time joinTime,petition_confirm petitionConfirm,first_talk_time firstTalkTime," +
+            "            reward_punish_info rewardPunishInfo,account_id accountId,type_id typeId,integral,qq,wechat," +
+            "            league_branch_id leagueBranchId ,general_id generalId,party_id partyId,group_id groupId," +
+            "            league_branch_name leagueBranchName, general_name generalName,party_name partyName,group_name groupName,"+
+            "            activist_time activistTime,develop_time developTime,pre_member_time preMemberTime,member_time memberTime, culture1_id culture1Id,culture2_id culture2Id,culture1_name culture1Name,culture2_name culture2Name," +
+            "            d.status" +
+            "            FROM tb_base_user bu,tb_development d WHERE bu.`id` = d.`user_id` and bu.type_id=#{type} and bu.name LIKE concat('%',#{name},'%') and d.status=#{status}" )
+    public List<CommonVo> findPotential(@Param("name") String name , @Param("type") int type, @Param("status") int status);
+
     @Select("select * from tb_base_user WHERE NAME LIKE concat('%',#{name},'%')")
 //    @Select("SELECT * FROM tb_base_user WHERE NAME=#{name}")
     public List<BaseUser> findTest(@Param("name") String name);

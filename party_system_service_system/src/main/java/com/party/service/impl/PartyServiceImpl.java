@@ -10,9 +10,11 @@ import com.party.pojo.system.Group;
 import com.party.pojo.system.General;
 import com.party.pojo.system.Party;
 import com.party.service.system.PartyService;
+import com.party.util.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,8 @@ public class PartyServiceImpl implements PartyService {
     private GeneralMapper generalMapper;
     @Autowired
     private PartyMapper partyMapper;
+    @Autowired
+    private IdWorker idWorker;
 
     /**
      * 返回全部记录
@@ -95,6 +99,8 @@ public class PartyServiceImpl implements PartyService {
      */
     public void add(Party party) {
 
+        party.setId(idWorker.nextId()+"");
+        party.setPartyTime(new Date());
         partyMapper.insert(party);
     }
 

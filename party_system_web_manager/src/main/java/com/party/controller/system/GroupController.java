@@ -70,13 +70,8 @@ public class GroupController {
 
     @PostMapping("/findGroup")
     public R findGroupPage(@RequestBody Map<String,Object> searchMap, int page, int size){
-        System.out.println("lai444");
         searchMap.put("name","小组");
-        System.out.println(searchMap.toString());
-        System.out.println(page);
-        System.out.println(size);
         PageResult<Group> group = groupService.findPage(searchMap,page,size);
-        System.out.println(group.getRows()+""+group.getTotal());
         return R.ok().data("group",group);
     }
 

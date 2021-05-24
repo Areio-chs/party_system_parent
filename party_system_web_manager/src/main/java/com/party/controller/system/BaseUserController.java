@@ -41,6 +41,18 @@ public class BaseUserController {
         return R.ok().data("pageInfo",pageInfo);
     }
 
+    @PostMapping("/findPotentialPage")
+    public R findPotentialPage(@RequestBody Map<String,Object> searchMap,int page, int size,int type,int status){
+//        String searchName = "";
+//        if(searchMap!=null){
+//            searchName= (String) searchMap.get("name");
+//        }
+        PageResult<CommonVo> pageInfo = baseUserService.findPotentialPage(searchMap,page,size,type,status);
+
+        return R.ok().data("pageInfo",pageInfo);
+    }
+
+
     @GetMapping("/findCommonById")
     public R findCommonById(String id,int type){
         System.out.println("11111111111111111111");

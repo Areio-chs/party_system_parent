@@ -302,6 +302,7 @@
         },
         created() {
             this.getPartyList();
+            this.getGeneralList();
         },
         methods: {
             getPartyList() {
@@ -347,11 +348,11 @@
                 })
                 this.formLabelAlign.select = array;
             },
-			getGeneralList() {
-				axios.get(`/general/findAll.do`).then(response => {
-					this.general = response.data.data.items;
-				});
-			},
+            getGeneralList(){
+                axios.get(`/general/findAll.do`).then(response => {
+                    this.general = response.data.data.items;
+                });
+            },
             // 点击按钮，添加新党支部
             add() {
                 this.$refs.addFormRef.validate(async valid => {
