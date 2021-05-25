@@ -154,13 +154,13 @@
 						<!-- 添加的对话框 -->
 						<el-dialog title="添加" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
 							<!-- 内容主体区域 -->
-							<el-alert
-									title="注：点击确认后系统将通知参加人员"
-									type="warning"
-									show-icon
-									center
-									style="margin-bottom: 10px">
-							</el-alert>
+<!--							<el-alert-->
+<!--									title="注：点击确认后系统将通知参加人员"-->
+<!--									type="warning"-->
+<!--									show-icon-->
+<!--									center-->
+<!--									style="margin-bottom: 10px">-->
+<!--							</el-alert>-->
 							<el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
 								<el-form-item label="学习主题" prop="studyName" label-width="80px">
 									<el-input v-model="addForm.studyName"></el-input>

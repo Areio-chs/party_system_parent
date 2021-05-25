@@ -25,6 +25,8 @@ public class GroupController {
     }
     @GetMapping("/findByPartyId")
     public R findByPartyId(String partyId){
+        System.out.println("---------------------------");
+        System.out.println(partyId);
         List<Group> list = groupService.findByPartyId(partyId);
         return R.ok().data("items",list);
     }

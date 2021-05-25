@@ -56,23 +56,23 @@
             <span>{{ study.integral }}</span>
         </li>
         <li>
-            <span>发布时间</span>
+            <span>参加时间</span>
             <span>{{ study.publishTime }}</span>
         </li>
     </ul>
-    <div>
-        <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-change="handleChange"
-                :file-list="fileList">
-            <el-button class="butt">上传学习总结</el-button>
-        </el-upload>
-    </div>
-    <template>
-        <!--<el-button  type="text" @click="submit">提交</el-button>-->
-        <el-button :plain="true" style="color: #ffffff;width: 98%;background-color: #1AA094;" @click="submit">提交</el-button>
-    </template>
+<!--    <div>-->
+<!--        <el-upload-->
+<!--                class="upload-demo"-->
+<!--                action="https://jsonplaceholder.typicode.com/posts/"-->
+<!--                :on-change="handleChange"-->
+<!--                :file-list="fileList">-->
+<!--            <el-button class="butt">上传学习总结</el-button>-->
+<!--        </el-upload>-->
+<!--    </div>-->
+<!--    <template>-->
+<!--        &lt;!&ndash;<el-button  type="text" @click="submit">提交</el-button>&ndash;&gt;-->
+<!--        <el-button :plain="true" style="color: #ffffff;width: 98%;background-color: #1AA094;" @click="submit">提交</el-button>-->
+<!--    </template>-->
 
 </div>
 
@@ -99,11 +99,11 @@
             getData() {
                 this.study = {
                     id: 1,
-                    studyName: '青年大学习第十一季第九期',
-                    studyPlace: '网上学习',
-                    integral: '10',
-                    publishTime: '2020-05-27 16:00:00',
-                    studyNote: '庆祝中国共产党成立100周年',
+                    studyName: '集体学习4',
+                    studyPlace: '学术报告厅',
+                    integral: '15',
+                    publishTime: '2021-03-27',
+                    studyNote: '抗美援朝 保家卫国',
                     publisher: '廖盛浪'
                 }
             },

@@ -6,6 +6,7 @@ import com.party.dao.GroupMapper;
 import com.party.dao.PartyMapper;
 import com.party.entity.PageResult;
 import com.party.pojo.system.*;
+import com.party.service.system.ActService;
 import com.party.service.system.GroupService;
 import com.party.util.IdWorker;
 import com.party.vo.ActivistVo;
@@ -18,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service(interfaceClass = GroupService.class )
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
@@ -68,6 +69,7 @@ public class GroupServiceImpl implements GroupService {
     public PageResult<Group> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
+        example.setOrderByClause("group_time asc ");
         List<Group> groupList = groupMapper.selectByExample(example);
         for (Group group : groupList) {
             if (!(group.getPartyId()==null)){

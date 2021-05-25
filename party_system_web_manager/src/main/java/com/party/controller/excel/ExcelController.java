@@ -98,8 +98,10 @@ public class ExcelController {
             e.printStackTrace();
         }
         for (MemberData memberData:list){
+            System.out.println("导入长度："+list.size());
             CommonVo commonVo = new CommonVo();
             BeanUtils.copyProperties(memberData,commonVo);
+            System.out.println("导入数据:"+commonVo);
             baseUserService.excelAddMember(commonVo);
         }
         return R.ok();

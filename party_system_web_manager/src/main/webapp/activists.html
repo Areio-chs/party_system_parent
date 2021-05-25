@@ -1270,7 +1270,7 @@
 						type: 'warning'
 					}).then( () => {
 						axios.get(`/baseUser/delete.do?id=${id}`).then(response => {
-							this.$message.success('删除党小组成功！')
+							this.$message.success('删除积极分子成功！')
 							this.getActivistList()
 						})
 					})

@@ -25,82 +25,83 @@
 				<div class="layui-field-box">
 					<el-card>
 						<el-row :gutter="12">
+
 							<el-col :span="8">
 								<el-card shadow="hover">
-									组织关系转接审核
+									确定积极分子待审核
+									<el-link type="primary">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
+									<el-divider></el-divider>
+									<el-timeline>
+										<el-timeline-item timestamp="2021/04/18" placement="top">
+											<el-card>
+												<h4>申请积极分子</h4>
+												<p>陈肖红 提交于 2021/04/18 10:22</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2021/04/17" placement="top">
+											<el-card>
+												<h4>申请积极分子</h4>
+												<p>黄玉霞 提交于 2021/04/17 20:46</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2021/04/17" placement="top">
+											<el-card>
+												<h4>申请积极分子</h4>
+												<p>邓海峰 提交于 2021/04/17 15:10</p>
+											</el-card>
+										</el-timeline-item>
+									</el-timeline>
+								</el-card>
+							</el-col>
+							<el-col :span="8">
+								<el-card shadow="hover">
+									确定发展对象待审核
+									<el-link type="primary">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
+									<el-divider></el-divider>
+									<el-timeline>
+										<el-timeline-item timestamp="2021/04/26" placement="top">
+											<el-card>
+												<h4>申请发展对象</h4>
+												<p>廖盛浪 提交于 2021/04/26 13:44</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2021/04/26" placement="top">
+											<el-card>
+												<h4>申请发展对象</h4>
+												<p>李杨柳 提交于 2021/04/26 11:26</p>
+											</el-card>
+										</el-timeline-item>
+										<el-timeline-item timestamp="2021/04/25" placement="top">
+											<el-card>
+												<h4>申请发展对象</h4>
+												<p>李汝佳 提交于 2021/04/25 22:19</p>
+											</el-card>
+										</el-timeline-item>
+									</el-timeline>
+								</el-card>
+							</el-col>
+							<el-col :span="8">
+								<el-card shadow="hover">
+									接收预备党员待审核
 									<el-link type="primary" id="add" @click="o">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
 									<el-divider></el-divider>
 									<el-timeline>
-										<el-timeline-item timestamp="2020/09/29" placement="top">
+										<el-timeline-item timestamp="2021/05/01" placement="top">
 											<el-card>
-												<h4>申请转入</h4>
-												<p>王小虎 提交于 2020/09/29 20:46</p>
+												<h4>申请预备党员</h4>
+												<p>杨成飞 提交于 2021/05/01 21:34</p>
 											</el-card>
 										</el-timeline-item>
-										<el-timeline-item timestamp="2020/09/27" placement="top">
+										<el-timeline-item timestamp="2021/05/01" placement="top">
 											<el-card>
-												<h4>申请转入</h4>
-												<p>王小虎 提交于 2020/09/27 20:46</p>
+												<h4>申请预备党员</h4>
+												<p>郑永素 提交于 2021/05/01 20:45</p>
 											</el-card>
 										</el-timeline-item>
-										<el-timeline-item timestamp="2020/09/22" placement="top">
+										<el-timeline-item timestamp="2021/05/01" placement="top">
 											<el-card>
-												<h4>申请转入</h4>
-												<p>王小虎 提交于 2020/09/22 20:46</p>
-											</el-card>
-										</el-timeline-item>
-									</el-timeline>
-								</el-card>
-							</el-col>
-							<el-col :span="8">
-								<el-card shadow="hover">
-									积极分子待审核
-									<el-link type="primary">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
-									<el-divider></el-divider>
-									<el-timeline>
-										<el-timeline-item timestamp="2020/09/29" placement="top">
-											<el-card>
-												<h4>申请转入</h4>
-												<p>廖盛浪 提交于 2021/05/24 20:46</p>
-											</el-card>
-										</el-timeline-item>
-										<el-timeline-item timestamp="2020/09/27" placement="top">
-											<el-card>
-												<h4>申请转入</h4>
-												<p>廖盛浪 提交于 2021/05/24 20:46</p>
-											</el-card>
-										</el-timeline-item>
-										<el-timeline-item timestamp="2020/09/22" placement="top">
-											<el-card>
-												<h4>申请转入</h4>
-												<p>廖盛浪 提交于 2021/05/24 20:46</p>
-											</el-card>
-										</el-timeline-item>
-									</el-timeline>
-								</el-card>
-							</el-col>
-							<el-col :span="8">
-								<el-card shadow="hover">
-									发展对象待审核
-									<el-link type="primary">更多<i class="el-icon-arrow-right el-icon--right"></i> </el-link>
-									<el-divider></el-divider>
-									<el-timeline>
-										<el-timeline-item timestamp="2020/09/29" placement="top">
-											<el-card>
-												<h4>申请转入</h4>
-												<p>王小虎 提交于 2020/09/29 20:46</p>
-											</el-card>
-										</el-timeline-item>
-										<el-timeline-item timestamp="2020/09/27" placement="top">
-											<el-card>
-												<h4>申请转入</h4>
-												<p>王小虎 提交于 2020/09/27 20:46</p>
-											</el-card>
-										</el-timeline-item>
-										<el-timeline-item timestamp="2020/09/22" placement="top">
-											<el-card>
-												<h4>申请转入</h4>
-												<p>王小虎 提交于 2020/09/22 20:46</p>
+												<h4>申请预备党员</h4>
+												<p>廖伟杰 提交于 2021/05/01 11:13</p>
 											</el-card>
 										</el-timeline-item>
 									</el-timeline>

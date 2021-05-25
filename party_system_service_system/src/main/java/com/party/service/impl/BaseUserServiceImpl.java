@@ -146,7 +146,10 @@ public class BaseUserServiceImpl implements BaseUserService {
         }else {//新增
             if (type!=3) {//党员没有发展对象
                 if (commonVo.getCulture1Id() != null && !"".equals(commonVo.getCulture1Id())) {
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!重点内容----");
+                    System.out.println(commonVo.toString());
                     String cul1 = handleCultureId(commonVo.getCulture1Id());
+                    System.out.println(cul1);
                     development2.setCulture1Id(cul1);
                     //培养人1的名称
                     development2.setCulture1Name(baseUserMapper.selectByPrimaryKey(cul1).getName());
@@ -327,7 +330,7 @@ public class BaseUserServiceImpl implements BaseUserService {
         BeanUtils.copyProperties(commonVo,development1);
         development1.setId(id);
         System.out.println("修改的发展表长什么样？"+development1);
-        developmentMapper.updateByPrimaryKey(development1);
+        developmentMapper.updateByPrimaryKeySelective(development1);
     }
 
 

@@ -121,13 +121,13 @@
 										</div>
 								　　</template>
 							</el-table-column>
-							<el-table-column label="是否通过">
-								<template slot-scope="scope">
-									<el-switch v-model="scope.row.status" @change="userStateChanged(scope.row)">
-									</el-switch>
-								</template>
-							</el-table-column>
-							<el-table-column label="操作" width="150" fixed="right" align="center">
+<!--							<el-table-column label="是否通过">-->
+<!--								<template slot-scope="scope">-->
+<!--									<el-switch v-model="scope.row.status" @change="userStateChanged(scope.row)">-->
+<!--									</el-switch>-->
+<!--								</template>-->
+<!--							</el-table-column>-->
+							<el-table-column label="操作" width="280" fixed="right" align="center">
 								<template slot-scope="scope">
 									<!-- 编辑 -->
 									<el-tooltip effect="dark" content="更多信息" placement="top" :enterable="false">
@@ -298,7 +298,7 @@
 							// 当前的页数
 							pagenum: 1,
 							// 当前每页显示多少条数据
-							pagesize: 2,
+							pagesize: 10,
 							//按名字查询
 							name: '',
 							sex: ''
@@ -315,7 +315,7 @@
 						//当前页
 						currentPage4: 1,
 						//总数
-						total: 10,
+						total: 7,
 						// 控制查看信息对话框的显示与隐藏
 						showDialogVisible: false,
 						//控制查看参加活动对话框的显示与隐藏
@@ -526,7 +526,7 @@
 							education: '本科',
 							duty: '班长',
 							address: 'D-1142',
-							applyTime: '2021-04-19',
+							applyTime: '2021-04-18',
 							status: false,
 							className: '计算机193',
 							studentNum: '201910254823',
@@ -547,7 +547,7 @@
 							education: '本科',
 							duty: '班长',
 							address: '仲恺农业工程学院',
-							applyTime: '2020-09-20',
+							applyTime: '2021-04-17',
 							culturel1Name: '陈志军',
 							culturel2Name: '陈子林',
 							status: false,
@@ -564,14 +564,14 @@
 							sex: '男',
 							nation: '民族',
 							nativePlace: '广东佛山',
-							birth: '2020-09-19',
+							birth: '2021-04-18',
 							idCard: '440981200010241546',
 							phoneNum: '13142323877',
 							email: '454305375@qq.com',
 							education: '本科',
 							duty: '班长',
 							address: '仲恺农业工程学院',
-							applyTime: '2020-09-19',
+							applyTime: '2021-04-17',
 							culturel1Name: '关培军',
 							culturel2Name: '郭凤玲',
 							status: false,
@@ -595,7 +595,7 @@
 							education: '本科',
 							duty: '班长',
 							address: '仲恺农业工程学院',
-							applyTime: '2020-09-20',
+							applyTime: '2021-04-16',
 							status: false,
 							className: '计算机183',
 							studentNum: '201810254724',
@@ -617,7 +617,7 @@
 							education: '本科',
 							duty: '班长',
 							address: '仲恺农业工程学院',
-							applyTime: '2020-09-20',
+							applyTime: '2021-04-16',
 							status: false,
 							className: '网络192',
 							studentNum: '201910254884',
@@ -639,7 +639,7 @@
 							education: '本科',
 							duty: '班长',
 							address: '仲恺农业工程学院',
-							applyTime: '2021-04-19',
+							applyTime: '2021-04-16',
 							status: false,
 							className: '网络191',
 							studentNum: '201910254806',
@@ -654,14 +654,14 @@
 							sex: '男',
 							nation: '民族',
 							nativePlace: '广东中山',
-							birth: '2020-09-19',
+							birth: '2021-04-18',
 							idCard: '440981998091832353',
 							phoneNum: '123456789',
 							email: '454305375@qq.com',
 							education: '本科',
 							duty: '班长',
 							address: '仲恺农业工程学院',
-							applyTime: '2020-09-20',
+							applyTime: '2021-04-16',
 							status: false,
 							className: '电信192',
 							studentNum: '201910252304',

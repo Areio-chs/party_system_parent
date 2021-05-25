@@ -27,15 +27,18 @@ var navs = [{
 	"title": "成员管理",
 	"icon": "fa-cogs",
 	"spread": false,
-	"children": [{
-		"title": "团员",
-		"icon": "fa-address-book",
-		"href": "leagueMember.html"
-	},{
-		"title": "入党申请人",
-		"icon": "&#xe609;",
-		"href": "applicant.html"
-	},{
+	"children": [
+	// 	{
+	// 	"title": "团员",
+	// 	"icon": "fa-address-book",
+	// 	"href": "leagueMember.html"
+	// },
+	// 	{
+	// 	"title": "入党申请人",
+	// 	"icon": "&#xe609;",
+	// 	"href": "applicant.html"
+	// },
+		{
 		"title": "积极分子",
 		"icon": "fa-table",
 		"href": "activists.html"
@@ -113,36 +116,39 @@ var navs = [{
 	"icon": "fa-stop-circle",
 	"href": "study.html",
 	"spread": false
-},{
-	"title": "权限管理",
-	"icon": "fa-stop-circle",
-	"href": "#",
-	"spread": false,
-	"children": [{
-		"title": "用户列表",
-		"icon": "fa-github",
-		"href": "user.html"
-	},{
-		"title": "角色列表",
-		"icon": "fa-github",
-		"href": "roles.html"
-	},{
-		"title": "权限列表",
-		"icon": "fa-github",
-		"href": "power.html"
-	}]
-},{
-	"title": "日志管理",
-	"icon": "fa-stop-circle",
-	"href": "#",
-	"spread": false,
-	"children": [{
-		"title": "操作日志",
-		"icon": "fa-github",
-		"href": "log.html"
-	},{
-		"title": "登录日志",
-		"icon": "fa-github",
-		"href": "loginlog.html"
-	}]
-}];
+},
+// 	{
+// 	"title": "权限管理",
+// 	"icon": "fa-stop-circle",
+// 	"href": "#",
+// 	"spread": false,
+// 	"children": [{
+// 		"title": "用户列表",
+// 		"icon": "fa-github",
+// 		"href": "user.html"
+// 	},{
+// 		"title": "角色列表",
+// 		"icon": "fa-github",
+// 		"href": "roles.html"
+// 	},{
+// 		"title": "权限列表",
+// 		"icon": "fa-github",
+// 		"href": "power.html"
+// 	}]
+// },{
+// 	"title": "日志管理",
+// 	"icon": "fa-stop-circle",
+// 	"href": "#",
+// 	"spread": false,
+// 	"children": [{
+// 		"title": "操作日志",
+// 		"icon": "fa-github",
+// 		"href": "log.html"
+// 	},{
+// 		"title": "登录日志",
+// 		"icon": "fa-github",
+// 		"href": "loginlog.html"
+// 	}]
+// }
+
+];

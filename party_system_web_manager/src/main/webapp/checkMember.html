@@ -32,302 +32,312 @@
 <body>
 <div id="app" style="margin: 15px;" v-cloak>
 
-			<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
-				<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
-				<el-breadcrumb-item>党员发展</el-breadcrumb-item>
-				<el-breadcrumb-item>确定正式党员</el-breadcrumb-item>
-			</el-breadcrumb>
+	<el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:14px;">
+		<el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+		<el-breadcrumb-item>党员发展</el-breadcrumb-item>
+		<el-breadcrumb-item>确定正式党员</el-breadcrumb-item>
+	</el-breadcrumb>
 
-			<el-card>
-				<!-- 搜索与添加区域 -->
-				<el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
-					<el-form-item label="姓名">
-						<el-input
-								v-model="searchMap.name"
-								placeholder="请输入姓名查询"
-						></el-input>
-					</el-form-item>
+	<el-card>
+		<!-- 搜索与添加区域 -->
+		<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
+			<el-form-item label="姓名">
+				<el-input
+						@keyup.enter.native="searchUser"
+						@clear="searchUser"
+						clearable
+						v-model="queryInfo.name"
+						placeholder="请输入用户名查询"
+				></el-input>
+			</el-form-item>
 
-					<el-form-item>
-						<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
-						<el-button @click="search()" type="primary" icon="el-icon-search">查询</el-button>
-						<el-button type="danger" icon="el-icon-upload2">导出</el-button>
-						<el-button @click="checkAll" type="warning" icon="el-icon-check">一键审核</el-button>
-					</el-form-item>
-				</el-form>
+			<el-form-item>
+				<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
+				<el-button type="primary" icon="el-icon-search">查询</el-button>
+				<el-button type="danger" icon="el-icon-upload2">导出</el-button>
+<!--				<el-button type="warning" icon="el-icon-check">一键审核</el-button>-->
+				<el-button @click="checkAll" type="warning" icon="el-icon-check">一键审核</el-button>
+			</el-form-item>
+		</el-form>
 
-				<el-table
-						ref="multipleTable"
-						:data="tableList"
-						tooltip-effect="dark"
-						style="width: 100%"
-						size="mini"
-						stripe
-						highlight-current-row
-						@selection-change="handleSelectionChange">
-					<el-table-column
-							type="selection"
-							width="center">
-					</el-table-column>
-					<el-table-column
-							type="index"
-							label="#"
-							width="center">
-					</el-table-column>
-					<el-table-column
-							prop="name"
-							label="姓名"
-							width="80"
-							sortable
-							align="center">
-					</el-table-column>
-					<el-table-column
-							prop="classNum"
-							label="班级"
-							width="80"
-							sortable
-							align="center">
-					</el-table-column>
-					<el-table-column
-							prop="leagueBranchName"
-							label="所属团支部"
-							width="120"
-							sortable
-							align="center">
-					</el-table-column>
-					<el-table-column
-							prop="groupName"
-							label="所属党小组"
-							width="120"
-							sortable
-							align="center">
-					</el-table-column>
-					<el-table-column
-							prop="petitionConfirm"
-							label="申请书落款时间"
-							width="150"
-							sortable
-							align="center">
-					</el-table-column>
-					<el-table-column
-							prop="activistTime"
-							label="确定积极分子时间"
-							width="150"
-							sortable
-							align="center">
-					</el-table-column>
-					<el-table-column
-							prop="developTime"
-							label="成为发展对象时间"
-							width="150"
-							sortable>
-					</el-table-column>
-					<el-table-column
-							prop="culture1Name"
-							label="培养联系人1"
-							width="120"
-							sortable>
-					</el-table-column>
-					<el-table-column
-							prop="culture2Name"
-							label="培养联系人2"
-							width="120"
-							sortable>
-					</el-table-column>
-					<el-table-column
-							prop="activityCount"
-							label="参加活动次数"
-							width="120"
-							sortable>
-						<template slot-scope="scope">
-							<span style="margin-right: 10px">{{ scope.row.activityCount }}</span>
-							<el-tag size="mini" type="danger" style="cursor: pointer" @click="showActivityDialog(scope.row.id)">点击详情</el-tag>
-						</template>
-					</el-table-column>
-					<el-table-column
-							prop="integral"
-							label="学习积分"
-							width="120"
-							sortable>
-					</el-table-column>
-					<el-table-column label="审核情况" width="120">
-						　　<template slot-scope="scope">
-						　　　　<div class="demo-image__preview">
-						<el-image
-								style="width: 50px; height: 50px"
-								:src="scope.row.url"
-								:preview-src-list="scope.row.src">
-						</el-image>
-					</div>
-						　　</template>
-					</el-table-column>
-					<el-table-column label="是否通过">
-						<template slot-scope="scope">
-							<el-switch v-model="scope.row.status" @change="userStateChanged(scope.row.id,scope.row.status)">
-							</el-switch>
-						</template>
-					</el-table-column>
-					<el-table-column label="操作" width="150" fixed="right" align="center">
-						<template slot-scope="scope">
-							<!-- 编辑 -->
-							<el-tooltip effect="dark" content="更多信息" placement="top" :enterable="false">
-								<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
-							</el-tooltip>
-							<!-- 查看其相关文档 -->
-							<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
-								<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
-							</el-tooltip>
-						</template>
-					</el-table-column>
-				</el-table>
+		<el-table
+				ref="multipleTable"
+				:data="tableList"
+				tooltip-effect="dark"
+				style="width: 100%"
+				size="mini"
+				stripe
+				highlight-current-row
+				@selection-change="handleSelectionChange">
+			<el-table-column
+					type="selection"
+					width="55">
+			</el-table-column>
+			<el-table-column
+					type="index"
+					label="#"
+					width="40">
+			</el-table-column>
+			<el-table-column
+					prop="name"
+					label="姓名"
+					width="80"
+					sortable>
+			</el-table-column>
+			<el-table-column
+					prop="className"
+					label="班级"
+					width="120"
+					:filters="selectClass"
+					:filter-method="filterCell"
+					filter-placement="bottom-end"
+					sortable
+					align="center">
+			</el-table-column>
+			<el-table-column
+					prop="youthLeagueBranch"
+					label="所属团支部"
+					width="120"
+					:filters="selectYouth"
+					:filter-method="filterCell3"
+					filter-placement="bottom-end"
+					sortable
+					align="center">
+			</el-table-column>
+			<el-table-column
+					prop="group"
+					label="所属党小组"
+					width="120"
+					:filters="selectGroup"
+					:filter-method="filterCell2"
+					filter-placement="bottom-end"
+					sortable
+					align="center">
+			</el-table-column>
+			<el-table-column
+					prop="applyTime"
+					label="申请书落款日期"
+					width="150"
+					sortable>
+			</el-table-column>
+			<el-table-column
+					prop="activistTime"
+					label="成为积极分子时间"
+					width="150"
+					sortable>
+			</el-table-column>
+			<el-table-column
+					prop="developTime"
+					label="成为发展对象时间"
+					width="150"
+					sortable>
+			</el-table-column>
+			<el-table-column
+					prop="culturel1Name"
+					label="培养联系人1"
+					width="120"
+					sortable>
+			</el-table-column>
+			<el-table-column
+					prop="culturel2Name"
+					label="培养联系人2"
+					width="120"
+					sortable>
+			</el-table-column>
+			<el-table-column
+					prop="activityCount"
+					label="参加活动次数"
+					width="120"
+					sortable>
+				<template slot-scope="scope">
+					<span style="margin-right: 10px">{{ scope.row.activityCount }}</span>
+					<el-tag size="mini" type="danger" style="cursor: pointer" @click="showActivityDialog(scope.row.id)">点击详情</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column
+					prop="integral"
+					label="学习积分"
+					width="120"
+					sortable>
+			</el-table-column>
+			<el-table-column label="审核情况" width="120">
+				　　<template slot-scope="scope">
+				　　　　<div class="demo-image__preview">
+				<el-image
+						style="width: 50px; height: 50px"
+						:src="scope.row.url"
+						:preview-src-list="scope.row.src">
+				</el-image>
+			</div>
+				　　</template>
+			</el-table-column>
+			<el-table-column label="是否通过">
+				<template slot-scope="scope">
+					<el-switch v-model="scope.row.status" @change="userStateChanged(scope.row)">
+					</el-switch>
+				</template>
+			</el-table-column>
+			<el-table-column label="操作" width="150" fixed="right" align="center">
+				<template slot-scope="scope">
+					<!-- 编辑 -->
+					<el-tooltip effect="dark" content="更多信息" placement="top" :enterable="false">
+						<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
+					</el-tooltip>
+					<!-- 查看其相关文档 -->
+					<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
+						<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
+					</el-tooltip>
+				</template>
+			</el-table-column>
+		</el-table>
 
-				<!-- 分页区域 -->
-				<el-pagination @size-change="handleSizeChange"
-							   @current-change="handleCurrentChange"
-							   :current-page="currentPage"
-							   :page-sizes="[1, 2, 4, 8, 10]"
-							   :page-size="size"
-							   layout="total, sizes, prev, pager, next, jumper"
-							   :total="total">
-				</el-pagination>
-			</el-card>
+		<!-- 分页区域 -->
+		<el-pagination @size-change="handleSizeChange"
+					   @current-change="handleCurrentChange"
+					   :current-page="queryInfo.pagenum"
+					   :page-sizes="[1, 2, 5, 10]"
+					   :page-size="queryInfo.pagesize"
+					   layout="total, sizes, prev, pager, next, jumper"
+					   :total="total">
+		</el-pagination>
+	</el-card>
 
-			<!-- 查看信息的对话框 -->
-			<el-dialog title="基本信息表" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
-				<table align="center" style="text-align: center" border="2px" cellspacing="0" cellpadding="2">
-					<tr>
-						<td align="center" colspan="7">一、基本信息</td>
-					</tr>
-					<tr>
-						<td>姓名</td>
-						<td width="15%">{{ tableList[0].name }}</td>
-						<td>性别</td>
-						<td width="15%">{{ tableList[0].sex }}</td>
-						<td>民族</td>
-						<td width="15%">{{ tableList[0].nation }}</td>
-						<td  width="18%" rowspan="2" align="center">照片</td>
-					</tr>
-					<tr>
-						<td >籍贯</td>
-						<td >{{ tableList[0].nativePlace }}</td>
-						<td >出生日期</td>
-						<td colspan="3">{{ tableList[0].birth }}</td>
-					</tr>
-					<tr>
-						<td >身份证号码</td>
-						<td colspan="6">{{ tableList[0].idCard }}</td>
-					</tr>
-					<tr>
-						<td>职务/职称</td>
-						<td >{{ tableList[0].duty }}</td>
-						<td colspan="2">申请入党时间</td>
-						<td colspan="3">{{ tableList[0].activistTime }}</td>
-					</tr>
-					<tr>
-						<td>学历</td>
-						<td >{{ tableList[0].education }}</td>
-						<td colspan="2">班级</td>
-						<td colspan="3">{{ tableList[0].className }}</td>
-					</tr>
-					<tr>
-						<td>培养联系人1</td>
-						<td >{{ tableList[0].culturel1Nmae }}</td>
-						<td colspan="2">培养联系人2</td>
-						<td colspan="3">{{ tableList[0].culturel2Nmae }}</td>
-					</tr>
-					<tr>
-						<td>联系电话</td>
-						<td >{{ tableList[0].phoneNum }}</td>
-						<td colspan="2">电子邮箱</td>
-						<td colspan="3">{{ tableList[0].email }}</td>
-					</tr>
-					<tr>
-						<td>家庭地址(详细)</td>
-						<td colspan="6">{{ tableList[0].address }}</td>
-					</tr>
-				</table>
-				<span slot="footer" class="dialog-footer">
+	<!-- 查看信息的对话框 -->
+	<el-dialog title="基本信息表" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
+		<table align="center" style="text-align: center" border="2px" cellspacing="0" cellpadding="2">
+			<tr>
+				<td align="center" colspan="7">一、基本信息</td>
+			</tr>
+			<tr>
+				<td>姓名</td>
+				<td width="15%">{{ tableList[0].name }}</td>
+				<td>性别</td>
+				<td width="15%">{{ tableList[0].sex }}</td>
+				<td>民族</td>
+				<td width="15%">{{ tableList[0].nation }}</td>
+				<td  width="18%" rowspan="2" align="center">照片</td>
+			</tr>
+			<tr>
+				<td >籍贯</td>
+				<td >{{ tableList[0].nativePlace }}</td>
+				<td >出生日期</td>
+				<td colspan="3">{{ tableList[0].birth }}</td>
+			</tr>
+			<tr>
+				<td >身份证号码</td>
+				<td colspan="6">{{ tableList[0].idCard }}</td>
+			</tr>
+			<tr>
+				<td>职务/职称</td>
+				<td >{{ tableList[0].duty }}</td>
+				<td colspan="2">申请入党时间</td>
+				<td colspan="3">{{ tableList[0].activistTime }}</td>
+			</tr>
+			<tr>
+				<td>学历</td>
+				<td >{{ tableList[0].education }}</td>
+				<td colspan="2">班级</td>
+				<td colspan="3">{{ tableList[0].className }}</td>
+			</tr>
+			<tr>
+				<td>培养联系人1</td>
+				<td >{{ tableList[0].culturel1Nmae }}</td>
+				<td colspan="2">培养联系人2</td>
+				<td colspan="3">{{ tableList[0].culturel2Nmae }}</td>
+			</tr>
+			<tr>
+				<td>联系电话</td>
+				<td >{{ tableList[0].phoneNum }}</td>
+				<td colspan="2">电子邮箱</td>
+				<td colspan="3">{{ tableList[0].email }}</td>
+			</tr>
+			<tr>
+				<td>家庭地址(详细)</td>
+				<td colspan="6">{{ tableList[0].address }}</td>
+			</tr>
+		</table>
+		<span slot="footer" class="dialog-footer">
 
         					<el-button @click="showDialogVisible = false">取 消</el-button>
         					<el-button type="primary">确 定</el-button>
       			</span>
-			</el-dialog>
+	</el-dialog>
 
-			<!-- 查看参加活动情况的对话框 -->
-			<el-dialog title="查看参加活动情况" :visible.sync="activityDialogVisible" width="50%">
-				<el-timeline>
-					<el-timeline-item
-							v-for=" act in activitys"
-							:key=" act.id"
-							:timestamp="act.actTime"
-							placement="top">
-						<el-card>
-							<h4><el-link type="primary" @click="innerDialog(act)">{{ act.name }}</el-link></h4>
-							<p>{{ act.username }} 参加于 {{ act.actTime }}</p>
-						</el-card>
-					</el-timeline-item>
-				</el-timeline>
-				<el-dialog
-						width="30%"
-						:visible.sync="innerVisible"
-						append-to-body>
-					<div class="demo-image">
-						<div class="block">
-							<el-image
-									style="width: 100px; height: 100px"
-									:src="url"
-									:preview-src-list="srcList">
-							</el-image>
-						</div>
-					</div>
+	<!-- 查看参加活动情况的对话框 -->
+	<el-dialog title="查看参加活动情况" :visible.sync="activityDialogVisible" width="50%">
+		<el-timeline>
+			<el-timeline-item
+					v-for=" act in activitys"
+					:key=" act.id"
+					:timestamp="act.actTime"
+					placement="top">
+				<el-card>
+					<h4><el-link type="primary" @click="innerDialog(act)">{{ act.name }}</el-link></h4>
+					<p>{{ act.username }} 参加于 {{ act.actTime }}</p>
+				</el-card>
+			</el-timeline-item>
+		</el-timeline>
+		<el-dialog
+				width="30%"
+				:visible.sync="innerVisible"
+				append-to-body>
+			<div class="demo-image">
+				<div class="block">
+					<el-image
+							style="width: 100px; height: 100px"
+							:src="url"
+							:preview-src-list="srcList">
+					</el-image>
+				</div>
+			</div>
 
-				</el-dialog>
-				<!-- 底部区域 -->
-				<span slot="footer" class="dialog-footer">
+		</el-dialog>
+		<!-- 底部区域 -->
+		<span slot="footer" class="dialog-footer">
 									<el-button @click="activityDialogVisible = false">取 消</el-button>
 								</span>
-			</el-dialog>
+	</el-dialog>
 
-			<!-- 查看上传文档情况的对话框 -->
-			<el-dialog title="查看上传文档情况" :visible.sync="fileDialogVisible" width="50%">
-				<el-timeline>
-					<el-timeline-item
-							v-for="file in files"
-							:key="file.id"
-							:timestamp="file.uploadTime"
-							placement="top">
-						<el-card>
-							<el-link type="primary" @click="innerDialog2(file)">{{ file.fileName }}</el-link>
-							<p>{{ file.username }} 提交于 {{ file.uploadTime }}</p>
-						</el-card>
-					</el-timeline-item>
-				</el-timeline>
+	<!-- 查看上传文档情况的对话框 -->
+	<el-dialog title="查看上传文档情况" :visible.sync="fileDialogVisible" width="50%">
+		<el-timeline>
+			<el-timeline-item
+					v-for="file in files"
+					:key="file.id"
+					:timestamp="file.uploadTime"
+					placement="top">
+				<el-card>
+					<el-link type="primary" @click="innerDialog2(file)">{{ file.fileName }}</el-link>
+					<p>{{ file.username }} 提交于 {{ file.uploadTime }}</p>
+				</el-card>
+			</el-timeline-item>
+		</el-timeline>
 
-				<el-dialog
-						width="30%"
-						:visible.sync="innerVisible2"
-						append-to-body>
-					<div class="demo-image">
-						<div class="block">
-							<el-image
-									style="width: 100px; height: 100px"
-									:src="url2"
-									:preview-src-list="srcList2">
-							</el-image>
-						</div>
-					</div>
+		<el-dialog
+				width="30%"
+				:visible.sync="innerVisible2"
+				append-to-body>
+			<div class="demo-image">
+				<div class="block">
+					<el-image
+							style="width: 100px; height: 100px"
+							:src="url2"
+							:preview-src-list="srcList2">
+					</el-image>
+				</div>
+			</div>
 
-				</el-dialog>
+		</el-dialog>
 
-				<!-- 底部区域 -->
-				<span slot="footer" class="dialog-footer">
+		<!-- 底部区域 -->
+		<span slot="footer" class="dialog-footer">
 									<el-button @click="fileDialogVisible = false">取 消</el-button>
 								</span>
-			</el-dialog>
-		</div>
-<script src="assets/js/vue.js"></script><!-- vue -->
-<script src="assets/js/elementui.js"></script><!-- vue -->
-<script src="assets/js/axios.js"></script>
+	</el-dialog>
+
+</div>
+
+
 <script>
 	new Vue({
 		el: '#app',
@@ -335,19 +345,28 @@
 		data() {
 			return {
 				// 获取党小组列表的参数对象
-				searchMap:{
-					name:'',
+				queryInfo: {
+					// 当前的页数
+					pagenum: 1,
+					// 当前每页显示多少条数据
+					pagesize: 2,
+					//按名字查询
+					name: '',
+					sex: ''
 				},
-				id:'',
 				tableList: [],
-
+				//检索党支部
+				selectClass: [],
+				//检索党小组
+				selectGroup: [],
+				//检索团支部
+				selectYouth: [],
 				//全选
 				multipleSelection: [],
 				//当前页
-				currentPage: 1,
+				currentPage4: 1,
 				//总数
 				total: 10,
-				size:10,
 				// 控制查看信息对话框的显示与隐藏
 				showDialogVisible: false,
 				//控制查看参加活动对话框的显示与隐藏
@@ -372,405 +391,474 @@
 				innerVisible2: false,
 				url2: '',
 				srcList2: [],
-                tableList2 : [
-                 {
-                    name: '吴钡钡',
-                    sex: '女',
-                    nation: '民族',
-                    nativePlace: '广东广州',
-                    birth: '2020/09/19',
-                    idCard: '44058219980516004X',
-                    phoneNum: '123456789',
-                    email: '454305375@qq.com',
-                    education: '本科',
-                    duty: '班长',
-                    address: '南B1-102',
-                    applyTime: '2017-09-20',
-                    activistTime: '2018-09-20',
-                    developTime: '2019-09-20',
-                    preMemberTime: '2019-09-20',
-                    culturel1Name: '陈波里',
-                    culturel2Name: '高宝城',
-                    status: false,
-                    className: '电信173',
-                    studentNum: '201710214220',
-                    url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                    src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-                    activityCount: 15,
-                    integral: 56,
-                    group: '信科院第二党小组',
-                    youthLeagueBranch: '信科院第二团支部'
-                }, {
-                    name: '林锦曼',
-                    sex: '女',
-                    nation: '民族',
-                    nativePlace: '广东潮州',
-                    birth: '2020/09/19',
-                    idCard: '445121199703264841',
-                    phoneNum: '15218856544',
-                    email: '454305375@qq.com',
-                    education: '本科',
-                    duty: '班长',
-                    address: '南B1-102',
-                    applyTime: '2017-09-20',
-                    activistTime: '2018-09-20',
-                    developTime: '2019-09-20',
-                    preMemberTime: '2019-09-20',
-                    culturel1Name: '姜汉',
-                    culturel2Name: '陈态',
-                    status: false,
-                    className: '信管171',
-                    studentNum: '201710214209',
-                    url: 'assets/img/avatar/头像.png',
-                    src: ['assets/img/avatar/头像.png'],
-                    activityCount: 15,
-                    integral: 56,
-                    group: '信科院第一党小组',
-                    youthLeagueBranch: '信科院第一团支部'
-                }, {
-                    name: '杨扬',
-                    sex: '女',
-                    nation: '民族',
-                    nativePlace: '广东揭阳',
-                    birth: '2020/09/19',
-                    idCard: '445121199703264841',
-                    phoneNum: '15913939523',
-                    email: '454305375@qq.com',
-                    education: '本科',
-                    duty: '班长',
-                    address: '南B1-103',
-                    applyTime: '2019-09-20',
-                    activistTime: '2019-09-20',
-                    developTime: '2019-09-20',
-                    preMemberTime: '2019-09-20',
-                    culturel1Name: '何积原',
-                    culturel2Name: '陈智敏',
-                    status: false,
-                    className: '电信173',
-                    studentNum: '201810254884',
-                    url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                    src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-                    activityCount: 15,
-                    integral: 56,
-                    group: '信科院第二党小组',
-                    youthLeagueBranch: '信科院第一团支部'
-                }, {
-                    name: '李海英',
-                    sex: '女',
-                    nation: '民族',
-                    nativePlace: '广东茂名',
-                    birth: '2020/09/19',
-                    idCard: '440509199801314024',
-                    phoneNum: '15815821405',
-                    email: '454305375@qq.com',
-                    education: '本科',
-                    duty: '班长',
-                    address: '南B1-102',
-                    applyTime: '2019-09-20',
-                    activistTime: '2019-09-20',
-                    developTime: '2019-09-20',
-                    preMemberTime: '2019-09-20',
-                    culturel1Name: '陈耿龙',
-                    culturel2Name: '梁凤吉',
-                    status: false,
-                    className: '电信172',
-                    studentNum: '201710214206',
-                    url: 'assets/img/avatar/头像.png',
-                    src: ['assets/img/avatar/头像.png'],
-                    activityCount: 15,
-                    integral: 56,
-                    group: '信科院第一党小组',
-                    youthLeagueBranch: '信科院第二团支部'
-                },{
-                        name: '钟国兴',
-                        sex: '男',
-                        nation: '民族',
-                        nativePlace: '广东广州',
-                        birth: '2020/09/19',
-                        idCard: '445322199507215811',
-                        phoneNum: '13763359810',
-                        email: '454305375@qq.com',
-                        education: '本科',
-                        duty: '班长',
-                        address: 'C114',
-                        applyTime: '2018-09-20',
-                        activistTime: '2019-09-20',
-                        developTime: '2020-09-20',
-                        preMemberTime: '2021-04-20',
-                        culturel1Name: '苏新颖',
-                        culturel2Name: '何汉',
-                        status: false,
-                        className: '计算机182',
-                        studentNum: '201810254884',
-                        url: 'assets/img/avatar/头像.png',
-                        src: ['assets/img/avatar/头像.png'],
-                        activityCount: 15,
-                        integral: 56,
-                        group: '信科院第二党小组',
-                        youthLeagueBranch: '信科院第一团支部'
-                    }, {
-                        name: '吴银奇',
-                        sex: '男',
-                        nation: '民族',
-                        nativePlace: '广东揭西',
-                        birth: '2020/09/19',
-                        idCard: '440509199710220014',
-                        phoneNum: '123456789',
-                        email: '454305375@qq.com',
-                        education: '本科',
-                        duty: '班长',
-                        address: '南A-143',
-                        applyTime: '2017-09-20',
-                        activistTime: '2018-09-20',
-                        developTime: '2020-09-20',
-                        preMemberTime: '2019-09-20',
-                        culturel1Name: '赖宗',
-                        culturel2Name: '林博正',
-                        status: false,
-                        className: '电信171',
-                        studentNum: '201710214110',
-                        url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                        src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-                        activityCount: 15,
-                        integral: 56,
-                        group: '信科院第二党小组',
-                        youthLeagueBranch: '信科院第一团支部'
-                    }, {
-                        name: '陈杰彬',
-                        sex: '男',
-                        nation: '民族',
-                        nativePlace: '广东广州',
-                        birth: '2020/09/19',
-                        idCard: '440981199703265436',
-                        phoneNum: '15218859512',
-                        email: '454305375@qq.com',
-                        education: '本科',
-                        duty: '班长',
-                        address: '南A-201',
-                        applyTime: '2018-09-20',
-                        activistTime: '2019-09-20',
-                        developTime: '2020-09-20',
-                        preMemberTime: '2019-09-20',
-                        culturel1Name: '程林',
-                        culturel2Name: '陈锦佳',
-                        status: false,
-                        className: '电信172',
-                        studentNum: '201710214227',
-                        url: 'assets/img/avatar/头像.png',
-                        src: ['assets/img/avatar/头像.png'],
-                        activityCount: 15,
-                        integral: 56,
-                        group: '信科院第二党小组',
-                        youthLeagueBranch: '信科院第一团支部'
-                    },]
+				tableList2 : [
+					{
+						name: '吴钡钡',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '44058219980516004X',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '南B1-102',
+						applyTime: '2017-09-20',
+						activistTime: '2018-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '陈波里',
+						culturel2Name: '高宝城',
+						status: false,
+						className: '电信173',
+						studentNum: '201710214220',
+						url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+						src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第二党小组',
+						youthLeagueBranch: '信科院第二团支部'
+					}, {
+						name: '林锦曼',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东潮州',
+						birth: '2020/09/19',
+						idCard: '445121199703264841',
+						phoneNum: '15218856544',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '南B1-102',
+						applyTime: '2017-09-20',
+						activistTime: '2018-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '姜汉',
+						culturel2Name: '陈态',
+						status: false,
+						className: '信管171',
+						studentNum: '201710214209',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第一党小组',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '杨扬',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东揭阳',
+						birth: '2020/09/19',
+						idCard: '445121199703264841',
+						phoneNum: '15913939523',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '南B1-103',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '何积原',
+						culturel2Name: '陈智敏',
+						status: false,
+						className: '电信173',
+						studentNum: '201810254884',
+						url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+						src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第二党小组',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '李海英',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东茂名',
+						birth: '2020/09/19',
+						idCard: '440509199801314024',
+						phoneNum: '15815821405',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '南B1-102',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '陈耿龙',
+						culturel2Name: '梁凤吉',
+						status: false,
+						className: '电信172',
+						studentNum: '201710214206',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第一党小组',
+						youthLeagueBranch: '信科院第二团支部'
+					},{
+						name: '钟国兴',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '445322199507215811',
+						phoneNum: '13763359810',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: 'C114',
+						applyTime: '2018-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2020-09-20',
+						preMemberTime: '2021-04-20',
+						culturel1Name: '苏新颖',
+						culturel2Name: '何汉',
+						status: false,
+						className: '计算机182',
+						studentNum: '201810254884',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第二党小组',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '吴银奇',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东揭西',
+						birth: '2020/09/19',
+						idCard: '440509199710220014',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '南A-143',
+						applyTime: '2017-09-20',
+						activistTime: '2018-09-20',
+						developTime: '2020-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '赖宗',
+						culturel2Name: '林博正',
+						status: false,
+						className: '电信171',
+						studentNum: '201710214110',
+						url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+						src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第二党小组',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '陈杰彬',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440981199703265436',
+						phoneNum: '15218859512',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '南A-201',
+						applyTime: '2018-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2020-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '程林',
+						culturel2Name: '陈锦佳',
+						status: false,
+						className: '电信172',
+						studentNum: '201710214227',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第二党小组',
+						youthLeagueBranch: '信科院第一团支部'
+					},]
 			}
 		},
 		created() {
 			this.getTableList()
 		},
 		methods: {
-            checkAll(){
-                this.$message.success('一键审核成功！');
-                //setTimeout("")
-                this.tableList=this.tableList2;
-            },
+			checkAll(){
+				this.$message.success('一键审核成功！');
+				//setTimeout("")
+				this.tableList=this.tableList2;
+			},
 			getTableList() {
-				axios.post(`/baseUser/findPotentialPage.do?page=${this.currentPage}&size=${this.size}&type=2&status=3`,this.searchMap).then(response => {
-					this.tableList = response.data.data.pageInfo.rows;
-					this.total = response.data.data.pageInfo.total;
-				});
 				//向后台获取列表
-/*				this.tableList = [
-						{
-					name: '陈嘉欣',
-					sex: '女',
-					nation: '民族',
-					nativePlace: '广东广州',
-					birth: '2020/09/19',
-					idCard: '445322199507215811',
-					phoneNum: '13763359810',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: 'C114',
-					applyTime: '2018-09-20',
-					activistTime: '2019-09-20',
-					developTime: '2020-09-20',
-					preMemberTime: '2021-04-20',
-					culturel1Name: '陈顺良',
-					culturel2Name: '梁伟邦',
-					status: false,
-					className: '计算机182',
-					studentNum: '201810254884',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '侯晓伟',
-					sex: '男',
-					nation: '民族',
-					nativePlace: '广东揭西',
-					birth: '2020/09/19',
-					idCard: '440509199710220014',
-					phoneNum: '123456789',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南A-143',
-					applyTime: '2017-09-20',
-					activistTime: '2018-09-20',
-					developTime: '2020-09-20',
-					preMemberTime: '2019-09-20',
-					culturel1Name: '陈广兴',
-					culturel2Name: '赵雯',
-					status: false,
-					className: '电信171',
-					studentNum: '201710214110',
-					url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-					src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-					activityCount: 15,
+				this.tableList = [
+					{
+						name: '廖盛浪',
+						sex: '男',
+						name: '陈嘉欣',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						idCard: '445322199507215811',
+						phoneNum: '13763359810',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2019-09-20',
+						address: 'C114',
+						applyTime: '2018-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						developTime: '2020-09-20',
+						preMemberTime: '2021-04-20',
+						culturel1Name: '陈顺良',
+						culturel2Name: '梁伟邦',
+						status: false,
+						className: '计机183',
+						className: '计算机182',
+						studentNum: '201810254884',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
 						integral: 56,
 						group: '信科院第二党小组',
 						youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '余伟杰',
-					sex: '男',
-					nation: '民族',
-					nativePlace: '广东广州',
-					birth: '2020/09/19',
-					idCard: '440981199703265436',
-					phoneNum: '15218859512',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南A-201',
-					applyTime: '2018-09-20',
-					activistTime: '2019-09-20',
-					developTime: '2020-09-20',
-					preMemberTime: '2019-09-20',
-					culturel1Name: '李斌浩',
-					culturel2Name: '钟立',
-					status: false,
-					className: '电信172',
-					studentNum: '201710214227',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
+					}, {
+						name: '廖盛浪',
+						name: '侯晓伟',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						nativePlace: '广东揭西',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						idCard: '440509199710220014',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						address: '南A-143',
+						applyTime: '2017-09-20',
+						activistTime: '2018-09-20',
+						developTime: '2020-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						culturel1Name: '陈广兴',
+						culturel2Name: '赵雯',
+						status: false,
+						className: '网络181',
+						studentNum: '201810254884',
+						className: '电信171',
+						studentNum: '201710214110',
+						url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+						src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+						activityCount: 15,
 						integral: 56,
 						group: '信科院第二党小组',
 						youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '吴钡钡',
-					sex: '女',
-					nation: '民族',
-					nativePlace: '广东广州',
-					birth: '2020/09/19',
-					idCard: '44058219980516004X',
-					phoneNum: '123456789',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南B1-102',
-					applyTime: '2017-09-20',
-					activistTime: '2018-09-20',
-					developTime: '2019-09-20',
-					preMemberTime: '2019-09-20',
-					culturel1Name: '陈波里',
-					culturel2Name: '高宝城',
-					status: false,
-					className: '电信173',
-					studentNum: '201710214220',
-					url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-					src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-					activityCount: 15,
+					}, {
+						name: '廖盛浪',
+						name: '余伟杰',
+						sex: '男',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						idCard: '440981199703265436',
+						phoneNum: '15218859512',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2019-09-20',
+						address: '南A-201',
+						applyTime: '2018-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						developTime: '2020-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						culturel1Name: '李斌浩',
+						culturel2Name: '钟立',
+						status: false,
+						className: '计算机187',
+						studentNum: '201810254884',
+						className: '电信172',
+						studentNum: '201710214227',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
+						integral: 56,
+						group: '信科院第二党小组',
+						youthLeagueBranch: '信科院第一团支部'
+					}, {
+						name: '廖盛浪',
+						sex: '男',
+						name: '吴钡钡',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东广州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						idCard: '44058219980516004X',
+						phoneNum: '123456789',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						address: '南B1-102',
+						applyTime: '2017-09-20',
+						activistTime: '2018-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						culturel1Name: '陈波里',
+						culturel2Name: '高宝城',
+						status: false,
+						className: '网络181',
+						studentNum: '201810254884',
+						className: '电信173',
+						studentNum: '201710214220',
+						url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+						src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+						activityCount: 15,
 						integral: 56,
 						group: '信科院第二党小组',
 						youthLeagueBranch: '信科院第二团支部'
-				}, {
-					name: '林锦曼',
-					sex: '女',
-					nation: '民族',
-					nativePlace: '广东潮州',
-					birth: '2020/09/19',
-					idCard: '445121199703264841',
-					phoneNum: '15218856544',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南B1-102',
-					applyTime: '2017-09-20',
-					activistTime: '2018-09-20',
-					developTime: '2019-09-20',
-					preMemberTime: '2019-09-20',
-					culturel1Name: '姜汉',
-					culturel2Name: '陈态',
-					status: false,
-					className: '信管171',
-					studentNum: '201710214209',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
+					}, {
+						name: '廖盛浪',
+						sex: '男',
+						name: '林锦曼',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东广州',
+						nativePlace: '广东潮州',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						idCard: '445121199703264841',
+						phoneNum: '15218856544',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						address: '南B1-102',
+						applyTime: '2017-09-20',
+						activistTime: '2018-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						culturel1Name: '姜汉',
+						culturel2Name: '陈态',
+						status: false,
+						className: '计算机187',
+						studentNum: '201810254884',
+						className: '信管171',
+						studentNum: '201710214209',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
 						integral: 56,
 						group: '信科院第一党小组',
 						youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '杨扬',
-					sex: '女',
-					nation: '民族',
-					nativePlace: '广东揭阳',
-					birth: '2020/09/19',
-					idCard: '445121199703264841',
-					phoneNum: '15913939523',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南B1-103',
-					applyTime: '2019-09-20',
-					activistTime: '2019-09-20',
-					developTime: '2019-09-20',
-					preMemberTime: '2019-09-20',
-					culturel1Name: '何积原',
-					culturel2Name: '陈智敏',
-					status: false,
-					className: '电信173',
-					studentNum: '201810254884',
-					url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-					src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-					activityCount: 15,
+					}, {
+						name: '廖盛浪',
+						sex: '男',
+						name: '杨扬',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东广州',
+						nativePlace: '广东揭阳',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						idCard: '445121199703264841',
+						phoneNum: '15913939523',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						address: '南B1-103',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						culturel1Name: '何积原',
+						culturel2Name: '陈智敏',
+						status: false,
+						className: '计算机187',
+						className: '电信173',
+						studentNum: '201810254884',
+						url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+						src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+						activityCount: 15,
 						integral: 56,
 						group: '信科院第二党小组',
 						youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '李海英',
-					sex: '女',
-					nation: '民族',
-					nativePlace: '广东茂名',
-					birth: '2020/09/19',
-					idCard: '440509199801314024',
-					phoneNum: '15815821405',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南B1-102',
-					applyTime: '2019-09-20',
-					activistTime: '2019-09-20',
-					developTime: '2019-09-20',
-					preMemberTime: '2019-09-20',
-					culturel1Name: '陈耿龙',
-					culturel2Name: '梁凤吉',
-					status: false,
-					className: '电信172',
-					studentNum: '201710214206',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
+					}, {
+						name: '廖盛浪',
+						sex: '男',
+						name: '李海英',
+						sex: '女',
+						nation: '民族',
+						nativePlace: '广东广州',
+						nativePlace: '广东茂名',
+						birth: '2020/09/19',
+						idCard: '440983333333333333',
+						phoneNum: '123456789',
+						idCard: '440509199801314024',
+						phoneNum: '15815821405',
+						email: '454305375@qq.com',
+						education: '本科',
+						duty: '班长',
+						address: '仲恺农业工程学院',
+						address: '南B1-102',
+						applyTime: '2019-09-20',
+						activistTime: '2019-09-20',
+						developTime: '2019-09-20',
+						preMemberTime: '2019-09-20',
+						culturel1Name: '小龙女',
+						culturel2Name: '杨过',
+						culturel1Name: '陈耿龙',
+						culturel2Name: '梁凤吉',
+						status: false,
+						className: '计算机187',
+						studentNum: '201810254884',
+						className: '电信172',
+						studentNum: '201710214206',
+						url: 'assets/img/avatar/头像.png',
+						src: ['assets/img/avatar/头像.png'],
+						activityCount: 15,
 						integral: 56,
 						group: '信科院第一党小组',
 						youthLeagueBranch: '信科院第二团支部'
-				}]
+					}]
 				this.selectClass = [{
 					text: '计机183',
 					value: '计机183'
@@ -794,7 +882,7 @@
 				}, {
 					text: '信科院第二团支部',
 					value: '信科院第二团支部'
-				}]*/
+				}]
 			},
 			filterCell(value, row) {
 				return row.classNum === value;
@@ -809,14 +897,17 @@
 			 * 重置
 			 */
 			reset(){
-				this.searchMap= {name:''}
-				this.getTableList();
+				this.queryInfo= {
+					pagenum: 1,
+					pagesize: 10,
+					name: ""
+				}
 			},
 			/**
 			 * 搜索用户
 			 */
-			search() {
-				this.currentPage = 1;
+			searchUser() {
+				this.queryInfo.pageNum = 1;
 				this.getTableList();
 			},
 			toggleSelection(rows) {
@@ -830,24 +921,12 @@
 			},
 			handleSelectionChange(val) {
 				this.multipleSelection = val;//val是一个数组
-				var array=[];
-				val.forEach((val,index)=>{
-					array.push(val.id);
-				})
-				//this.formLabelAlign.select=array;//选中的人的id
-				//this.dynamicValidateForm.select=array;
-
 			},
 			handleSizeChange(val) {
 				console.log(`每页 ${val} 条`);
-				this.currentPage=1
-				this.size=val;
-				this.getTableList();
 			},
 			handleCurrentChange(val) {
 				console.log(`当前页: ${val}`);
-				this.currentPage=val;
-				this.getTableList();
 			},
 			// 监听查看信息对话框的关闭事件
 			showDialogClosed() {
@@ -861,9 +940,7 @@
 			// 监听 switch 开关状态的改变
 			userStateChanged(row) {
 				//向后台审核
-				axios.post(`/development/updateStatus.do?id=${id}&status=${status}&type=3`).then(response => {
-					this.$message.success('审核通过！');
-				});
+				this.$message.success('审核通过！')
 			},
 			// 展示信息的对话框
 			showActivityDialog(id) {
@@ -872,6 +949,8 @@
 					{
 						id: '1',
 						name: '党课培训',
+						actTime: '2020/10/16',
+						username: '廖盛浪',
 						actTime: '2021/04/15',
 						username: '陈嘉欣',
 						record: [
@@ -882,6 +961,8 @@
 					},{
 						id: '2',
 						name: '三会一课',
+						actTime: '2020/10/16',
+						username: '廖盛浪',
 						actTime: '2020/12/16',
 						username: '陈嘉欣',
 						record: [
@@ -892,6 +973,8 @@
 					},{
 						id: '3',
 						name: '民主评议会',
+						actTime: '2020/10/16',
+						username: '廖盛浪',
 						actTime: '2020/09/16',
 						username: '陈嘉欣',
 						record: [

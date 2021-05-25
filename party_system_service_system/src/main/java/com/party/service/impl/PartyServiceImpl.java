@@ -68,6 +68,7 @@ public class PartyServiceImpl implements PartyService {
     public PageResult<Party> findPage(Map<String, Object> searchMap, int page, int size) {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
+        example.setOrderByClause("party_time asc ");
         List<Party> partyList = partyMapper.selectByExample(example);
         for (Party party : partyList) {
             if (!(party.getGeneralId()==null)){

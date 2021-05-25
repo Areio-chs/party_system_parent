@@ -211,13 +211,7 @@
 
 						<!-- 添加活动的对话框 -->
 						<el-dialog title="添加活动" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
-							<el-alert
-									title="注：点击确认后系统自动通知参加人员"
-									type="warning"
-									show-icon
-									center
-									style="margin-bottom: 10px">
-							</el-alert>
+
 							<!-- 内容主体区域 -->
 							<el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
 								<el-row>
@@ -443,7 +437,7 @@
 						// 可以发起添加活动的网络请求
 						axios.post(`/act/update.do`,this.editForm).then(response => {
 								this.$message.success('修改活动成功！')
-								this.updateDialogVisible = false
+								this.editDialogVisible = false
 								// 重新获取活动列表数据
 								this.getTableList()
 						});
