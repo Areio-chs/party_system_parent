@@ -89,15 +89,17 @@ var navs = [{
         "title":"院内关系转移记录",
         "icon": "fa-refresh",
         "href": "relation-change-pass.html"
-	},{
-		"title": "关系转入待审核",
-		"icon": "fa-hourglass-end",
-		"href": "relation-in-pending.html"
-	}, {
-		"title": "关系转入已审核",
-		"icon": "fa-paper-plane",
-		"href": "relation-in-pass.html"
-	}, {
+	},
+	// {
+	// 	"title": "关系转入待审核",
+	// 	"icon": "fa-hourglass-end",
+	// 	"href": "relation-in-pending.html"
+	// }, {
+	// 	"title": "关系转入已审核",
+	// 	"icon": "fa-paper-plane",
+	// 	"href": "relation-in-pass.html"
+	// },
+		{
 		"title": "关系转出待审核",
 		"icon": "fa-hourglass",
 		"href": "relation-out-pending.html"

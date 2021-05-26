@@ -52,16 +52,7 @@
                 placeholder="请输入姓名查询"
         ></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-select v-model="searchMap.generalId" clearable placeholder="党总支" @change="generalChanged">
-          <el-option
-                  v-for="item in general"
-                  :key="item.id"
-                  :label="item.generalName"
-                  :value="item.id">
-          </el-option>
-        </el-select>
-      </el-form-item>
+
       <el-form-item>
         <el-button  @click="reset('searchMap')" icon="el-icon-refresh">重置</el-button>
         <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
@@ -72,23 +63,6 @@
           <el-button type="warning" icon="el-icon-position" @click="showRelationshipDialog()">批量通过</el-button>
           <el-button type="danger"  icon="el-icon-upload2"   @click="downExcel">导出</el-button>
         </el-form-item>
-        <el-form-item>
-          <el-upload
-                  ref="upload"
-                  :auto-upload="true"
-                  :on-success="fileUploadSuccess"
-                  :on-error="fileUploadError"
-                  :disabled="importBtnDisabled"
-                  :loading="loading"
-                  :limit="1"
-                  action="http://localhost:9101/excel/leadInDevelopment.do"
-                  name="file"
-                  accept="application/vnd.ms-excel">
-            <el-button slot="trigger" type="success" icon="el-icon-plus">导入</el-button>
-          </el-upload>
-
-        </el-form-item>
-
     </el-form>
     <!--显示主体------------------------------------------------------>
     <el-table
@@ -137,27 +111,8 @@
                 sortable
                 align="center">
         </el-table-column>
-        <el-table-column
-                prop="nativePlace"
-                label="籍贯"
-                width="80"
-                sortable
-                align="center">
-        </el-table-column>
-      <el-table-column
-              prop="fromTime"
-              label="加入当前党总支时间"
-              width="160"
-              sortable
-              align="center">
-      </el-table-column>
-        <el-table-column
-                prop="toName"
-                label="要转出的党总支"
-                width="290"
-                sortable
-                align="center">
-        </el-table-column>
+
+
         <el-table-column
                 prop="phone"
                 label="电话"
@@ -179,13 +134,7 @@
                 sortable
                 align="center">
         </el-table-column>
-        <el-table-column
-                prop="room"
-                label="宿舍"
-                width="80"
-                sortable
-                align="center">
-        </el-table-column>
+
       <!--</el-table-column>-->
  <!--     <el-table-column label="党务信息" align="center">
         <el-table-column
@@ -253,10 +202,10 @@
         </el-table-column>
       </el-table-column>-->
 
-      <el-table-column label="操作" width="200" fixed="right" align="center">
+      <el-table-column label="操作" width="320" fixed="right" align="center">
         <template slot-scope="scope">
           <el-tooltip effect="dark" content="同意转出" placement="top" :enterable="false">
-            <el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
+            <el-button type="warning" icon="el-icon-position" size="mini" @click="showFileDialog"></el-button>
           </el-tooltip>
           <el-tooltip effect="dark" content="拒绝转出" placement="top" :enterable="false">
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGroupById(scope.row.id)"></el-button>
@@ -966,137 +915,152 @@
                 }
             }
             return {
+              developList3 : [
+                {
+                  name:'周佳玲',
+                  sex:'女',
+                  reason:'工作',
+                  phone:'17806707958',
+                  grade:'2018',
+                  classNum:'计算机182',
+                }],
+              developList2 : [
+                {
+                  name:'林丽如',
+                  sex:'女',
+                  reason:'工作',
+                  phone:'17806707612',
+                  grade:'2018',
+                  classNum:'计算机182',
+                }
+                ,
+                {
+                  name:'周佳玲',
+                  sex:'女',
+                  reason:'工作',
+                  phone:'17806707958',
+                  grade:'2018',
+                  classNum:'计算机182',
+                }],
                 developList : [
                     {
-                        name:'蔡杰栋',
+                        name:'廖盛浪',
                         sex:'男',
                         reason:'工作',
-                        nativePlace:'广东湛江',
-                        toName:'广州市海珠区科技工业商务和信息化局',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
                         phone:'17806707104',
                         grade:'2017',
                         classNum:'网络工程172',
-                        room:'A1-203',
+
                     },
                     {
-                        name:'沈秀琪',
+                      name:'林丽如',
+                      sex:'女',
+                      reason:'工作',
+                      phone:'17806707612',
+                      grade:'2018',
+                      classNum:'计算机182',
+                    }
+                    ,
+                    {
+                        name:'周佳玲',
                         sex:'女',
                         reason:'工作',
-                        nativePlace:'广东潮州',
-                        toName:'攻略互娱（深圳）互联网科技有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'15992545501',
-                        grade:'2017',
-                        classNum:'信管172',
-                        room:'B1-108',
-                    },
-                    {
-                        name:'单晓华',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东东莞',
-                        toName:'珠海誉满互联网科技有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13763359810',
-                        grade:'2017',
-                        classNum:'大数据171',
-                        room:'D-542',
-                    },
-                    {
-                        name:'徐小青',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东揭阳',
-                        toName:'云景（深圳）互联网有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'15217718792',
-                        grade:'2017',
-                        classNum:'物联网173',
-                        room:'D-1242',
-                    },
-                    {
-                        name:'何海清',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东汕头',
-                        toName:'广州市海珠区隐式服务公司海珠饮食旅游中心工会',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13763359812',
-                        grade:'2017',
-                        classNum:'通信工程173',
-                        room:'C-128',
-                    },
-                    {
-                        name:'李琦',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东珠海',
-                        toName:'广州知识产权保护中心',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13726624178',
-                        grade:'2017',
-                        classNum:'物联网173',
-                        room:'D-1051',
-                    },
-                    {
-                        name:'陈思宇',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东汕头',
-                        toName:'广州互益互联网服务有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'17806707612',
-                        grade:'2017',
-                        classNum:'信管171',
-                        room:'F1-201',
-                    },
-                    {
-                        name:'邢江龙',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东茂名',
-                        toName:'广州荣城建筑工程有限公司广州分公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'1501899840',
-                        grade:'2017',
-                        classNum:'网络工程172',
-                        room:'A1-252',
-                    },
-                    {
-                        name:'徐凯彬',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东阳江',
-                        toName:'星星精密科技有限公司广州分公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'18922100439',
-                        grade:'2017',
-                        classNum:'人工智能171',
-                        room:'C1-203',
-                    },
-                    {
-                        name:'熊虞珊',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东潮州',
-                        toName:'云端互联网（深圳）有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13542895964',
-                        grade:'2017',
-                        classNum:'信管171',
-                        room:'B1-310',
-                    },
+                        phone:'17806707958',
+                        grade:'2018',
+                        classNum:'计算机182',
+                    }
+                    // ,
+                    // {
+                    //     name:'徐小青',
+                    //     sex:'女',
+                    //     reason:'工作',
+                    //     nativePlace:'广东揭阳',
+                    //     toName:'云景（深圳）互联网有限公司',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'15217718792',
+                    //     grade:'2017',
+                    //     classNum:'物联网173',
+                    //     room:'D-1242',
+                    // },
+                    // {
+                    //     name:'何海清',
+                    //     sex:'男',
+                    //     reason:'工作',
+                    //     nativePlace:'广东汕头',
+                    //     toName:'广州市海珠区隐式服务公司海珠饮食旅游中心工会',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'13763359812',
+                    //     grade:'2017',
+                    //     classNum:'通信工程173',
+                    //     room:'C-128',
+                    // },
+                    // {
+                    //     name:'李琦',
+                    //     sex:'女',
+                    //     reason:'工作',
+                    //     nativePlace:'广东珠海',
+                    //     toName:'广州知识产权保护中心',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'13726624178',
+                    //     grade:'2017',
+                    //     classNum:'物联网173',
+                    //     room:'D-1051',
+                    // },
+                    // {
+                    //     name:'陈思宇',
+                    //     sex:'男',
+                    //     reason:'工作',
+                    //     nativePlace:'广东汕头',
+                    //     toName:'广州互益互联网服务有限公司',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'17806707612',
+                    //     grade:'2017',
+                    //     classNum:'信管171',
+                    //     room:'F1-201',
+                    // },
+                    // {
+                    //     name:'邢江龙',
+                    //     sex:'男',
+                    //     reason:'工作',
+                    //     nativePlace:'广东茂名',
+                    //     toName:'广州荣城建筑工程有限公司广州分公司',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'1501899840',
+                    //     grade:'2017',
+                    //     classNum:'网络工程172',
+                    //     room:'A1-252',
+                    // },
+                    // {
+                    //     name:'徐凯彬',
+                    //     sex:'男',
+                    //     reason:'工作',
+                    //     nativePlace:'广东阳江',
+                    //     toName:'星星精密科技有限公司广州分公司',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'18922100439',
+                    //     grade:'2017',
+                    //     classNum:'人工智能171',
+                    //     room:'C1-203',
+                    // },
+                    // {
+                    //     name:'熊虞珊',
+                    //     sex:'女',
+                    //     reason:'工作',
+                    //     nativePlace:'广东潮州',
+                    //     toName:'云端互联网（深圳）有限公司',
+                    //     toTime:'2021-05-24',
+                    //     fromTime:'2017-09-20',
+                    //     phone:'13542895964',
+                    //     grade:'2017',
+                    //     classNum:'信管171',
+                    //     room:'B1-310',
+                    // },
 
                 ],
                 searchMap:{
@@ -1121,7 +1085,7 @@
                 //当前页
                 currentPage: 1,
                 //总数
-                total: 43,
+                total: 3,
                 size: 10,
                 // 控制添加对话框的显示与隐藏
                 addDialogVisible: false,
@@ -1349,159 +1313,23 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then( () => {
-                    this.$message.success('拒绝转出成功！');
-                    this.total=42;
-                    this.developList=[
-                        {
-                            name:'沈秀琪',
-                            sex:'女',
-                            reason:'工作',
-                            nativePlace:'广东潮州',
-                            toName:'攻略互娱（深圳）互联网科技有限公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'15992545501',
-                            grade:'2017',
-                            classNum:'信管172',
-                            room:'B1-108',
-                        },
-                        {
-                            name:'单晓华',
-                            sex:'男',
-                            reason:'工作',
-                            nativePlace:'广东东莞',
-                            toName:'珠海誉满互联网科技有限公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'13763359810',
-                            grade:'2017',
-                            classNum:'大数据171',
-                            room:'D-542',
-                        },
-                        {
-                            name:'徐小青',
-                            sex:'女',
-                            reason:'工作',
-                            nativePlace:'广东揭阳',
-                            toName:'云景（深圳）互联网有限公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'15217718792',
-                            grade:'2017',
-                            classNum:'物联网173',
-                            room:'D-1242',
-                        },
-                        {
-                            name:'何海清',
-                            sex:'男',
-                            reason:'工作',
-                            nativePlace:'广东汕头',
-                            toName:'广州市海珠区隐式服务公司海珠饮食旅游中心工会',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'13763359812',
-                            grade:'2017',
-                            classNum:'通信工程173',
-                            room:'C-128',
-                        },
-                        {
-                            name:'李琦',
-                            sex:'女',
-                            reason:'工作',
-                            nativePlace:'广东珠海',
-                            toName:'广州知识产权保护中心',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'13726624178',
-                            grade:'2017',
-                            classNum:'物联网173',
-                            room:'D-1051',
-                        },
-                        {
-                            name:'陈思宇',
-                            sex:'男',
-                            reason:'工作',
-                            nativePlace:'广东汕头',
-                            toName:'广州互益互联网服务有限公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'17806707612',
-                            grade:'2017',
-                            classNum:'信管171',
-                            room:'F1-201',
-                        },
-                        {
-                            name:'邢江龙',
-                            sex:'男',
-                            reason:'工作',
-                            nativePlace:'广东茂名',
-                            toName:'广州荣城建筑工程有限公司广州分公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'1501899840',
-                            grade:'2017',
-                            classNum:'网络工程172',
-                            room:'A1-252',
-                        },
-                        {
-                            name:'徐凯彬',
-                            sex:'男',
-                            reason:'工作',
-                            nativePlace:'广东阳江',
-                            toName:'星星精密科技有限公司广州分公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'18922100439',
-                            grade:'2017',
-                            classNum:'人工智能171',
-                            room:'C1-203',
-                        },
-                        {
-                            name:'熊虞珊',
-                            sex:'女',
-                            reason:'工作',
-                            nativePlace:'广东潮州',
-                            toName:'云端互联网（深圳）有限公司',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'13542895964',
-                            grade:'2017',
-                            classNum:'信管171',
-                            room:'B1-310',
-                        },
-                        {
-                            name:'陈晓器',
-                            sex:'男',
-                            reason:'工作',
-                            nativePlace:'广东湛江',
-                            toName:'广州市海珠区科技工业商务和信息化局',
-                            toTime:'2021-05-24',
-                            fromTime:'2017-09-20',
-                            phone:'17806707104',
-                            grade:'2017',
-                            classNum:'网络工程172',
-                            room:'A1-203',
-                        }
-                    ];
+                    this.$message.success('拒绝转出');
+                    this.total=this.total-1;
+                    this.developList=this.developList3;
                 })
 
             },
             showFileDialog() {
-                //此处应向后台获取数据
-                this.files = [
-                    {
-                        id: '1',
-                        fileName: '转出申请',
-                        uploadTime: '2021-04-20 20:00:00',
-                        filePath: [
-                            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-                            'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                            'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-                        ],
-                        username: '蔡杰栋'
-                    }
-                ]
-                this.fileDialogVisible = true
+              this.$confirm('确定要同意转出吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then( () => {
+                this.$message.success("同意转出");
+                this.total=this.total-1;
+                this.developList=this.developList2;
+              })
+
             },
             innerDialog(file) {
                 //此处应向后台获取数据

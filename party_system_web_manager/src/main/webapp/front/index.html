@@ -21,7 +21,14 @@
                 个人中心
             </div>
             <div class="main">
-                <div>
+
+                <div v-if="this.r=='201910214101'">
+                    <a href="#" title="李海秦">
+                        <span>李海秦</span>
+                        <span>积极分子</span>
+                    </a>
+                </div>
+                <div v-else="this.r=='201810214303'">
                     <a href="#" title="廖盛浪">
                         <span>廖盛浪</span>
                         <span>积极分子</span>
@@ -45,9 +52,9 @@
                 <li>
 
                     <!--<template>-->
-                    <a @click="open" title="团费缴纳">
+                    <a @click="open" title="党费缴纳">
                         <span class="local-nav-icon3"></span>
-                        <span>团费缴纳</span>
+                        <span>党费缴纳</span>
                     </a>
                     <!--</template>-->
                 </li>
@@ -107,7 +114,19 @@
 <script>
     new Vue({
         el:'#app',
+        data() {
+            return {
+             r:''
+            };
+        },
+        created(){
+            this.getUrl()
+        },
         methods:{
+            getUrl(){
+                this.r = window.location.search.substring(5)
+                // alert(this.r)
+            },
             open() {
                 this.$message({
                     type: 'success',

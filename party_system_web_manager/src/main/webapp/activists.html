@@ -1150,6 +1150,16 @@
 						this.general = response.data.data.items;
 					});
 				},
+				getGroupList(){
+					axios.get(`/group/findAll.do`).then(response => {
+						this.group = response.data.data.items;
+					});
+				},
+				getPartyList(){
+					axios.get(`/party/findAll.do`).then(response => {
+						this.party = response.data.data.items;
+					});
+				},
 				generalChanged(value){//点击党总支触发chage，显示对应的支部
 					this.generalId=value;
 					//查找这个党总支下面的所有党支部
@@ -1254,8 +1264,14 @@
 				showUserDialog(id) {
 					//根据id
 					this.updateDialogVisible = true
+					this.getGeneralList()
+					this.getGroupList()
+					this.getPartyList()
+					//获取培养联系人级联下拉列表
 					this.getAllOption()
 					axios.get(`/baseUser/findCommonById.do?id=${id}&type=0`).then(response => {
+						// alert("11111")
+						// alert(JSON.stringify(response.data.data.items))
 						this.addForm = response.data.data.items;
 
 					});

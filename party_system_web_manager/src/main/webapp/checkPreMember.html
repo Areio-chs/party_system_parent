@@ -51,13 +51,6 @@
 						></el-input>
 					</el-form-item>
 
-
-					<el-form-item label="性别">
-						<el-radio v-model="queryInfo.sex" label="1">男</el-radio>
-						<el-radio v-model="queryInfo.sex" label="0">女</el-radio>
-						<el-radio v-model="queryInfo.sex" label>全部</el-radio>
-					</el-form-item>
-
 					<el-form-item>
 						<el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
 						<el-button type="primary" icon="el-icon-search">查询</el-button>
@@ -106,6 +99,26 @@
 							width="120"
 							:filters="selectYouth"
 							:filter-method="filterCell3"
+							filter-placement="bottom-end"
+							sortable
+							align="center">
+					</el-table-column>
+					<el-table-column
+							prop="general"
+							label="所属党总支"
+							width="120"
+							:filters="selectGroup"
+							:filter-method="filterCell2"
+							filter-placement="bottom-end"
+							sortable
+							align="center">
+					</el-table-column>
+					<el-table-column
+							prop="party"
+							label="所属党支部"
+							width="120"
+							:filters="selectGroup"
+							:filter-method="filterCell2"
 							filter-placement="bottom-end"
 							sortable
 							align="center">
@@ -190,9 +203,9 @@
 								<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
 							</el-tooltip>
 							<!-- 查看其相关文档 -->
-							<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
-								<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
-							</el-tooltip>
+<!--							<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">-->
+<!--								<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>-->
+<!--							</el-tooltip>-->
 						</template>
 					</el-table-column>
 				</el-table>
@@ -355,7 +368,7 @@
 					// 当前的页数
 					pagenum: 1,
 					// 当前每页显示多少条数据
-					pagesize: 2,
+					pagesize: 10,
 					//按名字查询
 					name: '',
 					sex: ''
@@ -372,7 +385,7 @@
 				//当前页
 				currentPage4: 1,
 				//总数
-				total: 10,
+				total: 5,
 				// 控制查看信息对话框的显示与隐藏
 				showDialogVisible: false,
 				//控制查看参加活动对话框的显示与隐藏
@@ -600,184 +613,200 @@
 					sex: '男',
 					nation: '民族',
 					nativePlace: '广东茂名',
-					birth: '2020/09/19',
+						birth: '1997/12/25',
 					idCard: '440923199712252633',
 					phoneNum: '15626712347',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
+					email: '',
+					education: '高中',
+					duty: '无',
 					address: 'F2-105',
-					applyTime: '2021-05-01',
-					activistTime: '2018-09-20',
-					developTime: '2020-09-20',
-					culturel1Name: '徐晓武',
-					culturel2Name: '冯永杰',
+					applyTime: '2018-10-20',
+					activistTime: '2019-03-13',
+					developTime: '2020-04-18',
+					culturel1Name: '陈嘉欣',
+					culturel2Name: '骆燕玲',
 					status: false,
-					className: '电信171',
-					studentNum: '201710224132',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
+					className: '计算机183',
+					studentNum: '201810214332',
+						url: 'assets/img/document/pict111.png',
+						src: ['assets/img/document/pict111.png'],
 					activityCount: 15,
-					integral: 56,
-					group: '信科院第一党小组',
-					youthLeagueBranch: '信科院第一团支部'
+					integral: 155,
+						general:'信科院第一党总支',
+						party:'第一支部',
+					group: '第一小组',
+					youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业183班支部委员会'
 				}, {
 					name: '郑永素',
 					sex: '男',
-					nation: '民族',
+					nation: '汉族',
 					nativePlace: '广东汕头',
-					birth: '2020/09/19',
+					birth: '1998/06/13',
 					idCard: '44058219980613613X',
 					phoneNum: '13417168698',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
+					email: '',
+					education: '高中',
+					duty: '无',
 					address: '南F2-111',
-					applyTime: '2021-05-01',
-					activistTime: '2020-04-20',
-					developTime: '2021-04-20',
-					culturel1Name: '陈彤',
-					culturel2Name: '林丽茹',
+					applyTime: '2018-10-23',
+					activistTime: '2019-03-13',
+					developTime: '2020-04-18',
+					culturel1Name: '张凯',
+					culturel2Name: '赖婕慧',
 					status: false,
-					className: '电信类172',
-					studentNum: '201810254884',
-					url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-					src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+					className: '计算机184',
+					studentNum: '201810214434',
+						url: 'assets/img/document/pict111.png',
+						src: ['assets/img/document/pict111.png'],
 					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第二团支部'
+					integral: 155,
+						general:'信科院第一党总支',
+						party:'第一支部',
+						group: '第一小组',
+						youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业184班支部委员会'
 				}, {
 					name: '廖伟杰',
 					sex: '男',
-					nation: '民族',
+					nation: '汉族',
 					nativePlace: '广东广州',
-					birth: '2020/09/19',
+					birth: '1999/07/21',
 					idCard: '445322199907215811',
 					phoneNum: '13763359812',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
+					email: '',
+					education: '高中',
+					duty: '无',
 					address: 'C114',
-					applyTime: '2021-04-30',
-					activistTime: '2019-09-20',
-					developTime: '2020-09-20',
-					culturel1Name: '杨洋',
-					culturel2Name: '吴贝贝',
+					applyTime: '2018-10-23 ',
+					activistTime: '2019-03-13',
+					developTime: '2020-04-18',
+					culturel1Name: '李海英',
+					culturel2Name: '林锦曼',
 					status: false,
-					className: '计算机182',
-					studentNum: '201810214211',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第一团支部'
+					className: '网工183',
+					studentNum: '201810224311',
+						url: 'assets/img/document/pict111.png',
+						src: ['assets/img/document/pict111.png'],
+					activityCount: 14,
+					integral: 140,
+						general:'信科院第一党总支',
+						party:'第二支部',
+						group: '第一小组',
+						youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院网络工程专业183班支部委员会'
 				}, {
 					name: '田晓培',
 					sex: '男',
-					nation: '民族',
+					nation: '汉族',
 					nativePlace: '广东揭阳',
-					birth: '2020/09/19',
-					idCard: '440983333333333333',
+					birth: '1999/07/19',
+					idCard: '445281199907194453',
 					phoneNum: '17806707873',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
+					email: '',
+					education: '高中',
+					duty: '无',
 					address: '南F2-104',
-					applyTime: '2021-04-30',
-					activistTime: '2019-09-20',
-					developTime: '2020-09-20',
-					culturel1Name: '黄子涛',
-					culturel2Name: '林金曼',
+					applyTime: '2018-10-23 ',
+					activistTime: '2019-03-13',
+					developTime: '2020-04-18',
+					culturel1Name: '陈嘉欣',
+					culturel2Name: '骆燕玲',
 					status: false,
-					className: '电信类171',
-					studentNum: '201710224125',
-					url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-					src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+					className: '物联网181',
+					studentNum: '201810234125',
+						url: 'assets/img/document/pict111.png',
+						src: ['assets/img/document/pict111.png'],
 					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '江雨滇',
-					sex: '男',
-					nation: '民族',
-					nativePlace: '广东广州',
-					birth: '2020/09/19',
-					idCard: '445281199912257017',
-					phoneNum: '17827418896',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: 'C-106',
-					applyTime: '2021-04-30',
-					activistTime: '2019-09-20',
-					developTime: '2021-04-20',
-					culturel1Name: '李海英',
-					culturel2Name: '王晓辉',
-					status: false,
-					className: '计算机181',
-					studentNum: '201810254884',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第一团支部'
-				}, {
+					integral: 155,
+						general:'信科院第一党总支',
+						party:'第二支部',
+						group: '第一小组',
+						youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院物联网工程专业181班支部委员会'
+				},
+					// {
+				// 	name: '江雨滇',
+				// 	sex: '男',
+				// 	nation: '汉族',
+				// 	nativePlace: '广东广州',
+				// 	birth: '2020/09/19',
+				// 	idCard: '445281199912257017',
+				// 	phoneNum: '17827418896',
+				// 	email: '454305375@qq.com',
+				// 	education: '本科',
+				// 	duty: '班长',
+				// 	address: 'C-106',
+				// 	applyTime: '2021-04-30',
+				// 	activistTime: '2019-09-20',
+				// 	developTime: '2021-04-20',
+				// 	culturel1Name: '李海英',
+				// 	culturel2Name: '王晓辉',
+				// 	status: false,
+				// 	className: '计算机181',
+				// 	studentNum: '201810254884',
+				// 		url: 'assets/img/document/pict111.png',
+				// 		src: ['assets/img/document/pict111.png'],
+				// 	activityCount: 15,
+				// 	integral: 56,
+				// 	group: '信科院第二党小组',
+				// 	youthLeagueBranch: '信科院第一团支部'
+				// }
+				// ,
+					{
 					name: '周宝仪',
 					sex: '女',
-					nation: '民族',
-					nativePlace: '广东广州',
-					birth: '2020/09/19',
+					nation: '汉族',
+					nativePlace: '广东揭阳',
+					birth: '1998/07/23',
 					idCard: '445202199807232728',
 					phoneNum: '17806707120',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
+					email: '',
+					education: '高中',
+					duty: '无',
 					address: '南B1-308',
-					applyTime: '2021-04-30',
-					activistTime: '2019-09-20',
-					developTime: '2020-09-20',
-					culturel1Name: '苏丁一',
-					culturel2Name: '黄早早',
+					applyTime: '2019-10-23',
+					activistTime: '2019-03-13',
+					developTime: '2020-04-18',
+					culturel1Name: '陈嘉欣',
+					culturel2Name: '骆燕玲',
 					status: false,
-					className: '计算机172',
-					studentNum: '201810254884',
-					url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-					src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+					className: '计算机192',
+					studentNum: '201910214201',
+					url: 'assets/img/document/pict111.png',
+					src: ['assets/img/document/pict111.png'],
 					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第一团支部'
-				}, {
-					name: '杨兴发',
-					sex: '男',
-					nation: '民族',
-					nativePlace: '广东广州',
-					birth: '2020/09/19',
-					idCard: '440981199804234217',
-					phoneNum: '15976535216',
-					email: '454305375@qq.com',
-					education: '本科',
-					duty: '班长',
-					address: '南F1-210',
-					applyTime: '2021-04-30',
-					activistTime: '2019-09-20',
-					developTime: '2021-04-20',
-					culturel1Name: '洪广军',
-					culturel2Name: '谢丽',
-					status: false,
-					className: '计算机172',
-					studentNum: '201810254884',
-					url: 'assets/img/avatar/头像.png',
-					src: ['assets/img/avatar/头像.png'],
-					activityCount: 15,
-					integral: 56,
-					group: '信科院第二党小组',
-					youthLeagueBranch: '信科院第一团支部'
-				}]
+					integral: 155,
+						general:'信科院第一党总支',
+						party:'第一支部',
+						group: '第二小组',
+						youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业192班支部委员会'
+				}
+				// ,
+				// 	{
+				// 	name: '杨兴发',
+				// 	sex: '男',
+				// 	nation: '民族',
+				// 	nativePlace: '广东广州',
+				// 	birth: '2020/09/19',
+				// 	idCard: '440981199804234217',
+				// 	phoneNum: '15976535216',
+				// 	email: '454305375@qq.com',
+				// 	education: '本科',
+				// 	duty: '班长',
+				// 	address: '南F1-210',
+				// 	applyTime: '2021-04-30',
+				// 	activistTime: '2019-09-20',
+				// 	developTime: '2021-04-20',
+				// 	culturel1Name: '洪广军',
+				// 	culturel2Name: '谢丽',
+				// 	status: false,
+				// 	className: '计算机172',
+				// 	studentNum: '201810254884',
+				// 	url: 'assets/img/avatar/头像.png',
+				// 	src: ['assets/img/avatar/头像.png'],
+				// 	activityCount: 15,
+				// 	integral: 56,
+				// 	group: '信科院第二党小组',
+				// 	youthLeagueBranch: '信科院第一团支部'
+				// }
+				]
 				this.selectClass = [{
 					text: '计机183',
 					value: '计机183'

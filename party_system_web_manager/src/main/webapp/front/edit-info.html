@@ -132,13 +132,10 @@
                                 message: '修改申请提交成功！等待审核通过后即生效!'
                             });
                         }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '已取消'
-                            });
+
                         });
                         //window.location.href="index.html";\
-                        setTimeout("window.location.href='index.html'",4000);    //返回上一页
+                        setTimeout("window.location.href='index.html'",2000);    //返回上一页
                     },
 /*                    submit() {
                         //提交editForm

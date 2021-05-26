@@ -85,7 +85,7 @@
             ref="multipleTable"
             :data="developList"
             tooltip-effect="dark"
-            style="width: 100%"
+            style="width: 782px"
             size="mini"
             border
             stripe
@@ -116,13 +116,6 @@
                 sortable
                 align="center">
         </el-table-column>
-      <el-table-column
-              prop="fromTime"
-              label="加入党总支时间"
-              width="130"
-              sortable
-              align="center">
-      </el-table-column>
         <el-table-column
                 prop="reason"
                 label="转出原因"
@@ -130,20 +123,7 @@
                 sortable
                 align="center">
         </el-table-column>
-        <el-table-column
-                prop="nativePlace"
-                label="籍贯"
-                width="100"
-                sortable
-                align="center">
-        </el-table-column>
-        <el-table-column
-                prop="fromName"
-                label="当前党总支"
-                width="290"
-                sortable
-                align="center">
-        </el-table-column>
+
       <el-table-column
               prop="toTime"
               label="转出时间"
@@ -853,135 +833,16 @@
             return {
                 developList : [
                     {
-                        name:'沈秀琪',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东潮州',
-                        fromName:'攻略互娱（深圳）互联网科技有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'15992545501',
-                        grade:'2017',
-                        classNum:'信管172',
-                        room:'B1-108',
-                    },
-                    {
-                        name:'单晓华',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东东莞',
-                        fromName:'珠海誉满互联网科技有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13763359810',
-                        grade:'2017',
-                        classNum:'大数据171',
-                        room:'D-542',
-                    },
-                    {
-                        name:'徐小青',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东揭阳',
-                        fromName:'云景（深圳）互联网有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'15217718792',
-                        grade:'2017',
-                        classNum:'物联网173',
-                        room:'D-1242',
-                    },
-                    {
-                        name:'何海清',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东汕头',
-                        fromName:'广州市海珠区隐式服务公司海珠饮食旅游中心工会',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13763359812',
-                        grade:'2017',
-                        classNum:'通信工程173',
-                        room:'C-128',
-                    },
-                    {
-                        name:'李琦',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东珠海',
-                        fromName:'广州知识产权保护中心',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13726624178',
-                        grade:'2017',
-                        classNum:'物联网173',
-                        room:'D-1051',
-                    },
-                    {
-                        name:'陈思宇',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东汕头',
-                        fromName:'广州互益互联网服务有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'17806707612',
-                        grade:'2017',
-                        classNum:'信管171',
-                        room:'F1-201',
-                    },
-                    {
-                        name:'邢江龙',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东茂名',
-                        fromName:'广州荣城建筑工程有限公司广州分公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'1501899840',
-                        grade:'2017',
-                        classNum:'网络工程172',
-                        room:'A1-252',
-                    },
-                    {
-                        name:'徐凯彬',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东阳江',
-                        fromName:'星星精密科技有限公司广州分公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'18922100439',
-                        grade:'2017',
-                        classNum:'人工智能171',
-                        room:'C1-203',
-                    },
-                    {
-                        name:'熊虞珊',
-                        sex:'女',
-                        reason:'工作',
-                        nativePlace:'广东潮州',
-                        fromName:'云端互联网（深圳）有限公司',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'13542895964',
-                        grade:'2017',
-                        classNum:'信管171',
-                        room:'B1-310',
-                    },
-                    {
-                        name:'陈晓器',
-                        sex:'男',
-                        reason:'工作',
-                        nativePlace:'广东湛江',
-                        fromName:'广州市海珠区科技工业商务和信息化局',
-                        toTime:'2021-05-24',
-                        fromTime:'2017-09-20',
-                        phone:'17806707104',
-                        grade:'2017',
-                        classNum:'网络工程172',
-                        room:'A1-203',
-                    },
+
+                      name:'廖盛浪',
+                      sex:'男',
+                      reason:'工作',
+                      phone:'17806707104',
+                      grade:'2017',
+                      toTime:'2021-05-26',
+                      classNum:'网络工程172',
+
+                    }
                 ],
                 searchMap:{
                     name:'',
@@ -1005,7 +866,7 @@
                 //当前页
                 currentPage: 1,
                 //总数
-                total: 108,
+                total: 1,
                 size: 10,
                 // 控制添加对话框的显示与隐藏
                 addDialogVisible: false,
@@ -1088,36 +949,7 @@
                     this.getDevelopList()
 
             },
-            getDevelopList() {
-                //向后台获取数据列表
-                axios.post(`/baseUser/findCommonPage.do?page=${this.currentPage}&size=${this.size}&type=1`,this.searchMap).then(response => {
-                    this.developList = response.data.data.pageInfo.rows;
-                    this.total = response.data.data.pageInfo.total;
-                });
-            },
-            getYouthLeagueBranchList(){
-                axios.get(`/leagueBranch/findAll.do`).then(response => {
-                    this.youthLeagueBranch = response.data.data.items;
-                });
-            },
-            getGeneralList(){
-                axios.get(`/general/findAll.do`).then(response => {
-                    this.general = response.data.data.items;
-                });
-            },
-            generalChanged(value){//点击党总支触发chage，显示对应的支部
-                this.generalId=value;
-                //查找这个党总支下面的所有党支部
-                axios.get(`/party/findByGeneralId.do?generalId=${this.generalId}`).then(response => {
-                    this.party = response.data.data.items;
-                });
-            },
-            partyChanged(value){
-                this.partyId=value;
-                axios.get(`/group/findByPartyId.do?partyId=${this.partyId}`).then(response => {
-                    this.group = response.data.data.items;
-                });
-            },
+
             downModel(){
                 window.location.href="model/development.xlsx";
             },
@@ -1133,44 +965,6 @@
             filterCell3(value, row) {
                 return row.youthLeagueBranch === value;
             },
-            //获取培养联系人级联下拉列表
-            getAllOption(){
-                axios.get(`/option/getOption.do`).then(response => {
-                    this.contacts = response.data.data.items;
-                });
-
-            },
-            /**
-             * 重置
-             */
-            reset(){
-                this.searchMap={
-                    name:'',
-                    generalId:'',
-                    partyId:'',
-                    groupId:'',
-                    leagueBranchId:''
-                }
-                this.getDevelopList()
-            },
-            toggleSelection(rows) {
-                if (rows) {
-                    rows.forEach(row => {
-                        this.$refs.multipleTable.toggleRowSelection(row);
-                    });
-                } else {
-                    this.$refs.multipleTable.clearSelection();
-                }
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-                var array=[];
-                val.forEach((val,index)=>{
-                    array.push(val.id);
-                })
-                this.formLabelAlign.select=array;//选中的人的id
-                this.dynamicValidateForm.select=array;
-            },
 
             addDialogOpen() {
                 this.addForm={}
@@ -1185,147 +979,14 @@
             showDialogClosed() {
                 //this.$refs.addFormRef.resetFields()
             },
-            // 展示信息的对话框
-            showUserDialog(id) {
-                //根据id
-                this.updateDialogVisible = true
-                this.getAllOption()
-                axios.get(`/baseUser/findCommonById.do?id=${id}&type=1`).then(response => {
-                    this.addForm = response.data.data.items;
 
-                });
-            },
-            // 根据Id删除对应的发展对象信息
-            async removeGroupById(id) {
-                // 弹框询问党小组是否删除数据
-                this.$confirm('确定要删除此记录吗?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then( () => {
-                    axios.get(`/baseUser/delete.do?id=${id}`).then(response => {
-                        this.$message.success('删除党员成功！')
-                        this.getDevelopList()
-                    })
-                })
-
-            },
-            showFileDialog() {
-                //此处应向后台获取数据
-                this.files = [
-                    {
-                        id: '1',
-                        fileName: '入党申请书',
-                        uploadTime: '2020/10/13 20:00:00',
-                        filePath: [
-                            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-                            'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                            'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-                        ],
-                        username: '赖乐宗'
-                    },{
-                        id: '2',
-                        fileName: '入党申请书',
-                        uploadTime: '2020/10/13 20:00:00',
-                        filePath: [
-                            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-                            'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                            'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-                        ],
-                        username: '赖乐宗'
-                    },{
-                        id: '3',
-                        fileName: '入党申请书',
-                        uploadTime: '2020/10/13 20:00:00',
-                        filePath: [
-                            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-                            'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                            'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-                        ],
-                        username: '赖乐宗'
-                    }
-                ]
-                this.fileDialogVisible = true
-            },
             innerDialog(file) {
                 //此处应向后台获取数据
                 this.url = file.filePath[0]
                 this.srcList = file.filePath
                 this.innerVisible = true
             },
-            //删除文件
-            async removeFile(file) {
-                // 弹框询问是否删除数据
-                const confirmResult = await this.$confirm(
-                    '此操作将永久删除该文件, 是否继续?',
-                    '提示',
-                    {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }
-                ).catch(err => err)
 
-                // 如果确认删除，则返回值为字符串 confirm
-                // 如果取消了删除，则返回值为字符串 cancel
-                // console.log(confirmResult)
-                if (confirmResult !== 'confirm') {
-                    return this.$message.info('已取消删除')
-                }
-                //此处向后台发请求进行删除
-                this.$message.success('删除文件成功！')
-                this.fileDialogVisible = false
-            },
-            showRelationshipDialog() {
-                if(this.multipleSelection.length==0){//选择了多少项
-                    this.$message.error('请选择你想转移的成员')
-                    return
-                }
-                //先统计多选框里选中的人数。得出sum
-                this.formLabelAlign.sum = this.multipleSelection.length
-                //此处应向后台获取options数据
-                axios.get(`/option/getTransferOption.do`).then(response =>{
-                    this.options = response.data.data.items
-                })
-                this.relationshipDialogVisible  = true
-            },
-
-            //处理关系转移的方法
-            transfer(){
-                // alert(JSON.stringify(this.formLabelAlign))
-                //要传选中的人的id过去，还要传选中的党小组id
-                axios.post(`/baseUser/transfer.do`,this.formLabelAlign).then(response => {
-                    this.$message.success('关系转移成功！')
-                    this.getDevelopList()
-                    this.relationshipDialogVisible = false
-                })
-            },
-            //变更培养联系人
-            showContactsDialog(id) {
-                if(this.multipleSelection.length == 0){
-                    this.$message.error('请选择你想变更联系人的成员')
-                    return
-                }
-                //先统计多选框里选中的人数。得出sum
-                this.dynamicValidateForm.sum = this.multipleSelection.length
-                //获取培养联系人列表
-                this.getAllOption()
-                this.contactsDialogVisible  = true
-            },
-            // 监听变更培养联系人对话框的关闭事件
-            setContactsDialogClosed() {
-                this.dynamicValidateForm = {
-                    organization1:[],
-                    organization2:[]
-                }
-            },
-            change_cul(){
-                axios.post(`/baseUser/changeCul.do`,this.dynamicValidateForm).then(response => {
-                    this.$message.success('变更培养联系人成功！')
-                    this.getDevelopList()
-                    this.contactsDialogVisible = false
-                })
-            },
 
             // 监听分配权限对话框的关闭事件
             setRelationshipDialogClosed() {

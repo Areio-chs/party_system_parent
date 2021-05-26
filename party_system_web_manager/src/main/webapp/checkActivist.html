@@ -97,7 +97,7 @@
 							<el-table-column
 									prop="youthLeagueBranch"
 									label="所属团支部"
-									width="120"
+									width="400"
 									:filters="selectYouth"
 									:filter-method="filterCell3"
 									filter-placement="bottom-end"
@@ -133,10 +133,10 @@
 									<el-tooltip effect="dark" content="更多信息" placement="top" :enterable="false">
 										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
 									</el-tooltip>
-									<!-- 查看其相关文档 -->
-									<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
-										<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
-									</el-tooltip>
+<!--									&lt;!&ndash; 查看其相关文档 &ndash;&gt;-->
+<!--									<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">-->
+<!--										<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>-->
+<!--									</el-tooltip>-->
 								</template>
 							</el-table-column>
 						</el-table>
@@ -153,7 +153,7 @@
 					</el-card>
 
 					<!-- 查看信息的对话框 -->
-					<el-dialog title="积极分子表" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
+					<el-dialog title="信息详情" :visible.sync="showDialogVisible" width="50%" @close="showDialogClosed">
 						<table align="center" style="text-align: center" border="2px" cellspacing="0" cellpadding="2">
 							<tr>
 								<td align="center" colspan="7">一、基本信息</td>
@@ -180,7 +180,7 @@
 							<tr>
 								<td>职务/职称</td>
 								<td >{{ tableList[0].duty }}</td>
-								<td colspan="2">申请入党时间</td>
+								<td colspan="2">申请书落款时间</td>
 								<td colspan="3">{{ tableList[0].applyTime }}</td>
 							</tr>
 							<tr>
@@ -341,165 +341,144 @@
 						url2: '',
 						srcList2: [],
                         tableList2 : [
-                         {
-                            name: '郭耀升',
-                            sex: '男',
-                            nation: '民族',
-                            nativePlace: '广东汕尾',
-                            birth: '2021-04-19',
-                            idCard: '440981999091832353',
-                            phoneNum: '123456789',
-                            email: '454305375@qq.com',
-                            education: '本科',
-                            duty: '班长',
-                            address: '仲恺农业工程学院',
-                            applyTime: '2020-09-20',
-                            status: false,
-                            className: '计算机183',
-                            studentNum: '201810254724',
-                            url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                            src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-                            activityCount: 15,
-                            integral: 56,
-                            group: '信科院第一党小组',
-                            youthLeagueBranch: '信科院第一团支部'
-                        }, {
-                            name: '关培军',
-                            sex: '男',
-                            nation: '民族',
-                            nativePlace: '广东揭阳',
-                            birth: '2020-09-19',
-                            idCard: '440982000091832353',
-                            phoneNum: '123456789',
-                            email: '454305375@qq.com',
-                            education: '本科',
-                            duty: '班长',
-                            address: '仲恺农业工程学院',
-                            applyTime: '2020-09-20',
-                            status: false,
-                            className: '网络192',
-                            studentNum: '201910254884',
-                            url: 'assets/img/avatar/头像.png',
-                            src: ['assets/img/avatar/头像.png'],
-                            activityCount: 15,
-                            integral: 56,
-                            group: '信科院第二党小组',
-                            youthLeagueBranch: '信科院第二团支部'
-                        }, {
-                            name: '郭敏',
-                            sex: '男',
-                            nation: '民族',
-                            nativePlace: '广东珠海',
-                            birth: '2020-09-19',
-                            idCard: '440981199906074583',
-                            phoneNum: '123456789',
-                            email: '454305375@qq.com',
-                            education: '本科',
-                            duty: '班长',
-                            address: '仲恺农业工程学院',
-                            applyTime: '2021-04-19',
-                            status: false,
-                            className: '网络191',
-                            studentNum: '201910254806',
-                            url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-                            src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
-                            activityCount: 15,
-                            integral: 56,
-                            group: '信科院第二党小组',
-                            youthLeagueBranch: '信科院第一团支部'
-                        }, {
-                            name: '黄润森',
-                            sex: '男',
-                            nation: '民族',
-                            nativePlace: '广东中山',
-                            birth: '2020-09-19',
-                            idCard: '440981998091832353',
-                            phoneNum: '123456789',
-                            email: '454305375@qq.com',
-                            education: '本科',
-                            duty: '班长',
-                            address: '仲恺农业工程学院',
-                            applyTime: '2020-09-20',
-                            status: false,
-                            className: '电信192',
-                            studentNum: '201910252304',
-                            url: 'assets/img/avatar/头像.png',
-                            src: ['assets/img/avatar/头像.png'],
-                            activityCount: 15,
-                            integral: 56,
-                            group: '信科院第二党小组',
-                            youthLeagueBranch: '信科院第一团支部'
-                        },
-                            {
-                                name: '徐小晶',
-                                sex: '女',
-                                nation: '民族',
-                                nativePlace: '广东汕头',
-                                birth: '1999-09-29',
-                                idCard: '4409811999092923473',
-                                phoneNum: '13142323877',
-                                email: '454305375@qq.com',
-                                education: '本科',
-                                duty: '班长',
-                                address: 'D-1142',
-                                applyTime: '2021-04-19',
-                                status: false,
-                                className: '计算机193',
-                                studentNum: '201910254823',
-                                url: 'assets/img/avatar/头像.png',
-                                src: ['assets/img/avatar/头像.png'],
-                                activityCount: 15,
-                                integral: 56,
-                                youthLeagueBranch: '信科院第一团支部'
-                            }, {
-                                name: '黄少花',
-                                sex: '女',
-                                nation: '民族',
-                                nativePlace: '广东广州',
-                                birth: '2020-09-19',
-                                idCard: '440923199712252633',
-                                phoneNum: '123456789',
-                                email: '454305375@qq.com',
-                                education: '本科',
-                                duty: '班长',
-                                address: '仲恺农业工程学院',
-                                applyTime: '2020-09-20',
-                                culturel1Name: '陈志军',
-                                culturel2Name: '陈子林',
-                                status: false,
-                                className: '计算机192',
-                                studentNum: '201910224243',
-                                url: 'assets/img/avatar/头像.png',
-                                src: ['assets/img/avatar/头像.png'],
-                                activityCount: 15,
-                                integral: 56,
-                                group: '信科院第二党小组',
-                                youthLeagueBranch: '信科院第二团支部'
-                            }, {
-                                name: '徐佳',
-                                sex: '男',
-                                nation: '民族',
-                                nativePlace: '广东佛山',
-                                birth: '2020-09-19',
-                                idCard: '440981200010241546',
-                                phoneNum: '13142323877',
-                                email: '454305375@qq.com',
-                                education: '本科',
-                                duty: '班长',
-                                address: '仲恺农业工程学院',
-                                applyTime: '2020-09-19',
-                                culturel1Name: '关培军',
-                                culturel2Name: '郭凤玲',
-                                status: false,
-                                className: '大数据192',
-                                studentNum: '201910224429',
-                                url: 'assets/img/avatar/头像.png',
-                                src: ['assets/img/avatar/头像.png'],
-                                activityCount: 15,
-                                integral: 56,
-                                group: '信科院第二党小组',
-                                youthLeagueBranch: '信科院第二团支部'
-                            }]
+							{
+								name: '黄玉霞',
+								sex: '女',
+								nation: '民族',
+								nativePlace: '广东广州',
+								birth: '2020-09-19',
+								idCard: '440923199712252633',
+								phoneNum: '123456789',
+								email: '454305375@qq.com',
+								education: '本科',
+								duty: '班长',
+								address: '仲恺农业工程学院',
+								applyTime: '2021-04-17',
+								culturel1Name: '陈志军',
+								culturel2Name: '陈子林',
+								status: false,
+								className: '计算机192',
+								studentNum: '201910224243',
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
+								activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业192班支部委员会'
+							}, {
+								name: '邓海峰',
+								sex: '男',
+								nation: '民族',
+								nativePlace: '广东佛山',
+								birth: '2021-04-18',
+								idCard: '440981200010241546',
+								phoneNum: '13142323877',
+								email: '454305375@qq.com',
+								education: '本科',
+								duty: '班长',
+								address: '仲恺农业工程学院',
+								applyTime: '2021-04-17',
+								culturel1Name: '关培军',
+								culturel2Name: '郭凤玲',
+								status: false,
+								className: '计算机192',
+								studentNum: '201910224429',
+								// assets/img/avatar/头像.png
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
+								activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业192班支部委员会'
+							}, {
+								name: '郭耀升',
+								sex: '男',
+								nation: '民族',
+								nativePlace: '广东汕尾',
+								birth: '2021-04-19',
+								idCard: '440981999091832353',
+								phoneNum: '123456789',
+								email: '454305375@qq.com',
+								education: '本科',
+								duty: '班长',
+								address: '仲恺农业工程学院',
+								applyTime: '2021-04-16',
+								status: false,
+								className: '计算机201',
+								studentNum: '201810254724',
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
+								activityCount: 15,
+								integral: 56,
+								group: '信科院第一党小组',
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业201班支部委员会'
+							}, {
+								name: '关培军',
+								sex: '男',
+								nation: '民族',
+								nativePlace: '广东揭阳',
+								birth: '2020-09-19',
+								idCard: '440982000091832353',
+								phoneNum: '123456789',
+								email: '454305375@qq.com',
+								education: '本科',
+								duty: '班长',
+								address: '仲恺农业工程学院',
+								applyTime: '2021-04-16',
+								status: false,
+								className: '网工192',
+								studentNum: '201910254884',
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
+								activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院网络工程专业192班支部委员会'
+							}, {
+								name: '郭敏',
+								sex: '男',
+								nation: '民族',
+								nativePlace: '广东珠海',
+								birth: '2020-09-19',
+								idCard: '440981199906074583',
+								phoneNum: '123456789',
+								email: '454305375@qq.com',
+								education: '本科',
+								duty: '班长',
+								address: '仲恺农业工程学院',
+								applyTime: '2021-04-16',
+								status: false,
+								className: '计算机202',
+								studentNum: '201910254806',
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
+								activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业202班支部委员会'
+							}, {
+								name: '黄润森',
+								sex: '男',
+								nation: '民族',
+								nativePlace: '广东中山',
+								birth: '2021-04-18',
+								idCard: '440981998091832353',
+								phoneNum: '123456789',
+								email: '454305375@qq.com',
+								education: '本科',
+								duty: '班长',
+								address: '仲恺农业工程学院',
+								applyTime: '2021-04-16',
+								status: false,
+								className: '物联网191',
+								studentNum: '201910252304',
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
+								activityCount: 15,
+								integral: 56,
+								group: '信科院第二党小组',
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院物联网工程专业191班支部委员会'
+							}]
 					}
 				},
 				created() {
@@ -510,6 +489,7 @@
                         this.$message.success('一键审核成功！');
                         //setTimeout("")
                         this.tableList=this.tableList2;
+                        this.total=6
                     },
 					getTableList() {
 						//向后台获取列表
@@ -517,24 +497,24 @@
 								{
 							name: '陈肖红',
 							sex: '女',
-							nation: '民族',
+							nation: '汉族',
 							nativePlace: '广东汕头',
 							birth: '1999-09-29',
 							idCard: '4409811999092923473',
 							phoneNum: '13142323877',
 							email: '454305375@qq.com',
-							education: '本科',
+							education: '高中',
 							duty: '班长',
-							address: 'D-1142',
+							address: '广东省汕头市潮阳区金浦街道阿牛电器',
 							applyTime: '2021-04-18',
 							status: false,
 							className: '计算机193',
 							studentNum: '201910254823',
-							url: 'assets/img/avatar/头像.png',
-							src: ['assets/img/avatar/头像.png'],
+							url: 'assets/img/document/pict111.png',
+							src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 									integral: 56,
-									youthLeagueBranch: '信科院第一团支部'
+									youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业193班支部委员会'
 						}, {
 							name: '黄玉霞',
 							sex: '女',
@@ -553,12 +533,12 @@
 							status: false,
 							className: '计算机192',
 							studentNum: '201910224243',
-							url: 'assets/img/avatar/头像.png',
-							src: ['assets/img/avatar/头像.png'],
+							url: 'assets/img/document/pict111.png',
+							src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 								integral: 56,
 								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业192班支部委员会'
 						}, {
 							name: '邓海峰',
 							sex: '男',
@@ -575,14 +555,15 @@
 							culturel1Name: '关培军',
 							culturel2Name: '郭凤玲',
 							status: false,
-							className: '大数据192',
+							className: '计算机192',
 							studentNum: '201910224429',
-							url: 'assets/img/avatar/头像.png',
-							src: ['assets/img/avatar/头像.png'],
+								// assets/img/avatar/头像.png
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 								integral: 56,
 								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业192班支部委员会'
 						}, {
 							name: '郭耀升',
 							sex: '男',
@@ -597,14 +578,14 @@
 							address: '仲恺农业工程学院',
 							applyTime: '2021-04-16',
 							status: false,
-							className: '计算机183',
+							className: '计算机201',
 							studentNum: '201810254724',
-							url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-							src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 								integral: 56,
 								group: '信科院第一党小组',
-								youthLeagueBranch: '信科院第一团支部'
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业201班支部委员会'
 						}, {
 							name: '关培军',
 							sex: '男',
@@ -619,14 +600,14 @@
 							address: '仲恺农业工程学院',
 							applyTime: '2021-04-16',
 							status: false,
-							className: '网络192',
+							className: '网工192',
 							studentNum: '201910254884',
-							url: 'assets/img/avatar/头像.png',
-							src: ['assets/img/avatar/头像.png'],
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 								integral: 56,
 								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第二团支部'
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院网络工程专业192班支部委员会'
 						}, {
 							name: '郭敏',
 							sex: '男',
@@ -641,14 +622,14 @@
 							address: '仲恺农业工程学院',
 							applyTime: '2021-04-16',
 							status: false,
-							className: '网络191',
+							className: '计算机202',
 							studentNum: '201910254806',
-							url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-							src: ['https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'],
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 								integral: 56,
 								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院计算机科学与技术专业202班支部委员会'
 						}, {
 							name: '黄润森',
 							sex: '男',
@@ -663,14 +644,14 @@
 							address: '仲恺农业工程学院',
 							applyTime: '2021-04-16',
 							status: false,
-							className: '电信192',
+							className: '物联网191',
 							studentNum: '201910252304',
-							url: 'assets/img/avatar/头像.png',
-							src: ['assets/img/avatar/头像.png'],
+								url: 'assets/img/document/pict111.png',
+								src: ['assets/img/document/pict111.png'],
 							activityCount: 15,
 								integral: 56,
 								group: '信科院第二党小组',
-								youthLeagueBranch: '信科院第一团支部'
+								youthLeagueBranch: '中国共产主义青年团仲恺农业工程学院信息科学与技术学院物联网工程专业191班支部委员会'
 						}]
 						this.selectClass = [{
 							text: '计算机187',

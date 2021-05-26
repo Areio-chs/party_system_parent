@@ -29,15 +29,17 @@
         <el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
             <el-form-item>
                 <el-input placeholder="请输入党支部名字"
-						  v-model="searchMap.partyName" clearable>
+						  v-model="searchMap.partyName"
+                          @clear="search"
+                          clearable>
                     <el-button slot="append" icon="el-icon-search" type="primary" @click="getPartyList"></el-button>
                 </el-input>
             </el-form-item>
 
             <el-form-item>
                 <el-button type="primary" icon="el-icon-plus" @click="addDialogVisible = true;addForm={}">添加</el-button>
-                <el-button type="warning" icon="el-icon-s-promotion" @click="showRelationshipDialog">组织转移</el-button>
-                <el-button type="success" icon="el-icon-download">导出</el-button>
+<!--                <el-button type="warning" icon="el-icon-s-promotion" @click="showRelationshipDialog">组织转移</el-button>-->
+<!--                <el-button type="success" icon="el-icon-download">导出</el-button>-->
             </el-form-item>
         </el-form>
 		<!--显示主体------------------------------------------------------>
@@ -328,6 +330,12 @@
 				}
 				this.getPartyList()
 			},
+            search(){
+                // alert("sssss")
+                this.currentPage=1,
+                    this.getPartyList()
+
+            },
             toggleSelection(rows) {
                 if (rows) {
                     rows.forEach(row => {
