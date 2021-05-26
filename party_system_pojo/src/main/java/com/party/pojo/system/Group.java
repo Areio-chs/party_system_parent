@@ -99,6 +99,18 @@ public class Group implements Serializable{
 		this.accountId = accountId;
 	}
 
-
-	
+	@Override
+	public String toString() {
+		return "Group{" +
+				"id='" + id + '\'' +
+				", groupName='" + groupName + '\'' +
+				", groupPhone='" + groupPhone + '\'' +
+				", groupAddress='" + groupAddress + '\'' +
+				", groupTime=" + groupTime +
+				", groupNote='" + groupNote + '\'' +
+				", partyId='" + partyId + '\'' +
+				", partyName='" + partyName + '\'' +
+				", accountId='" + accountId + '\'' +
+				'}';
+	}
 }

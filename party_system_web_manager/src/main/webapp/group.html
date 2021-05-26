@@ -138,18 +138,15 @@
                             v-model="addForm.groupNote">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="党支部">
-                    <el-select
-                            clearable
+                <el-form-item label="上级">
+                    <el-cascader
+                            :options="partys"
                             v-model="addForm.partyId"
-                            placeholder="请选择所属党支部">
-                        <el-option
-                                v-for="item in party"
-                                :label="item.partyName"
-                                :key="item.id"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
+                            :props="{ checkStrictly: true }"
+                            @change="change3"
+                            collapse-tags="true"
+                            clearable>
+                    </el-cascader>
                 </el-form-item>
 
             </el-form>
@@ -309,13 +306,38 @@
                 relationshipDialogVisible: false,
                 formLabelAlign: {},
                 //上级列表
-                party: []
+                party: [],
+                partys:[]
             }
         },
         created() {
             this.getGroupList();
+            this.getPartyList();
+            this.getGeneralList();
+            this.getPartys();
+
         },
         methods: {
+            getPartys() {
+                this.partys = [
+                    {
+                        value: '1',
+                        label: '信科院第一党总支',
+                        children: [{
+                            value: '1',
+                            label: '信科院第一党支部',
+                        }, {
+                            value: '2',
+                            label: '信科院第二党支部',
+                        }, {
+                            value: '3',
+                            label: '信科院第三党支部',
+                        }, {
+                            value: '4',
+                            label: '信科院第四党支部',
+                        }]
+                    }]
+            },
             getGroupList() {
                 axios.post(`/group/findGroup.do?page=${this.currentPage}&size=${this.size}`, this.searchMap).then(response => {
                     this.groupList = response.data.data.group.rows;
@@ -337,7 +359,7 @@
                 this.searchMap={
                     name:''
                 };
-                this.getGroupList()
+                this.getGroupList();
             },
             toggleSelection(rows) {
                 if (rows) {
@@ -363,6 +385,11 @@
             getPartyList(){
                 axios.get(`/party/findAll.do`).then(response => {
                     this.party = response.data.data.items;
+                });
+            },
+            getGeneralList(){
+                axios.get(`/general/findAll.do`).then(response => {
+                    this.general = response.data.data.items;
                 });
             },
             // 点击按钮，添加新党小组

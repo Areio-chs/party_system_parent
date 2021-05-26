@@ -54,6 +54,9 @@ public class GroupController {
 
     @PostMapping("/add")
     public R add(@RequestBody Group group){
+        System.out.println(group.getPartyId());
+        group.setPartyId("1");
+        System.out.println(group.getPartyId());
         groupService.add(group);
         return R.ok();
     }
@@ -72,7 +75,6 @@ public class GroupController {
 
     @PostMapping("/findGroup")
     public R findGroupPage(@RequestBody Map<String,Object> searchMap, int page, int size){
-        searchMap.put("name","小组");
         PageResult<Group> group = groupService.findPage(searchMap,page,size);
         return R.ok().data("group",group);
     }
