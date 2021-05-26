@@ -116,7 +116,7 @@
 							<el-form-item>
 
 								<el-button icon="el-icon-download" @click="downModel">点击下载模版</el-button>
-								<el-button icon="el-icon-download">入党积极分子预审表</el-button>
+<!--								<el-button icon="el-icon-download">入党积极分子预审表</el-button>-->
 							</el-form-item>
 						</el-form>
 						<!--显示主体------------------------------------------------------>
@@ -305,10 +305,10 @@
 									<el-tooltip effect="dark" content="查看个人信息" placement="top" :enterable="false">
 										<el-button type="primary" icon="el-icon-user" size="mini" @click="showUserDialog(scope.row.id)"></el-button>
 									</el-tooltip>
-									<!-- 查看其相关文档 -->
-									<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">
-										<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>
-									</el-tooltip>
+<!--									&lt;!&ndash; 查看其相关文档 &ndash;&gt;-->
+<!--									<el-tooltip effect="dark" content="查看其相关文档" placement="top" :enterable="false">-->
+<!--										<el-button icon="el-icon-folder" size="mini" @click="showFileDialog"></el-button>-->
+<!--									</el-tooltip>-->
 									<!-- 删除按钮 -->
 									<el-tooltip effect="dark" content="删除信息" placement="top" :enterable="false">
 										<el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGroupById(scope.row.id)"></el-button>
@@ -1216,7 +1216,7 @@
 					this.dynamicValidateForm.select=array;
 				},
 				downModel(){
-					window.location.href="model/模板表.xlsx";
+					window.location.href="model/activists.xlsx";
 				},
 				downExcel(){
 					window.location.href="/excel/leadOutActivist.do";
