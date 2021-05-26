@@ -35,7 +35,7 @@
 
 					<el-card>
 						<!-- 搜索与添加区域 -->
-						<el-form :inline="true" ref="form" :model="queryInfo" size="mini" label-width="70px">
+						<el-form :inline="true" ref="searchMap" :model="searchMap" size="mini" label-width="70px">
 							<el-form-item>
 								<el-input placeholder="请输入名称" v-model="searchMap.name" clearable>
 									<el-button slot="append" icon="el-icon-search" type="primary" @click="fetchData"></el-button>
@@ -185,9 +185,10 @@
 								<el-form-item label="上级">
 									<el-cascader
 											:options="groups"
-											v-model="editForm.group"
+											v-model="addForm.group"
 											:props="{ checkStrictly: true }"
-											@change="change2"
+											@change="change3"
+											collapse-tags="true"
 											clearable>
 									</el-cascader>
 								</el-form-item>
@@ -314,9 +315,9 @@
 				},
 				methods: {
 					fetchData() {
-						axios.post(`/leagueBranch/findPage.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
-							this.tableData = response.data.rows;
-							this.total = response.data.total;
+						axios.post(`/leagueBranch/findLeagueBranch.do?page=${this.currentPage}&size=${this.size}`,this.searchMap).then(response => {
+							this.tableData = response.data.data.leagueBranch.rows;
+							this.total = response.data.data.leagueBranch.total;
 						});
 					},
 					handleSizeChange(val) {
@@ -365,12 +366,13 @@
 					// 展示编辑团支部的对话框
 					showEditDialog(id) {
 						axios.get(`/leagueBranch/findById.do?id=${id}`).then(response => {
-							this.editForm = response.data;
+							this.editForm = response.data.data.items;
 						})
 						this.editDialogVisible = true;
 					},
 					// 监听修改团支部对话框的关闭事件
 					editDialogClosed() {
+
 						this.$refs.editFormRef.resetFields()
 						this.groups = []
 					},
@@ -443,8 +445,8 @@
 										value: '第三党小组',
 										label: '第三党小组'
 									}, {
-										value: '第三党小组',
-										label: '第三党小组'
+										value: '第四党小组',
+										label: '第四党小组'
 									}]
 								}, {
 									value: '信科院第二党支部',
@@ -455,67 +457,9 @@
 									}, {
 										value: '第二党小组',
 										label: '第二党小组'
-									}]
-								}]
-							}, {
-								value: '信科院第二党总支',
-								label: '信科院第二党总支',
-								children: [{
-									value: '第一党支部',
-									label: '第一党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
 									}, {
 										value: '第三党小组',
 										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第二党支部',
-									label: '第二党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
-									}]
-								}, {
-									value: '第三党支部',
-									label: '第三党支部',
-									children: [{
-										value: '第一党小组',
-										label: '第一党小组'
-									}, {
-										value: '第二党小组',
-										label: '第二党小组'
-									}, {
-										value: '第三党小组',
-										label: '第三党小组'
-									}, {
-										value: '第四党小组',
-										label: '第四党小组'
-									}, {
-										value: '第五党小组',
-										label: '第五党小组'
 									}]
 								}]
 							}]

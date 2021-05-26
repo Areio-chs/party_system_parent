@@ -63,6 +63,7 @@ public class GroupController {
 
     @PostMapping("/update")
     public R update(@RequestBody Group group){
+        group.setPartyId("1");
         groupService.update(group);
         return R.ok();
     }

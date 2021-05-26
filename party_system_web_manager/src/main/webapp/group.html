@@ -177,18 +177,15 @@
                             v-model="editForm.groupNote">
                     </el-input>
                 </el-form-item>
-                <el-form-item label="修改上级">
-                    <el-select
-                            clearable
-                            v-model="editForm.partyId"
-                            placeholder="请选择所属上级">
-                        <el-option
-                                v-for="item in party"
-                                :label="item.partyName"
-                                :key="item.id"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
+                <el-form-item label="上级">
+                    <el-cascader
+                            :options="partys"
+                            v-model="addForm.partyId"
+                            :props="{ checkStrictly: true }"
+                            @change="change3"
+                            collapse-tags="true"
+                            clearable>
+                    </el-cascader>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -214,19 +211,15 @@
                         </el-col>
                     </el-form-item>
 
-                    <el-form-item label="修改上级">
-                        <el-select
-                                clearable
-                                v-model="formLabelAlign.toParty"
-                                placeholder="请选择所属上级">
-                            <el-option
-                                    v-for="item in party"
-                                    :label="item.partyName"
-                                    :key="item.id"
-                                    :value="item.id">
-                            </el-option>
-                        </el-select>
-<!--                        <el-cascader :options="options" v-model="formLabelAlign.organization" style="width: 100%" clearable></el-cascader>-->
+                    <el-form-item label="上级">
+                        <el-cascader
+                                :options="partys"
+                                v-model="addForm.partyId"
+                                :props="{ checkStrictly: true }"
+                                @change="change3"
+                                collapse-tags="true"
+                                clearable>
+                        </el-cascader>
                     </el-form-item>
                 </el-form>
             </el-card>

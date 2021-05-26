@@ -35,6 +35,8 @@ public class LeagueBranchController {
         return leagueBranchService.findPage(page, size);
     }
 
+
+
     @PostMapping("/findList")
     public List<LeagueBranch> findList(@RequestBody Map<String,Object> searchMap){
         return leagueBranchService.findList(searchMap);
@@ -54,12 +56,17 @@ public class LeagueBranchController {
 
     @PostMapping("/add")
     public R add(@RequestBody LeagueBranch leagueBranch){
+
+        leagueBranch.setPartyId("1");
+        leagueBranch.setGroupId("1");
         leagueBranchService.add(leagueBranch);
         return R.ok();
     }
 
     @PostMapping("/update")
     public R update(@RequestBody LeagueBranch leagueBranch){
+        leagueBranch.setPartyId("1");
+        leagueBranch.setGroupId("1");
         leagueBranchService.update(leagueBranch);
         return R.ok();
     }
